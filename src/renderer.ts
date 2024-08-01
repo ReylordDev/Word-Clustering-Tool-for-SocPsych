@@ -39,3 +39,7 @@ submitButton.addEventListener("click", () => {
   console.log("Button clicked");
   window.python.start();
 });
+
+window.python.onStdout((data: string) => {
+  console.log(`stdout: ${data}`);
+});

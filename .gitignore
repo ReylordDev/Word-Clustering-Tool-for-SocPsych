@@ -100,3 +100,7 @@ out/
 
 # Venv
 .venv
+
+# PyInstaller
+build
+dist

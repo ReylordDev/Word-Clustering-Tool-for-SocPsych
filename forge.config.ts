@@ -10,6 +10,9 @@ import { FuseV1Options, FuseVersion } from "@electron/fuses";
 
 import { mainConfig } from "./webpack.main.config";
 import { rendererConfig } from "./webpack.renderer.config";
+import path from "path";
+import fs from "fs";
+import { cp } from "fs/promises";
 
 const config: ForgeConfig = {
   packagerConfig: {
@@ -52,6 +55,19 @@ const config: ForgeConfig = {
       [FuseV1Options.OnlyLoadAppFromAsar]: true,
     }),
   ],
+  hooks: {
+    postPackage: async (forgeConfig, options) => {
+      const { outputPaths } = options;
+
+      const pythonFolderPath = "./dist/main";
+
+      for (const outputPath of outputPaths) {
+        const destinationPath = path.join(outputPath, "python");
+        await cp(pythonFolderPath, destinationPath, { recursive: true });
+        console.log(`Copied ${pythonFolderPath} to ${destinationPath}`);
+      }
+    },
+  },
 };
 
 export default config;

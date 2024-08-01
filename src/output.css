@@ -554,10 +554,6 @@ video {
   --tw-contain-style:  ;
 }
 
-.visible {
-  visibility: visible;
-}
-
 .rounded-xl {
   border-radius: 0.75rem;
 }
@@ -584,12 +580,4 @@ video {
 .text-xl {
   font-size: 1.25rem;
   line-height: 1.75rem;
-}
-
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
-    Arial, sans-serif;
-  margin: auto;
-  max-width: 38rem;
-  padding: 2rem;
 }

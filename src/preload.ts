@@ -8,4 +8,6 @@ import { contextBridge, ipcRenderer } from "electron";
 
 contextBridge.exposeInMainWorld("python", {
   start: () => ipcRenderer.send("python:start"),
+  onStdout: (listener: (data: string) => void) =>
+    ipcRenderer.on("python:stdout", (_, data) => listener(data)),
 });
