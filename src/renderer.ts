@@ -28,6 +28,14 @@
 
 import "./output.css";
 
-console.log(
-  '👋 This message is being logged by "renderer.js", included via webpack',
-);
+const submitButton = document.getElementById("submit-button");
+console.log("Hello from renderer process!");
+
+if (!submitButton) {
+  throw new Error("No submit button found");
+}
+
+submitButton.addEventListener("click", () => {
+  console.log("Button clicked");
+  window.python.start();
+});
