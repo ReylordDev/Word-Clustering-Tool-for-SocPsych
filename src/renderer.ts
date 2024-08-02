@@ -38,3 +38,6 @@ if (!submitButton) {
 submitButton.addEventListener("click", () => {
   console.log("Button clicked");
 });
+
+// Add this to the end of the existing file
+import "./app";
