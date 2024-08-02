@@ -104,3 +104,6 @@ out/
 # PyInstaller
 build
 dist
+
+# Pycache
+__pycache__
