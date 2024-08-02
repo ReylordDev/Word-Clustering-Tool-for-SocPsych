@@ -65,6 +65,9 @@ const config: ForgeConfig = {
         const destinationPath = path.join(outputPath, "python");
         await cp(pythonFolderPath, destinationPath, { recursive: true });
         console.log(`Copied ${pythonFolderPath} to ${destinationPath}`);
+
+        await cp("requirements.txt", path.join(outputPath, "requirements.txt"));
+        console.log(`Copied requirements.txt to ${outputPath}`);
       }
     },
   },

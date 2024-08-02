@@ -6,8 +6,4 @@ import { contextBridge, ipcRenderer } from "electron";
 // Expose protected methods that allow the renderer process to use
 // the ipcRenderer without exposing the entire object
 
-contextBridge.exposeInMainWorld("python", {
-  start: () => ipcRenderer.send("python:start"),
-  onStdout: (listener: (data: string) => void) =>
-    ipcRenderer.on("python:stdout", (_, data) => listener(data)),
-});
+contextBridge.exposeInMainWorld("python", {});
