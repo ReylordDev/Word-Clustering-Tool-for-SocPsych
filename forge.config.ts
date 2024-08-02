@@ -59,7 +59,7 @@ const config: ForgeConfig = {
     postPackage: async (forgeConfig, options) => {
       const { outputPaths } = options;
 
-      const pythonFolderPath = "./dist/main";
+      const pythonFolderPath = "./src/python";
 
       for (const outputPath of outputPaths) {
         const destinationPath = path.join(outputPath, "python");
