@@ -13,6 +13,7 @@ logger.add(
 
 @app.get("/")
 def read_root():
+    logger.debug("Hello World")
     return {"Hello": "World"}
 
 
