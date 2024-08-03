@@ -1,8 +1,15 @@
-import { createRoot } from "react-dom/client";
+import { MemoryRouter as Router, Routes, Route } from "react-router-dom";
 
-const reactContainer = document.getElementById("react-container");
-if (!reactContainer) {
-  throw new Error("No react container found");
+import LandingPage from "./components/LandingPage";
+import FileSelection from "./components/FileSelection";
+
+export default function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/file" element={<FileSelection />} />
+      </Routes>
+    </Router>
+  );
 }
-const root = createRoot(reactContainer);
-root.render(<h2>Hello from React!</h2>);

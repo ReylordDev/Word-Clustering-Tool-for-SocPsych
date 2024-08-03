@@ -84,8 +84,8 @@ const startServer = () => {
 const createWindow = () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    height: 600,
-    width: 800,
+    height: 768,
+    width: 1024,
     webPreferences: {
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
     },

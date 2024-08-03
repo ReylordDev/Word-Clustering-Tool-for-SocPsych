@@ -28,16 +28,5 @@
 
 import "./output.css";
 
-const submitButton = document.getElementById("submit-button");
-console.log("Hello from renderer process!");
-
-if (!submitButton) {
-  throw new Error("No submit button found");
-}
-
-submitButton.addEventListener("click", () => {
-  console.log("Button clicked");
-});
-
 // Add this to the end of the existing file
-import "./app";
+import "./react-renderer";
