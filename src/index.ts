@@ -109,6 +109,8 @@ app.on("ready", async () => {
   startServer();
 
   console.log("App is ready.");
+  console.log(MAIN_WINDOW_WEBPACK_ENTRY);
+  console.log(MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY);
 
   // IPC communication between main and renderer processes
   // todo
