@@ -22,7 +22,7 @@ const installRequirements = async () => {
   const requirementsPath = "requirements.txt";
   return new Promise<void>((resolve, reject) => {
     installerProcess = exec(
-      `python -m pip install -r ${requirementsPath}`,
+      `python3 -m pip install -r ${requirementsPath}`,
       (error, stdout, stderr) => {
         if (error) {
           console.error(`Error: ${error.message}`);
@@ -54,11 +54,11 @@ const startServer = () => {
   console.log("Starting server...");
   if (isDev()) {
     server = exec(
-      "python -m uvicorn --reload src.python.server:app --host 127.0.0.1 --port 8154",
+      "python3 -m uvicorn --reload src.python.server:app --host 127.0.0.1 --port 8154",
     );
   } else {
     server = exec(
-      "python -m uvicorn python.server:app --host 127.0.0.1 --port 8154",
+      "python3 -m uvicorn python.server:app --host 127.0.0.1 --port 8154",
     );
   }
   server.on("error", (error) => {
@@ -111,6 +111,7 @@ app.on("ready", async () => {
   console.log("App is ready.");
 
   // IPC communication between main and renderer processes
+  // todo
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common
