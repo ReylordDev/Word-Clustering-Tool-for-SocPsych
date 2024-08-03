@@ -1,7 +1,7 @@
 import { MemoryRouter as Router, Routes, Route } from "react-router-dom";
 
 import LandingPage from "./components/LandingPage";
-import FileSelection from "./components/FileSelection";
+import FileSelection from "./components/FileSelectionPage";
 
 export default function App() {
   return (

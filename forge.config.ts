@@ -68,6 +68,11 @@ const config: ForgeConfig = {
 
         await cp("requirements.txt", path.join(outputPath, "requirements.txt"));
         console.log(`Copied requirements.txt to ${outputPath}`);
+
+        await cp("example_data", path.join(outputPath, "example_data"), {
+          recursive: true,
+        });
+        console.log(`Copied example_data to ${outputPath}`);
       }
     },
   },
