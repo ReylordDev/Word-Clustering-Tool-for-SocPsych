@@ -3,14 +3,18 @@ import { Header } from "./Header";
 import { FileSelector } from "./FileSelector";
 import { useState } from "react";
 
-export default function LandingPageStar() {
+export default function FileSelectionPage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const submitFile = () => {
     if (selectedFile) {
       console.log(selectedFile.path);
-      window.python.previewFile(selectedFile.path);
+      window.python.submitFilePath(selectedFile.path);
     }
+  };
+
+  const exampleFile = () => {
+    console.log("Not implemented yet");
   };
 
   return (
@@ -39,7 +43,10 @@ export default function LandingPageStar() {
               You can also start with an example file if you <br />
               just want to try the application out.
             </p>
-            <button className="rounded-full bg-secondary p-4 px-8 text-background">
+            <button
+              className="rounded-full bg-secondary p-4 px-8 text-background"
+              onClick={exampleFile}
+            >
               <p>Choose Example File</p>
             </button>
           </div>
@@ -47,7 +54,10 @@ export default function LandingPageStar() {
       </div>
       <div className="my-12"></div>
       <div className="flex items-center justify-center">
-        <Link to={selectedFile ? "/" : ""}>
+        <Link
+          to={selectedFile ? "/file_settings" : ""}
+          state={selectedFile?.path}
+        >
           {selectedFile ? (
             <button
               className="w-48 rounded-full bg-primary p-4 px-8 text-background"

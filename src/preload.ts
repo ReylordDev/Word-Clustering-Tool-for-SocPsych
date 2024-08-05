@@ -7,7 +7,10 @@ import { contextBridge, ipcRenderer } from "electron";
 // the ipcRenderer without exposing the entire object
 
 contextBridge.exposeInMainWorld("python", {
-  previewFile: async (path: string) => {
-    return await ipcRenderer.invoke("python:preview-file", path);
+  submitFilePath: async (path: string) => {
+    return await ipcRenderer.invoke("python:submitFilePath", path);
+  },
+  readFile: async (path: string) => {
+    return await ipcRenderer.invoke("python:readFile", path);
   },
 });
