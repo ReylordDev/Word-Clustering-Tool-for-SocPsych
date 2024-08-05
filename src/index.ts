@@ -165,6 +165,39 @@ app.on("ready", async () => {
       console.log(response);
     },
   );
+  ipcMain.handle(
+    "python:setAlgorithmSettings",
+    async (
+      event,
+      autoChooseClusters: boolean,
+      maxClusters: number,
+      excludedWords: string[],
+      seed: number,
+    ) => {
+      console.log({
+        autoChooseClusters,
+        maxClusters,
+        excludedWords,
+        seed,
+      });
+      const response = await net.fetch(
+        `http://localhost:8154/algorithm/settings`,
+        {
+          method: "put",
+          body: JSON.stringify({
+            auto_choose_clusters: autoChooseClusters,
+            max_clusters: maxClusters,
+            excluded_words: excludedWords,
+            seed,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+      console.log(response);
+    },
+  );
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common
@@ -215,6 +248,12 @@ declare global {
         hasHeader: boolean,
         separator: string,
         selectedColumns: number[],
+      ) => void;
+      setAlgorithmSettings: (
+        autoChooseClusters: boolean,
+        maxClusters: number,
+        excludedWords: string[],
+        seed: number,
       ) => void;
     };
   }

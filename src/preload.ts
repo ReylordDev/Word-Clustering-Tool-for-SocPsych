@@ -25,4 +25,18 @@ contextBridge.exposeInMainWorld("python", {
       selectedColumns,
     );
   },
+  setAlgorithmSettings: async (
+    autoChooseClusters: boolean,
+    maxClusters: number,
+    excludedWords: string[],
+    seed: number,
+  ) => {
+    return await ipcRenderer.invoke(
+      "python:setAlgorithmSettings",
+      autoChooseClusters,
+      maxClusters,
+      excludedWords,
+      seed,
+    );
+  },
 });

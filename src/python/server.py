@@ -1,7 +1,13 @@
 from typing import Union
 from loguru import logger
 from fastapi import FastAPI
-from .models import FilePathParam, FileSettings, FileSettingsParam
+from .models import (
+    FilePathParam,
+    FileSettings,
+    FileSettingsParam,
+    AutoAlgorithmSettings,
+    ManualAlgorithmSettings,
+)
 
 app = FastAPI()
 
@@ -9,15 +15,23 @@ logger.add(
     "logs/python/server.log", rotation="10 MB", retention="10 days", level="DEBUG"
 )
 
-file_settings: FileSettings = FileSettings(
-    path="example_path", separator=",", header=True, selectedColumns=[0]
+FILE_SETTINGS: FileSettings = FileSettings(
+    path="",
+    separator=",",
+    header=True,
+    selectedColumns=[],
 )
+ALGORITHM_SETTINGS: Union[AutoAlgorithmSettings, ManualAlgorithmSettings]
 
 
 @app.get("/")
 def read_root():
     logger.debug("Hello World")
-    return file_settings.model_dump()
+    return {
+        "message": "Hello World",
+        "file_settings": FILE_SETTINGS.model_dump(),
+        "algorithm_settings": ALGORITHM_SETTINGS.model_dump(),
+    }
 
 
 @app.get("/items/{item_id}")
@@ -28,16 +42,40 @@ def read_item(item_id: int, q: Union[str, None] = None):
 @app.put("/file")
 def select_file(params: FilePathParam):
     logger.debug(f"Selected file: {params.path}")
-    global file_settings
-    file_settings.path = params.path
+    global FILE_SETTINGS
+    FILE_SETTINGS.path = params.path
     return {"path": params.path}
 
 
 @app.put("/file/settings")
 def set_file_settings(settings: FileSettingsParam):
     logger.debug(f"Settings: {settings}")
-    global file_settings
-    file_settings.separator = settings.separator
-    file_settings.header = settings.header
-    file_settings.selectedColumns = settings.selectedColumns
+    global FILE_SETTINGS
+    FILE_SETTINGS.separator = settings.separator
+    FILE_SETTINGS.header = settings.header
+    FILE_SETTINGS.selectedColumns = settings.selectedColumns
+    return settings.model_dump()
+
+
+@app.put("/algorithm/settings")
+def set_algorithm_settings(
+    settings: Union[AutoAlgorithmSettings, ManualAlgorithmSettings],
+):
+    logger.debug(f"Settings: {settings}")
+    global ALGORITHM_SETTINGS
+    if isinstance(settings, AutoAlgorithmSettings):
+        ALGORITHM_SETTINGS = AutoAlgorithmSettings(
+            seed=settings.seed,
+            excluded_words=settings.excluded_words,
+            auto_cluster_count=settings.auto_cluster_count,
+            max_clusters=settings.max_clusters,
+        )
+    else:
+        ALGORITHM_SETTINGS = ManualAlgorithmSettings(
+            seed=settings.seed,
+            excluded_words=settings.excluded_words,
+            auto_cluster_count=settings.auto_cluster_count,
+            cluster_count=settings.cluster_count,
+        )
+
     return settings.model_dump()
