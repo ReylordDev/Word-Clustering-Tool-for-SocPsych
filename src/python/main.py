@@ -8,7 +8,8 @@ from sklearn.cluster import AgglomerativeClustering, KMeans
 from sklearn.metrics import silhouette_score
 from tqdm import tqdm
 import time
-import logging
+from loguru import logger
+
 
 UPLOADS_DIR = "uploads"
 OUTPUTS_DIR = "static/outputs"
@@ -22,10 +23,8 @@ OUTPUT_FILE_PATH = f"{OUTPUTS_DIR}/output.csv"
 STATS_FILE_PATH = f"{OUTPUTS_DIR}/stats.json"
 LANGUAGE_MODEL = "BAAI/bge-large-en-v1.5"
 
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
-logger = logging.getLogger(__name__)
+
+FILE_PATH = ""
 
 
 def read_input_file(
@@ -135,7 +134,7 @@ def find_number_of_clusters(
     bics = []
     for K in tqdm(K_values):
         print(f"Computing K = {K}")
-        logging.info(f"Computing K = {K}")
+        logger.info(f"Computing K = {K}")
         clustering = KMeans(n_clusters=K, n_init=10, random_state=seed)
         clustering.fit(embeddings_normalized, sample_weight=sample_weights)
         sil = silhouette_score(np.asarray(embeddings_normalized), clustering.labels_)
@@ -195,7 +194,7 @@ def cluster_and_merge(
             "Merging similar clusters together until the cosine similarity of all cluster centers is below %g"
             % merge_threshold
         )
-        logging.info(
+        logger.info(
             "Merging similar clusters together until the cosine similarity of all cluster centers is below %g",
             merge_threshold,
         )
@@ -218,7 +217,7 @@ def cluster_and_merge(
                     "the following clusters got merged together: %s"
                     % (", ".join(merged_exemplars))
                 )
-                logging.info(
+                logger.info(
                     "the following clusters got merged together: %s",
                     ", ".join(merged_exemplars),
                 )
@@ -357,9 +356,9 @@ def main(
     word_count = sum(word_counts.values())
     unique_word_count = len(word_counts)
     print(f"Number of rows: {len(rows)}")
-    logging.info(f"Number of rows: {len(rows)}")
+    logger.info(f"Number of rows: {len(rows)}")
     print(f"Number of unique words: {unique_word_count}, total words: {word_count}")
-    logging.info(
+    logger.info(
         f"Number of unique words: {unique_word_count}, total words: {word_count}"
     )
     words = list(word_counts.keys())
@@ -380,10 +379,10 @@ def main(
     print(
         f"Number of remaining words after outlier detection: {len(words_no_outliers)}"
     )
-    logging.info(
+    logger.info(
         f"Number of remaining words after outlier detection: {len(words_no_outliers)}"
     )
-    logging.info(f"Shape of embeddings: {norm_embeddings_no_outliers.shape}")
+    logger.info(f"Shape of embeddings: {norm_embeddings_no_outliers.shape}")
 
     outliers = set(words) - set(words_no_outliers)
 
@@ -399,7 +398,7 @@ def main(
             norm_embeddings_no_outliers, max_num_clusters, sample_weights, seed
         )
         print(f"Automatically determined number of clusters: {K}")
-        logging.info(f"Automatically determined number of clusters: {K}")
+        logger.info(f"Automatically determined number of clusters: {K}")
 
     # cluster the embeddings
     cluster_idxs, centers_normalized = cluster_and_merge(
@@ -413,7 +412,7 @@ def main(
     K_new = centers_normalized.shape[0]
     if K_new < K:
         print(f"Reduced number of clusters by merging to {K_new}")
-        logging.info(f"Reduced number of clusters by merging to {K_new}")
+        logger.info(f"Reduced number of clusters by merging to {K_new}")
 
     # output the clustering results
     output_clustering_results(
@@ -426,14 +425,12 @@ def main(
         col_delimiter,
     )
     print(f"Clustering written to {CLUSTERING_OUTPUT_FILE}")
-    logging.info(f"Clustering written to {CLUSTERING_OUTPUT_FILE}")
+    logger.info(f"Clustering written to {CLUSTERING_OUTPUT_FILE}")
 
     # output the pairwise similarities between all cluster centers
     output_pairwise_similarities(PAIRWISE_SIMILARITIES_OUTPUT_FILE, centers_normalized)
     print(f"Pairwise similarities written to {PAIRWISE_SIMILARITIES_OUTPUT_FILE}")
-    logging.info(
-        f"Pairwise similarities written to {PAIRWISE_SIMILARITIES_OUTPUT_FILE}"
-    )
+    logger.info(f"Pairwise similarities written to {PAIRWISE_SIMILARITIES_OUTPUT_FILE}")
 
     # update the input file with the cluster indices
     output_cluster_indices(
@@ -448,7 +445,7 @@ def main(
         col_delimiter,
     )
     print(f"Cluster indices written to {OUTPUT_FILE_PATH}")
-    logging.info(f"Cluster indices written to {OUTPUT_FILE_PATH}")
+    logger.info(f"Cluster indices written to {OUTPUT_FILE_PATH}")
 
     execution_time = time.time() - start_time
 

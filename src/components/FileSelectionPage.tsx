@@ -9,6 +9,7 @@ export default function LandingPageStar() {
   const submitFile = () => {
     if (selectedFile) {
       console.log(selectedFile.path);
+      window.python.previewFile(selectedFile.path);
     }
   };
 
@@ -47,12 +48,21 @@ export default function LandingPageStar() {
       <div className="my-12"></div>
       <div className="flex items-center justify-center">
         <Link to={selectedFile ? "/" : ""}>
-          <button
-            className="w-48 rounded-full bg-primary p-4 px-8 text-background"
-            onClick={submitFile}
-          >
-            <h5>Let's Start</h5>
-          </button>
+          {selectedFile ? (
+            <button
+              className="w-48 rounded-full bg-primary p-4 px-8 text-background"
+              onClick={submitFile}
+            >
+              <h5>Confirm</h5>
+            </button>
+          ) : (
+            <button
+              className="w-48 rounded-full bg-gray-400 p-4 px-8 text-background"
+              disabled
+            >
+              <h5>Confirm</h5>
+            </button>
+          )}
         </Link>
       </div>
     </>
