@@ -138,6 +138,33 @@ app.on("ready", async () => {
       });
     });
   });
+  ipcMain.handle(
+    "python:setFileSettings",
+    async (
+      event,
+      hasHeader: boolean,
+      separator: string,
+      selectedColumns: string[],
+    ) => {
+      console.log({
+        hasHeader,
+        separator,
+        selectedColumns,
+      });
+      const response = await net.fetch(`http://localhost:8154/file/settings`, {
+        method: "put",
+        body: JSON.stringify({
+          header: hasHeader,
+          separator: separator,
+          selectedColumns,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+    },
+  );
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common
@@ -184,6 +211,11 @@ declare global {
     python: {
       submitFilePath: (path: string) => Promise<unknown>;
       readFile: (path: string) => Promise<string>;
+      setFileSettings: (
+        hasHeader: boolean,
+        separator: string,
+        selectedColumns: number[],
+      ) => void;
     };
   }
 }

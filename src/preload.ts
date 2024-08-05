@@ -13,4 +13,16 @@ contextBridge.exposeInMainWorld("python", {
   readFile: async (path: string) => {
     return await ipcRenderer.invoke("python:readFile", path);
   },
+  setFileSettings: async (
+    hasHeader: boolean,
+    separator: string,
+    selectedColumns: number[],
+  ) => {
+    return await ipcRenderer.invoke(
+      "python:setFileSettings",
+      hasHeader,
+      separator,
+      selectedColumns,
+    );
+  },
 });

@@ -1,7 +1,7 @@
 from typing import Union
 from loguru import logger
 from fastapi import FastAPI
-from .models import FilePathParam, FileSettings
+from .models import FilePathParam, FileSettings, FileSettingsParam
 
 app = FastAPI()
 
@@ -10,14 +10,14 @@ logger.add(
 )
 
 file_settings: FileSettings = FileSettings(
-    path="example_path", delimiter=",", header=True
+    path="example_path", separator=",", header=True, selectedColumns=[0]
 )
 
 
 @app.get("/")
 def read_root():
     logger.debug("Hello World")
-    return {"Hello": "World"}
+    return file_settings.model_dump()
 
 
 @app.get("/items/{item_id}")
@@ -31,3 +31,13 @@ def select_file(params: FilePathParam):
     global file_settings
     file_settings.path = params.path
     return {"path": params.path}
+
+
+@app.put("/file/settings")
+def set_file_settings(settings: FileSettingsParam):
+    logger.debug(f"Settings: {settings}")
+    global file_settings
+    file_settings.separator = settings.separator
+    file_settings.header = settings.header
+    file_settings.selectedColumns = settings.selectedColumns
+    return settings.model_dump()
