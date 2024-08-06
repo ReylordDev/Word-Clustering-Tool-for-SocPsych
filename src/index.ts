@@ -17,6 +17,8 @@ let server: ChildProcess | undefined;
 let serverPid: number | undefined;
 let reloaderPid: number | undefined;
 let installerProcess: ChildProcess | undefined;
+const progressMessages: string[] = [];
+const completedMessages: string[] = [];
 
 const installRequirements = async () => {
   console.log("Installing requirements...");
@@ -51,6 +53,28 @@ const parsePid = (data: string) => {
   return undefined;
 };
 
+const parseProgressMessage = (data: string) => {
+  // Extract the progress message from the log message, e.g. "...STARTED: Reading input file..."
+  const progressRegex = /STARTED: [a-zA-z\s]*[a-zA-Z]/;
+  const match = data.match(progressRegex);
+  if (match) {
+    return match[0].replace("STARTED: ", "");
+  }
+  console.log(data);
+  return undefined;
+};
+
+const parseCompletedMessage = (data: string) => {
+  // Extract the progress message from the log message, e.g. "...COMPLETED: Reading input file..."
+  const completedRegex = /COMPLETED: [a-zA-z\s]*[a-zA-Z]/;
+  const match = data.match(completedRegex);
+  if (match) {
+    return match[0].replace("COMPLETED: ", "");
+  }
+  console.log(data);
+  return undefined;
+};
+
 const startServer = () => {
   console.log("Starting server...");
   if (isDev()) {
@@ -74,6 +98,22 @@ const startServer = () => {
     if (data.includes("Started reloader process")) {
       reloaderPid = parsePid(data.toString());
       console.log(`Reloader PID: ${reloaderPid}`);
+    }
+    if (data.includes("STARTED: ")) {
+      const progressMessage = parseProgressMessage(data.toString());
+      if (!progressMessage) {
+        console.log("Progress message parsing failed.");
+        return;
+      }
+      progressMessages.push(progressMessage);
+    }
+    if (data.includes("COMPLETED: ")) {
+      const completedMessage = parseCompletedMessage(data.toString());
+      if (!completedMessage) {
+        console.log("Completed message parsing failed.");
+        return;
+      }
+      completedMessages.push(completedMessage);
     }
     console.log(`stderr: ${data}`);
   });
@@ -210,11 +250,21 @@ app.on("ready", async () => {
       console.log(response);
     },
   );
-  ipcMain.handle("python:startClustering", async (event) => {
+  ipcMain.handle("python:startClustering", async () => {
     const response = await net.fetch(`http://localhost:8154/start`, {
       method: "put",
     });
     console.log(response);
+  });
+  ipcMain.handle("python:pollClusterProgress", async () => {
+    const currentTask = progressMessages[progressMessages.length - 1];
+    const progress = {
+      currentTask: currentTask,
+      completedMessages: completedMessages,
+    };
+    return new Promise<typeof progress>((resolve) => {
+      resolve(progress);
+    });
   });
 });
 
@@ -278,6 +328,10 @@ declare global {
         similarityThreshold: number,
       ) => void;
       startClustering: () => void;
+      pollClusterProgress: () => Promise<{
+        currentTask: string;
+        completedMessages: string[];
+      }>;
     };
   }
 }
