@@ -27,6 +27,211 @@ LANGUAGE_MODEL = "BAAI/bge-large-en-v1.5"
 FILE_PATH = ""
 
 
+def read_input_file_new(
+    path: str,
+    delimiter: str,
+    has_headers: bool,
+    selected_columns: list[int],
+    excluded_words: list[str],
+):
+    logger.info("STARTED: Reading input file")
+    rows: list[list[str]] = []
+    word_counts: Counter[str] = Counter()
+    with open(path, encoding="utf-8") as f:
+        reader = csv.reader(f, delimiter=delimiter)
+        if has_headers:
+            headers = reader.__next__()
+            logger.debug(f"Headers: {headers}")
+        col_idxs: list[int] = []
+
+        # Currently the semantics are a bit off here
+        for i, val in enumerate(selected_columns):
+            if val == 0:
+                continue
+            col_idxs.append(i)
+        logger.debug(f"Column indexes: {col_idxs}")
+
+        for user_entry in reader:
+            rows.append(user_entry)
+
+            for column_index in col_idxs:
+                # get the next entry provided by the current participant
+                response = user_entry[column_index]
+                if response == "" or response is None:
+                    continue
+                # if the word is in the list of forbidden words, ignore it
+                if response.strip() in excluded_words:
+                    continue
+                # otherwise, count the word
+                word_counts[response] += 1
+    unique_word_count = len(word_counts)
+    words = list(word_counts.keys())
+    logger.info("COMPLETED: Reading input file")
+    logger.debug(f"Number of rows: {len(rows)}")
+    logger.debug(f"Word counts: {word_counts}")
+    logger.debug(f"Number of unique words: {unique_word_count}")
+
+    return words, word_counts
+
+
+def embed_words(words: list[str], language_model) -> np.ndarray:
+    logger.info("STARTED: Embedding words")
+    model = SentenceTransformer(language_model, cache_folder=CACHE_FOLDER)
+    norm_embeddings = model.encode(
+        words, normalize_embeddings=True, convert_to_numpy=True
+    )  # shape (no_of_unique_words, embedding_dim)
+    norm_embeddings = np.array(norm_embeddings)  # Type casting (only for IDE)
+    logger.info("COMPLETED: Embedding words")
+    return norm_embeddings
+
+
+def outlier_detection(
+    words: list[str],
+    norm_embeddings: np.ndarray,
+    outlier_k: int,
+    outlier_detection_threshold: float,
+) -> tuple[list[str], list[str], np.ndarray]:
+    logger.info("STARTED: Outlier detection")
+    # compute the overall cosine similarity matrix between all embeddings
+    S = np.dot(norm_embeddings, norm_embeddings.T)
+    # get the average cosine similarities to the OUTLIER_K nearest neighbors for
+    # each word (excluding the word itself). The numpy.partition function helps us
+    # with that because it can find the smallest values in an array efficiently.
+    # So we use that to find the OUTLIER_K+1 smallest negative similarities,
+    # take the second to OUTLIER_K+1 values of those (to exclude the similarity
+    # to the word itself), swap the sign again, and take the average.
+    avg_neighbor_sim = np.mean(
+        -np.partition(-S, outlier_k + 1, axis=1)[:, 1 : outlier_k + 1], axis=1
+    )
+    outlier_threshold = np.mean(
+        avg_neighbor_sim
+    ) - outlier_detection_threshold * np.std(avg_neighbor_sim)
+
+    outliers = avg_neighbor_sim < outlier_threshold
+
+    # take only the remaining words
+    remaining_indexes = np.where(np.logical_not(outliers))[0]
+    words_remaining: list[str] = []
+    for i in remaining_indexes:
+        words_remaining.append(words[i])
+
+    outliers = list(set(words) - set(words_remaining))
+    logger.info("COMPLETED: Outlier detection")
+    logger.debug(f"Number of outliers: {len(outliers)}")
+    logger.debug(f"Outliers: {outliers}")
+    return outliers, words_remaining, norm_embeddings[remaining_indexes, :]
+
+
+def cluster(
+    embeddings: np.ndarray,
+    K: int,
+    sample_weights: np.ndarray,
+    seed: Optional[int] = None,
+):
+    logger.info("STARTED: Clustering")
+    clustering = KMeans(n_clusters=K, n_init=10, random_state=seed)
+    clustering.fit(embeddings, sample_weight=sample_weights)
+    cluster_idxs = np.copy(clustering.labels_)
+    cluster_centers = clustering.cluster_centers_ / np.linalg.norm(
+        clustering.cluster_centers_, axis=1, keepdims=True, ord=2
+    )
+    logger.info("COMPLETED: Clustering")
+    return cluster_idxs, cluster_centers
+
+
+def merge(
+    merge_threshold: float,
+    cluster_idxs: np.ndarray,
+    cluster_centers: np.ndarray,
+    embeddings: np.ndarray,
+    sample_weights: np.ndarray,
+):
+    logger.info("STARTED: Merging clusters")
+    # merge the closest clusters using Agglomorative Clustering
+    # until everything is closer than the threshold
+    meta_clustering = AgglomerativeClustering(
+        n_clusters=None,
+        distance_threshold=1.0 - merge_threshold,
+        linkage="complete",
+        metric="cosine",
+    )
+    meta_clustering.fit(np.asarray(cluster_centers))
+
+    # override the original k-means result with the merged clusters
+    K_new = len(np.unique(meta_clustering.labels_))
+    for i in range(len(cluster_idxs)):
+        cluster_idxs[i] = meta_clustering.labels_[cluster_idxs[i]]
+
+    # re-set the cluster centers to the weighted mean of all their
+    # points
+    centers_new = np.zeros((K_new, cluster_centers.shape[1]))
+    for k in range(K_new):
+        in_cluster_k = cluster_idxs == k
+        centers_new[k, :] = np.dot(
+            sample_weights[in_cluster_k], embeddings[in_cluster_k, :]
+        ) / np.sum(sample_weights[in_cluster_k])
+
+    # normalize the cluster centers again to unit length
+    cluster_centers = centers_new / np.linalg.norm(
+        centers_new, axis=1, keepdims=True, ord=2
+    )
+    logger.info("COMPLETED: Merging clusters")
+    return cluster_idxs, cluster_centers
+
+
+def main_new(
+    path: str,
+    delimiter: str,
+    has_headers: bool,
+    selected_columns: list[int],
+    excluded_words: list[str],
+    language_model: str,
+    nearest_neighbors: int,
+    z_score_threshold: float,
+    automatic_k: bool,
+    max_num_clusters: Optional[int],
+    seed: int,
+    cluster_count: Optional[int],
+    merge_threshold: float,
+):
+    logger.info("Starting clustering")
+    words, word_counts = read_input_file_new(
+        path, delimiter, has_headers, selected_columns, excluded_words
+    )
+
+    embeddings = embed_words(words, language_model)
+
+    outliers, words_remaining, embeddings = outlier_detection(
+        words, embeddings, nearest_neighbors, z_score_threshold
+    )
+
+    # a list of how often each word was named
+    sample_weights = []
+    for word in words_remaining:
+        sample_weights.append(word_counts[word])
+    sample_weights = np.array(sample_weights)
+
+    # find the number of clusters
+    if automatic_k:
+        if not max_num_clusters:
+            max_num_clusters = len(words_remaining) // 2
+        K = find_number_of_clusters(embeddings, max_num_clusters, sample_weights, seed)
+    else:
+        assert (
+            cluster_count is not None
+        ), "Cluster count must be provided if not automatic"
+        K = cluster_count
+
+    cluster_idxs, cluster_centers = cluster(embeddings, K, sample_weights, seed)
+
+    if merge_threshold is not None and merge_threshold < 1.0:
+        cluster_idxs, cluster_centers = merge(
+            merge_threshold, cluster_idxs, cluster_centers, embeddings, sample_weights
+        )
+
+    # TODO: Output clustering results
+
+
 def read_input_file(
     col_delimiter: str = ",",
     num_words_per_row: int = 5,
@@ -73,48 +278,13 @@ def read_input_file(
     return rows, word_counts, headers, col_idxs, out_col_idxs
 
 
-def outlier_detection(
-    words: list[str],
-    norm_embeddings: np.ndarray,
-    outlier_k: int = 5,
-    outlier_detection_threshold: float = 1.0,
-) -> tuple[list[str], np.ndarray]:
-    # compute the overall cosine similarity matrix between all embeddings
-    S = np.dot(norm_embeddings, norm_embeddings.T)
-    # get the average cosine similarities to the OUTLIER_K nearest neighbors for
-    # each word (excluding the word itself). The numpy.partition function helps us
-    # with that because it can find the smallest values in an array efficiently.
-    # So we use that to find the OUTLIER_K+1 smallest negative similarities,
-    # take the second to OUTLIER_K+1 values of those (to exclude the similarity
-    # to the word itself), swap the sign again, and take the average.
-    avg_neighbor_sim = np.mean(
-        -np.partition(-S, outlier_k + 1, axis=1)[:, 1 : outlier_k + 1], axis=1
-    )
-    outlier_threshold = np.mean(
-        avg_neighbor_sim
-    ) - outlier_detection_threshold * np.std(avg_neighbor_sim)
-
-    outliers = avg_neighbor_sim < outlier_threshold
-
-    # take only the remaining words
-    remaining_indexes = np.where(np.logical_not(outliers))[0]
-    words_remaining = []
-    for i in remaining_indexes:
-        words_remaining.append(words[i])
-
-    return words_remaining, norm_embeddings[remaining_indexes, :]
-
-
 def find_number_of_clusters(
     embeddings_normalized: np.ndarray,
     max_num_clusters: int,
     sample_weights: Optional[np.ndarray] = None,
     seed: Optional[int] = None,
 ) -> int:
-    max_num_clusters = min(
-        max_num_clusters, len(embeddings_normalized) - 1
-    )  # Prevent more clusters than words
-
+    logger.info("STARTED: Finding number of clusters")
     # set up the list of Ks we want to try
     if max_num_clusters < 50:
         # for max_num_clusters < 50, we try every possible value
@@ -133,7 +303,6 @@ def find_number_of_clusters(
     sils = []
     bics = []
     for K in tqdm(K_values):
-        print(f"Computing K = {K}")
         logger.info(f"Computing K = {K}")
         clustering = KMeans(n_clusters=K, n_init=10, random_state=seed)
         clustering.fit(embeddings_normalized, sample_weight=sample_weights)
@@ -160,6 +329,10 @@ def find_number_of_clusters(
     # AND high BIC score.
     K = K_values[np.argmax(sils * bics)]
 
+    sorted_K_values = K_values[np.argsort(sils * bics)]
+    logger.debug(f"Sorted K values: {sorted_K_values}")
+
+    logger.info("COMPLETED: Finding number of clusters")
     return K
 
 
@@ -373,7 +546,7 @@ def main(
     logger.info("Embedding complete")
 
     # remove outliers
-    words_no_outliers, norm_embeddings_no_outliers = outlier_detection(
+    _, words_no_outliers, norm_embeddings_no_outliers = outlier_detection(
         words, norm_embeddings, outlier_k, outlier_detection_threshold
     )
     print(

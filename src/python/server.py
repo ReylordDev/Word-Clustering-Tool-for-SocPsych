@@ -26,7 +26,6 @@ ALGORITHM_SETTINGS: Union[AutoAlgorithmSettings, ManualAlgorithmSettings]
 
 @app.get("/")
 def read_root():
-    logger.debug("Hello World")
     return {
         "message": "Hello World",
         "file_settings": FILE_SETTINGS.model_dump(),
@@ -87,3 +86,14 @@ def set_algorithm_settings(
         )
 
     return settings.model_dump()
+
+
+@app.put("/auto_cluster_count")
+def set_auto_cluster_count():
+    pass
+
+
+@app.put("/start")
+def start():
+    logger.debug("Starting processing")
+    return {"message": "Processing started"}

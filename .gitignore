@@ -106,3 +106,5 @@ __pycache__
 
 # Remove this later
 example_data
+
+.vscode
