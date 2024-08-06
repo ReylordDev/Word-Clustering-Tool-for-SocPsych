@@ -1,11 +1,14 @@
 import { Link } from "react-router-dom";
 import { Header } from "./Header";
 import { useState } from "react";
+import ExcludedWordsEditor from "./ExcludedWordsEditor";
 
 export default function AlgorithmSettingsPage() {
   const [autoChooseClusters, setAutoChooseClusters] = useState(true);
   const [maxClusters, setMaxClusters] = useState(10);
   const [excludedWords, setExcludedWords] = useState<string[]>([]);
+  const [isExcludedWordsEditorOpen, setIsExcludedWordsEditorOpen] =
+    useState(false);
   const [seed, setSeed] = useState(0);
 
   const submitAlgorithmSettings = () => {
@@ -18,11 +21,22 @@ export default function AlgorithmSettingsPage() {
     );
   };
 
+  const handleSave = (newWords: string[]) => {
+    setExcludedWords(newWords);
+    // You might want to save this to your backend or local storage here
+  };
+
   return (
     <>
       <Header>
         <h1>Algorithm Settings</h1>
       </Header>
+      <ExcludedWordsEditor
+        isOpen={isExcludedWordsEditorOpen}
+        onClose={() => setIsExcludedWordsEditorOpen(false)}
+        initialWords={excludedWords}
+        onSave={handleSave}
+      />
       <div className="flex flex-col justify-start bg-blue-300 px-24">
         <div className="flex flex-col gap-8 bg-red-300">
           <div></div>
@@ -44,9 +58,9 @@ export default function AlgorithmSettingsPage() {
             />
           </div>
           <div className="flex items-center justify-between pr-4">
-            <h5>Excluded Words</h5>
+            <h5>Excluded Words ({excludedWords.length})</h5>
             <button
-              onClick={() => console.log("edit")}
+              onClick={() => setIsExcludedWordsEditorOpen(true)}
               className="w-32 rounded-2xl bg-secondary p-2 px-4 text-background"
             >
               Edit
