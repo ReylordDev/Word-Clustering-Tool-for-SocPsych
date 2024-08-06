@@ -6,7 +6,10 @@ import AdvancedOptionsEditor from "./AdvancedOptionsEditor";
 
 export default function AlgorithmSettingsPage() {
   const [autoChooseClusters, setAutoChooseClusters] = useState(true);
-  const [maxClusters, setMaxClusters] = useState(10);
+  const [maxClusters, setMaxClusters] = useState<number | undefined>(undefined);
+  const [clusterCount, setClusterCount] = useState<number | undefined>(
+    undefined,
+  );
   const [excludedWords, setExcludedWords] = useState<string[]>([]);
   const [isExcludedWordsEditorOpen, setIsExcludedWordsEditorOpen] =
     useState(false);
@@ -27,6 +30,7 @@ export default function AlgorithmSettingsPage() {
     console.log({
       autoChooseClusters,
       maxClusters,
+      clusterCount,
       excludedWords,
       seed,
       language_model: advancedOptions.languageModel,
@@ -38,6 +42,7 @@ export default function AlgorithmSettingsPage() {
     window.python.setAlgorithmSettings(
       autoChooseClusters,
       maxClusters,
+      clusterCount,
       excludedWords,
       seed,
       advancedOptions.languageModel,
@@ -114,17 +119,36 @@ export default function AlgorithmSettingsPage() {
             <input
               type="checkbox"
               checked={autoChooseClusters}
-              onChange={() => setAutoChooseClusters(!autoChooseClusters)}
+              onChange={() => {
+                setAutoChooseClusters(!autoChooseClusters);
+                if (autoChooseClusters) {
+                  setClusterCount(undefined);
+                } else {
+                  setMaxClusters(undefined);
+                }
+              }}
             />
           </div>
-          <div className="flex items-center justify-between pr-4">
-            <h5>Max clusters</h5>
-            <input
-              type="number"
-              value={maxClusters}
-              onChange={(e) => setMaxClusters(parseInt(e.target.value))}
-            />
-          </div>
+          {autoChooseClusters && (
+            <div className="flex items-center justify-between pr-4">
+              <h5>Max clusters</h5>
+              <input
+                type="number"
+                value={maxClusters || ""}
+                onChange={(e) => setMaxClusters(parseInt(e.target.value))}
+              />
+            </div>
+          )}
+          {!autoChooseClusters && (
+            <div className="flex items-center justify-between pr-4">
+              <h5>Clusters</h5>
+              <input
+                type="number"
+                value={clusterCount || ""}
+                onChange={(e) => setClusterCount(parseInt(e.target.value))}
+              />
+            </div>
+          )}
           <div className="flex items-center justify-between pr-4">
             <h5>Excluded Words ({excludedWords.length})</h5>
             <button

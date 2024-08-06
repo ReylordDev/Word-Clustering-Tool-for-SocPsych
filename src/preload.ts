@@ -27,7 +27,8 @@ contextBridge.exposeInMainWorld("python", {
   },
   setAlgorithmSettings: async (
     autoChooseClusters: boolean,
-    maxClusters: number,
+    maxClusters: number | undefined,
+    clusterCount: number | undefined,
     excludedWords: string[],
     seed: number,
     languageModel: string,
@@ -39,6 +40,7 @@ contextBridge.exposeInMainWorld("python", {
       "python:setAlgorithmSettings",
       autoChooseClusters,
       maxClusters,
+      clusterCount,
       excludedWords,
       seed,
       languageModel,

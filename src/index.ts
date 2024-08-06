@@ -210,7 +210,8 @@ app.on("ready", async () => {
     async (
       event,
       autoChooseClusters: boolean,
-      maxClusters: number,
+      maxClusters: number | undefined,
+      clusterCount: number | undefined,
       excludedWords: string[],
       seed: number,
       languageModel: string,
@@ -221,6 +222,7 @@ app.on("ready", async () => {
       console.log({
         autoChooseClusters,
         maxClusters,
+        clusterCount,
         excludedWords,
         seed,
         languageModel,
@@ -229,12 +231,13 @@ app.on("ready", async () => {
         similarityThreshold,
       });
       const response = await net.fetch(
-        `http://localhost:8154/algorithm/settings`,
+        `http://localhost:8154/algorithm/settings?auto=${autoChooseClusters}`,
         {
           method: "put",
           body: JSON.stringify({
             auto_choose_clusters: autoChooseClusters,
             max_clusters: maxClusters,
+            cluster_count: clusterCount,
             excluded_words: excludedWords,
             seed: seed,
             language_model: languageModel,
@@ -319,7 +322,8 @@ declare global {
       ) => void;
       setAlgorithmSettings: (
         autoChooseClusters: boolean,
-        maxClusters: number,
+        maxClusters: number | undefined,
+        clusterCount: number | undefined,
         excludedWords: string[],
         seed: number,
         languageModel: string,
