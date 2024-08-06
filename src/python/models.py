@@ -7,15 +7,15 @@ class FilePathParam(BaseModel):
 
 class FileSettingsParam(BaseModel):
     separator: str
-    header: bool
-    selectedColumns: list[int]
+    has_header: bool
+    selected_columns: list[int]
 
 
 class FileSettings(BaseModel):
     path: str
     separator: str
-    header: bool
-    selectedColumns: list[int]
+    has_header: bool
+    selected_columns: list[int]
 
 
 class AlgorithmSettings(BaseModel):

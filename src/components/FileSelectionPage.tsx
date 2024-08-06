@@ -14,7 +14,7 @@ export default function FileSelectionPage() {
   };
 
   const exampleFile = () => {
-    console.log("Not implemented yet");
+    window.python.chooseExampleFile();
   };
 
   return (
@@ -55,7 +55,7 @@ export default function FileSelectionPage() {
       <div className="my-12"></div>
       <div className="flex items-center justify-center">
         <Link
-          to={selectedFile ? "/file_settings" : ""}
+          to={selectedFile ? "/file_preview" : ""}
           state={selectedFile?.path}
         >
           {selectedFile ? (

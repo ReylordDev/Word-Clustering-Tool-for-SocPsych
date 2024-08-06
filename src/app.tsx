@@ -13,7 +13,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/file" element={<FileSelectionPage />} />
-        <Route path="/file_settings" element={<FilePreviewPage />} />
+        <Route path="/file_preview" element={<FilePreviewPage />} />
         <Route path="/algorithm_settings" element={<AlgorithmSettingsPage />} />
         <Route path="/clustering" element={<ProgressPage />} />
         <Route path="/results" element={<ResultsPage />} />

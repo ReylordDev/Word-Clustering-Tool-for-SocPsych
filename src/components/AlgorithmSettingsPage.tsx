@@ -27,17 +27,18 @@ export default function AlgorithmSettingsPage() {
 
   const submitAlgorithmSettings = () => {
     console.log("Submitting settings...");
-    console.log({
-      autoChooseClusters,
-      maxClusters,
-      clusterCount,
-      excludedWords,
-      seed,
-      language_model: advancedOptions.languageModel,
-      nearest_neighbors: parseInt(advancedOptions.nearestNeighbors),
-      z_score_threshold: parseFloat(advancedOptions.zScoreThreshold),
-      similarity_threshold: parseFloat(advancedOptions.similarityThreshold),
-    });
+
+    if (autoChooseClusters && !maxClusters) {
+      console.error("Max clusters must be set when autoChooseClusters is true");
+      return;
+    }
+
+    if (!autoChooseClusters && !clusterCount) {
+      console.error(
+        "Cluster count must be set when autoChooseClusters is false",
+      );
+      return;
+    }
 
     window.python.setAlgorithmSettings(
       autoChooseClusters,

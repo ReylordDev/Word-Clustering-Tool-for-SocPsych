@@ -19,8 +19,8 @@ logger.add(
 FILE_SETTINGS: FileSettings = FileSettings(
     path="",
     separator=",",
-    header=True,
-    selectedColumns=[],
+    has_header=True,
+    selected_columns=[],
 )
 ALGORITHM_SETTINGS: Union[AutoAlgorithmSettings, ManualAlgorithmSettings]
 
@@ -52,8 +52,8 @@ def set_file_settings(settings: FileSettingsParam):
     logger.debug(f"Settings: {settings}")
     global FILE_SETTINGS
     FILE_SETTINGS.separator = settings.separator
-    FILE_SETTINGS.header = settings.header
-    FILE_SETTINGS.selectedColumns = settings.selectedColumns
+    FILE_SETTINGS.has_header = settings.has_header
+    FILE_SETTINGS.selected_columns = settings.selected_columns
     return settings.model_dump()
 
 
@@ -103,8 +103,8 @@ def start():
         main_new(
             FILE_SETTINGS.path,
             FILE_SETTINGS.separator,
-            FILE_SETTINGS.header,
-            FILE_SETTINGS.selectedColumns,
+            FILE_SETTINGS.has_header,
+            FILE_SETTINGS.selected_columns,
             ALGORITHM_SETTINGS.excluded_words,
             ALGORITHM_SETTINGS.language_model,
             ALGORITHM_SETTINGS.nearest_neighbors,
@@ -119,8 +119,8 @@ def start():
         main_new(
             FILE_SETTINGS.path,
             FILE_SETTINGS.separator,
-            FILE_SETTINGS.header,
-            FILE_SETTINGS.selectedColumns,
+            FILE_SETTINGS.has_header,
+            FILE_SETTINGS.selected_columns,
             ALGORITHM_SETTINGS.excluded_words,
             ALGORITHM_SETTINGS.language_model,
             ALGORITHM_SETTINGS.nearest_neighbors,
