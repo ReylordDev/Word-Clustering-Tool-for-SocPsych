@@ -1,10 +1,11 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Header } from "./Header";
 import { FileSelector } from "./FileSelector";
 import { useState } from "react";
 
 export default function FileSelectionPage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const navigate = useNavigate();
 
   const submitFile = () => {
     if (selectedFile) {
@@ -14,7 +15,9 @@ export default function FileSelectionPage() {
   };
 
   const submitExampleFile = () => {
-    window.python.chooseExampleFile();
+    window.python.chooseExampleFile().then(() => {
+      navigate("/file_preview");
+    });
   };
 
   return (
@@ -54,10 +57,7 @@ export default function FileSelectionPage() {
       </div>
       <div className="my-12"></div>
       <div className="flex items-center justify-center">
-        <Link
-          to={selectedFile ? "/file_preview" : ""}
-          state={selectedFile?.path}
-        >
+        <Link to={selectedFile ? "/file_preview" : ""}>
           {selectedFile ? (
             <button
               className="w-48 rounded-full bg-primary p-4 px-8 text-background"

@@ -16,6 +16,8 @@ logger.add(
     "logs/python/server.log", rotation="10 MB", retention="10 days", level="DEBUG"
 )
 
+EXAMPLE_FILE_PATH = "example_data/Self-Generated_Motives_of_Social_Casino_Gamers.csv"
+
 FILE_SETTINGS: FileSettings = FileSettings(
     path="",
     delimiter=",",
@@ -34,17 +36,25 @@ def read_root():
     }
 
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
-
-
 @app.put("/file")
 def select_file(params: FilePathParam):
     logger.debug(f"Selected file: {params.path}")
     global FILE_SETTINGS
     FILE_SETTINGS.path = params.path
     return {"path": params.path}
+
+
+@app.get("/file")
+def get_file():
+    return {"path": FILE_SETTINGS.path}
+
+
+@app.put("/file/example")
+def select_example_file():
+    logger.debug(f"Selected example file: {EXAMPLE_FILE_PATH}")
+    global FILE_SETTINGS
+    FILE_SETTINGS.path = EXAMPLE_FILE_PATH
+    return {"path": EXAMPLE_FILE_PATH}
 
 
 @app.put("/file/settings")

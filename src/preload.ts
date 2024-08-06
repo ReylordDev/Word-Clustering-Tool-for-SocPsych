@@ -18,6 +18,9 @@ contextBridge.exposeInMainWorld("python", {
   chooseExampleFile: async () => {
     return await ipcRenderer.invoke("python:chooseExampleFile");
   },
+  fetchFilePath: async () => {
+    return await ipcRenderer.invoke("python:fetchFilePath");
+  },
   readFile: async (path: string) => {
     return await ipcRenderer.invoke("python:readFile", path);
   },

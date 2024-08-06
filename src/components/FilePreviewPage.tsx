@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Header } from "./Header";
 import { useEffect, useState } from "react";
 
@@ -7,7 +7,16 @@ export default function FilePreviewPage() {
   const [delimiter, setDelimiter] = useState(",");
   const [previewData, setPreviewData] = useState<string[][]>([]);
   const [selectedColumns, setSelectedColumns] = useState<boolean[]>([]);
-  const filePath = useLocation().state;
+  const [filePath, setFilePath] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchFilePath = async () => {
+      window.python.fetchFilePath().then((path: string) => {
+        setFilePath(path);
+      });
+    };
+    fetchFilePath();
+  }, []);
 
   console.log(filePath);
   console.log(hasHeader);
