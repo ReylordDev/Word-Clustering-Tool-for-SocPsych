@@ -1,24 +1,29 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
+from pydantic.alias_generators import to_camel
 
 
-class FilePathParam(BaseModel):
+class CamelModel(BaseModel):
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
+
+
+class FilePathParam(CamelModel):
     path: str
 
 
-class FileSettingsParam(BaseModel):
-    separator: str
+class FileSettingsParam(CamelModel):
+    delimiter: str
     has_header: bool
-    selected_columns: list[int]
+    selected_columns: list[bool]
 
 
-class FileSettings(BaseModel):
+class FileSettings(CamelModel):
     path: str
-    separator: str
+    delimiter: str
     has_header: bool
-    selected_columns: list[int]
+    selected_columns: list[bool]
 
 
-class AlgorithmSettings(BaseModel):
+class AlgorithmSettings(CamelModel):
     seed: int
     excluded_words: list[str]
     auto_cluster_count: bool

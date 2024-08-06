@@ -13,7 +13,7 @@ export default function FileSelectionPage() {
     }
   };
 
-  const exampleFile = () => {
+  const submitExampleFile = () => {
     window.python.chooseExampleFile();
   };
 
@@ -45,7 +45,7 @@ export default function FileSelectionPage() {
             </p>
             <button
               className="rounded-full bg-secondary p-4 px-8 text-background"
-              onClick={exampleFile}
+              onClick={submitExampleFile}
             >
               <p>Choose Example File</p>
             </button>

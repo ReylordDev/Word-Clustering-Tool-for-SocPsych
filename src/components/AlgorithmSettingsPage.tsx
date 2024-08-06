@@ -40,17 +40,17 @@ export default function AlgorithmSettingsPage() {
       return;
     }
 
-    window.python.setAlgorithmSettings(
-      autoChooseClusters,
-      maxClusters,
-      clusterCount,
-      excludedWords,
+    window.python.setAlgorithmSettings({
       seed,
-      advancedOptions.languageModel,
-      parseInt(advancedOptions.nearestNeighbors),
-      parseFloat(advancedOptions.zScoreThreshold),
-      parseFloat(advancedOptions.similarityThreshold),
-    );
+      excludedWords,
+      nearestNeighbors: parseInt(advancedOptions.nearestNeighbors),
+      zScoreThreshold: parseFloat(advancedOptions.zScoreThreshold),
+      similarityThreshold: parseFloat(advancedOptions.similarityThreshold),
+      languageModel: advancedOptions.languageModel,
+      ...(autoChooseClusters
+        ? { autoClusterCount: true, maxClusters: maxClusters as number }
+        : { autoClusterCount: false, clusterCount: clusterCount as number }),
+    });
 
     window.python.startClustering();
   };
@@ -87,12 +87,10 @@ export default function AlgorithmSettingsPage() {
 
   const handleExcludedWordsSave = (newWords: string[]) => {
     setExcludedWords(newWords);
-    // You might want to save this to your backend or local storage here
   };
 
   const handleAdvancedOptionsSave = (values: Record<string, string>) => {
     setAdvancedOptions(values);
-    // You might want to save this to your backend or local storage here
   };
 
   return (

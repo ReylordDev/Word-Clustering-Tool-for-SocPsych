@@ -2,6 +2,11 @@
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 
 import { contextBridge, ipcRenderer } from "electron";
+import {
+  AutoAlgorithmSettings,
+  FileSettingsParam,
+  ManualAlgorithmSettings,
+} from "./models";
 
 // Expose protected methods that allow the renderer process to use
 // the ipcRenderer without exposing the entire object
@@ -16,40 +21,15 @@ contextBridge.exposeInMainWorld("python", {
   readFile: async (path: string) => {
     return await ipcRenderer.invoke("python:readFile", path);
   },
-  setFileSettings: async (
-    hasHeader: boolean,
-    separator: string,
-    selectedColumns: number[],
-  ) => {
-    return await ipcRenderer.invoke(
-      "python:setFileSettings",
-      hasHeader,
-      separator,
-      selectedColumns,
-    );
+  setFileSettings: async (fileSettings: FileSettingsParam) => {
+    return await ipcRenderer.invoke("python:setFileSettings", fileSettings);
   },
   setAlgorithmSettings: async (
-    autoChooseClusters: boolean,
-    maxClusters: number | undefined,
-    clusterCount: number | undefined,
-    excludedWords: string[],
-    seed: number,
-    languageModel: string,
-    nearestNeighbors: number,
-    zScoreThreshold: number,
-    similarityThreshold: number,
+    algorithmSettings: AutoAlgorithmSettings | ManualAlgorithmSettings,
   ) => {
     return await ipcRenderer.invoke(
       "python:setAlgorithmSettings",
-      autoChooseClusters,
-      maxClusters,
-      clusterCount,
-      excludedWords,
-      seed,
-      languageModel,
-      nearestNeighbors,
-      zScoreThreshold,
-      similarityThreshold,
+      algorithmSettings,
     );
   },
   startClustering: async () => {

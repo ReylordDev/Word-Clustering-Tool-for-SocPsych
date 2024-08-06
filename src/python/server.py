@@ -18,7 +18,7 @@ logger.add(
 
 FILE_SETTINGS: FileSettings = FileSettings(
     path="",
-    separator=",",
+    delimiter=",",
     has_header=True,
     selected_columns=[],
 )
@@ -51,7 +51,7 @@ def select_file(params: FilePathParam):
 def set_file_settings(settings: FileSettingsParam):
     logger.debug(f"Settings: {settings}")
     global FILE_SETTINGS
-    FILE_SETTINGS.separator = settings.separator
+    FILE_SETTINGS.delimiter = settings.delimiter
     FILE_SETTINGS.has_header = settings.has_header
     FILE_SETTINGS.selected_columns = settings.selected_columns
     return settings.model_dump()
@@ -102,7 +102,7 @@ def start():
     if isinstance(ALGORITHM_SETTINGS, AutoAlgorithmSettings):
         main_new(
             FILE_SETTINGS.path,
-            FILE_SETTINGS.separator,
+            FILE_SETTINGS.delimiter,
             FILE_SETTINGS.has_header,
             FILE_SETTINGS.selected_columns,
             ALGORITHM_SETTINGS.excluded_words,
@@ -118,7 +118,7 @@ def start():
     else:
         main_new(
             FILE_SETTINGS.path,
-            FILE_SETTINGS.separator,
+            FILE_SETTINGS.delimiter,
             FILE_SETTINGS.has_header,
             FILE_SETTINGS.selected_columns,
             ALGORITHM_SETTINGS.excluded_words,

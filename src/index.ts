@@ -1,5 +1,10 @@
 import { app, BrowserWindow, ipcMain, net } from "electron";
 import { ChildProcess, exec } from "child_process";
+import {
+  AutoAlgorithmSettings,
+  FileSettingsParam,
+  ManualAlgorithmSettings,
+} from "./models";
 import squirrel from "electron-squirrel-startup";
 import fs from "fs";
 import path from "path";
@@ -178,15 +183,24 @@ app.on("ready", async () => {
       }
     });
   });
+
   ipcMain.handle("python:chooseExampleFile", async () => {
     const relativePath =
       "/example_data/Self-Generated_Motives_of_Social_Casino_Gamers.csv";
     // This is probably wrong and needs to be improved
     console.log("isDev: ", isDev());
     console.log("dirname: ", __dirname);
-    const absolutePath = path.join(__dirname, relativePath);
+    const absolutePath = path.join(__dirname, "..", "..", relativePath);
     console.log(absolutePath);
+    makeRequest("put", "file", JSON.stringify({ path: absolutePath })).then(
+      (response) => {
+        if (!response.ok) {
+          console.error(response.statusText);
+        }
+      },
+    );
   });
+
   ipcMain.handle("python:readFile", async (event, path: string) => {
     return new Promise<string>((resolve, reject) => {
       fs.readFile(path, "utf-8", (err, data) => {
@@ -198,57 +212,30 @@ app.on("ready", async () => {
       });
     });
   });
+
   ipcMain.handle(
     "python:setFileSettings",
-    (
-      event,
-      hasHeader: boolean,
-      separator: string,
-      selectedColumns: string[],
-    ) => {
-      makeRequest(
-        "put",
-        "file/settings",
-        JSON.stringify({
-          separator,
-          has_header: hasHeader,
-          selected_columns: selectedColumns,
-        }),
-      ).then((response) => {
-        if (!response.ok) {
-          console.error(response.statusText);
-        }
-      });
+    (event, fileSettings: FileSettingsParam) => {
+      makeRequest("put", "file/settings", JSON.stringify(fileSettings)).then(
+        (response) => {
+          if (!response.ok) {
+            console.error(response.statusText);
+          }
+        },
+      );
     },
   );
+
   ipcMain.handle(
     "python:setAlgorithmSettings",
     (
       event,
-      autoChooseClusters: boolean,
-      maxClusters: number | undefined,
-      clusterCount: number | undefined,
-      excludedWords: string[],
-      seed: number,
-      languageModel: string,
-      nearestNeighbors: number,
-      zScoreThreshold: number,
-      similarityThreshold: number,
+      algorithmSettings: AutoAlgorithmSettings | ManualAlgorithmSettings,
     ) => {
       makeRequest(
         "put",
         "algorithm/settings",
-        JSON.stringify({
-          auto_choose_clusters: autoChooseClusters,
-          max_clusters: maxClusters,
-          cluster_count: clusterCount,
-          excluded_words: excludedWords,
-          seed,
-          language_model: languageModel,
-          nearest_neighbors: nearestNeighbors,
-          z_score_threshold: zScoreThreshold,
-          similarity_threshold: similarityThreshold,
-        }),
+        JSON.stringify(algorithmSettings),
       ).then((response) => {
         if (!response.ok) {
           console.error(response.statusText);
@@ -256,6 +243,7 @@ app.on("ready", async () => {
       });
     },
   );
+
   ipcMain.handle("python:startClustering", () => {
     makeRequest("put", "start").then((response) => {
       if (!response.ok) {
@@ -263,6 +251,7 @@ app.on("ready", async () => {
       }
     });
   });
+
   ipcMain.handle("python:pollClusterProgress", () => {
     const currentTask = progressMessages[progressMessages.length - 1];
     const progress = {
@@ -318,21 +307,9 @@ declare global {
       submitFilePath: (path: string) => void;
       chooseExampleFile: () => void;
       readFile: (path: string) => Promise<string>;
-      setFileSettings: (
-        hasHeader: boolean,
-        separator: string,
-        selectedColumns: number[],
-      ) => void;
+      setFileSettings: (fileSettings: FileSettingsParam) => void;
       setAlgorithmSettings: (
-        autoChooseClusters: boolean,
-        maxClusters: number | undefined,
-        clusterCount: number | undefined,
-        excludedWords: string[],
-        seed: number,
-        languageModel: string,
-        nearestNeighbors: number,
-        zScoreThreshold: number,
-        similarityThreshold: number,
+        algorithmSettings: AutoAlgorithmSettings | ManualAlgorithmSettings,
       ) => void;
       startClustering: () => void;
       pollClusterProgress: () => Promise<{

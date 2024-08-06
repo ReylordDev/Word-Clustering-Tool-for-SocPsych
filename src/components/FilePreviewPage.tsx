@@ -4,20 +4,20 @@ import { useEffect, useState } from "react";
 
 export default function FilePreviewPage() {
   const [hasHeader, setHasHeader] = useState(true);
-  const [separator, setSeparator] = useState(",");
+  const [delimiter, setDelimiter] = useState(",");
   const [previewData, setPreviewData] = useState<string[][]>([]);
   const [selectedColumns, setSelectedColumns] = useState<boolean[]>([]);
   const filePath = useLocation().state;
 
   console.log(filePath);
   console.log(hasHeader);
-  console.log(separator);
+  console.log(delimiter);
   console.log(previewData);
   console.log(selectedColumns);
 
   useEffect(() => {
     const fetchPreviewData = async () => {
-      if (!separator || !filePath) {
+      if (!delimiter || !filePath) {
         return;
       }
       try {
@@ -25,7 +25,7 @@ export default function FilePreviewPage() {
         console.log(input.length);
         const lines = input.split("\n");
         console.log(lines.length);
-        const parsedData = lines.map((line) => line.split(separator));
+        const parsedData = lines.map((line) => line.split(delimiter));
         setPreviewData(parsedData.slice(0, 6)); // Get first 6 rows (including header if present)
         setSelectedColumns(new Array(parsedData[0].length).fill(true));
       } catch (error) {
@@ -34,7 +34,7 @@ export default function FilePreviewPage() {
     };
 
     fetchPreviewData();
-  }, [filePath, separator]);
+  }, [filePath, delimiter]);
 
   const displayData = hasHeader ? previewData.slice(1) : previewData;
   const headers = hasHeader ? previewData[0] : [];
@@ -51,11 +51,13 @@ export default function FilePreviewPage() {
   const submitSettings = () => {
     console.log("Submitting settings...");
     console.log("Has header:", hasHeader);
-    console.log("Separator:", separator);
+    console.log("Delimiter:", delimiter);
     console.log("Selected columns:", selectedColumns);
-    const selectedColumnIndexes = selectedColumns.map((val) => (val ? 1 : 0));
-    console.log("Selected column indexes:", selectedColumnIndexes);
-    window.python.setFileSettings(hasHeader, separator, selectedColumnIndexes);
+    window.python.setFileSettings({
+      delimiter,
+      hasHeader,
+      selectedColumns,
+    });
   };
 
   return (
@@ -77,8 +79,8 @@ export default function FilePreviewPage() {
             <input
               type="text"
               id="separator"
-              value={separator}
-              onChange={(e) => setSeparator(e.target.value)}
+              value={delimiter}
+              onChange={(e) => setDelimiter(e.target.value)}
               className="w-16"
             />
           </div>

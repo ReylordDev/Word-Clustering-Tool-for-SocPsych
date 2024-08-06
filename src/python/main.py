@@ -30,7 +30,7 @@ def read_input_file_new(
     path: str,
     delimiter: str,
     has_headers: bool,
-    selected_columns: list[int],
+    selected_columns: list[bool],
     excluded_words: list[str],
 ):
     logger.info("STARTED: Reading input file")
@@ -45,7 +45,7 @@ def read_input_file_new(
 
         # Currently the semantics are a bit off here
         for i, val in enumerate(selected_columns):
-            if val == 0:
+            if not val:
                 continue
             col_idxs.append(i)
         logger.debug(f"Column indexes: {col_idxs}")
@@ -247,7 +247,7 @@ def main_new(
     path: str,
     delimiter: str,
     has_headers: bool,
-    selected_columns: list[int],
+    selected_columns: list[bool],
     excluded_words: list[str],
     language_model: str,
     nearest_neighbors: int,
