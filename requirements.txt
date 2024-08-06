@@ -1,6 +1,5 @@
 fastapi
 sentence-transformers
-tqdm
 scikit-learn
 loguru
 uvicorn

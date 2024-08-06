@@ -6,7 +6,6 @@ import numpy as np
 from sentence_transformers import SentenceTransformer
 from sklearn.cluster import AgglomerativeClustering, KMeans
 from sklearn.metrics import silhouette_score
-from tqdm import tqdm
 import time
 from loguru import logger
 
@@ -370,7 +369,7 @@ def find_number_of_clusters(
 
     sils = []
     bics = []
-    for K in tqdm(K_values):
+    for K in K_values:
         logger.info(f"Computing K = {K}")
         clustering = KMeans(n_clusters=K, n_init=10, random_state=seed)
         clustering.fit(embeddings_normalized, sample_weight=sample_weights)
