@@ -178,6 +178,71 @@ def merge(
     return cluster_idxs, cluster_centers
 
 
+def output_clustering_results_new(
+    input_path: str,
+    K: int,
+    cluster_idxs: np.ndarray,
+    embeddings_normalized: np.ndarray,
+    centers_normalized: np.ndarray,
+    words: list[str],
+    col_delimiter: str = ",",
+):
+    clustering_output_file = input_path.replace(".csv", "_clustering_output.csv")
+    with open(clustering_output_file, "w", encoding="utf-8") as f:
+        writer = csv.writer(f, delimiter=col_delimiter, lineterminator="\n")
+        writer.writerow(["word", "cluster_index", "similarity_to_center"])
+        # similarity to center refers to the distance from embedding to the
+        # cluster mean which is a measure of how representative
+        # the word is for the cluster
+
+        for k in range(K):
+            # get the indices of all words in cluster k
+            in_cluster_k = np.where(cluster_idxs == k)[0]
+
+            if len(in_cluster_k) == 0:
+                continue
+
+            # compute the cosine similarity of the embeddings of all words
+            # in cluster k to the mean of cluster k
+            sim = np.dot(
+                embeddings_normalized[in_cluster_k, :], centers_normalized[k, :]
+            )
+            # iterate over all words in cluster k - but sort descendingly
+            # by the cosine similarity because we may want to label clusters by
+            # the most similar words
+            for i in np.argsort(-sim):
+                cluster_col_idx = in_cluster_k[i]
+                word = words[cluster_col_idx]
+                k = cluster_idxs[cluster_col_idx]
+                s = sim[i].item()
+                writer.writerow([word, k, s])
+
+
+def output_cluster_indices_new(
+    input_path: str,
+    delimiter: str,
+    has_headers: bool,
+    selected_columns: list[int],
+    cluster_idxs: np.ndarray,
+):
+    output_file = input_path.replace(".csv", "_output.csv")
+    with open(output_file, "w", encoding="utf-8") as f:
+        with open(input_path, encoding="utf-8") as f_in:
+            reader = csv.reader(f_in, delimiter=delimiter)
+            writer = csv.writer(f, delimiter=delimiter, lineterminator="\n")
+            if has_headers:
+                headers = reader.__next__()
+                selected_headers = [
+                    headers[i] for i, val in enumerate(selected_columns) if val == 1
+                ]
+                for selected_header in selected_headers:
+                    headers.append(f"{selected_header}_cluster")
+                logger.debug(f"Headers: {headers}")
+                writer.writerow(headers)
+    # TODO: Complete this function
+    pass
+
+
 @logger.catch
 def main_new(
     path: str,
@@ -230,6 +295,9 @@ def main_new(
         )
 
     # TODO: Output clustering results
+    output_clustering_results_new(
+        path, K, cluster_idxs, embeddings, cluster_centers, words_remaining, delimiter
+    )
 
 
 def read_input_file(
