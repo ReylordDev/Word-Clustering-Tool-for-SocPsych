@@ -68,7 +68,6 @@ def read_input_file_new(
     words = list(word_counts.keys())
     logger.info("COMPLETED: Reading input file")
     logger.debug(f"Number of rows: {len(rows)}")
-    logger.debug(f"Word counts: {word_counts}")
     logger.debug(f"Number of unique words: {unique_word_count}")
 
     return words, word_counts
@@ -179,6 +178,7 @@ def merge(
     return cluster_idxs, cluster_centers
 
 
+@logger.catch
 def main_new(
     path: str,
     delimiter: str,
@@ -328,9 +328,6 @@ def find_number_of_clusters(
     # and BIC. The product is chosen to achieve both high silhoutte
     # AND high BIC score.
     K = K_values[np.argmax(sils * bics)]
-
-    sorted_K_values = K_values[np.argsort(sils * bics)]
-    logger.debug(f"Sorted K values: {sorted_K_values}")
 
     logger.info("COMPLETED: Finding number of clusters")
     return K

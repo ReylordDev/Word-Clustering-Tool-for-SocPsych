@@ -8,6 +8,7 @@ from .models import (
     AutoAlgorithmSettings,
     ManualAlgorithmSettings,
 )
+from .main import main_new
 
 app = FastAPI()
 
@@ -88,12 +89,39 @@ def set_algorithm_settings(
     return settings.model_dump()
 
 
-@app.put("/auto_cluster_count")
-def set_auto_cluster_count():
-    pass
-
-
 @app.put("/start")
 def start():
-    logger.debug("Starting processing")
-    return {"message": "Processing started"}
+    logger.debug("Starting clustering")
+    if isinstance(ALGORITHM_SETTINGS, AutoAlgorithmSettings):
+        main_new(
+            FILE_SETTINGS.path,
+            FILE_SETTINGS.separator,
+            FILE_SETTINGS.header,
+            FILE_SETTINGS.selectedColumns,
+            ALGORITHM_SETTINGS.excluded_words,
+            ALGORITHM_SETTINGS.language_model,
+            ALGORITHM_SETTINGS.nearest_neighbors,
+            ALGORITHM_SETTINGS.z_score_threshold,
+            ALGORITHM_SETTINGS.auto_cluster_count,
+            ALGORITHM_SETTINGS.max_clusters,
+            ALGORITHM_SETTINGS.seed,
+            None,
+            ALGORITHM_SETTINGS.similarity_threshold,
+        )
+    else:
+        main_new(
+            FILE_SETTINGS.path,
+            FILE_SETTINGS.separator,
+            FILE_SETTINGS.header,
+            FILE_SETTINGS.selectedColumns,
+            ALGORITHM_SETTINGS.excluded_words,
+            ALGORITHM_SETTINGS.language_model,
+            ALGORITHM_SETTINGS.nearest_neighbors,
+            ALGORITHM_SETTINGS.z_score_threshold,
+            ALGORITHM_SETTINGS.auto_cluster_count,
+            None,
+            ALGORITHM_SETTINGS.seed,
+            ALGORITHM_SETTINGS.cluster_count,
+            ALGORITHM_SETTINGS.similarity_threshold,
+        )
+    return {"message": "Clustering started"}

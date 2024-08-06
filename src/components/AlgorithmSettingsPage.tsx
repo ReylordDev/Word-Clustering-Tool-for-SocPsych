@@ -45,6 +45,8 @@ export default function AlgorithmSettingsPage() {
       parseFloat(advancedOptions.zScoreThreshold),
       parseFloat(advancedOptions.similarityThreshold),
     );
+
+    window.python.startClustering();
   };
 
   // can move this into the component

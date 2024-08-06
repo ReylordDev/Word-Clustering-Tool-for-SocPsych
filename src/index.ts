@@ -210,6 +210,12 @@ app.on("ready", async () => {
       console.log(response);
     },
   );
+  ipcMain.handle("python:startClustering", async (event) => {
+    const response = await net.fetch(`http://localhost:8154/start`, {
+      method: "put",
+    });
+    console.log(response);
+  });
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common
@@ -271,6 +277,7 @@ declare global {
         zScoreThreshold: number,
         similarityThreshold: number,
       ) => void;
+      startClustering: () => void;
     };
   }
 }
