@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Header } from "./Header";
 import { useState } from "react";
 import ExcludedWordsEditor from "./ExcludedWordsEditor";
+import AdvancedOptionsEditor from "./AdvancedOptionsEditor";
 
 export default function AlgorithmSettingsPage() {
   const [autoChooseClusters, setAutoChooseClusters] = useState(true);
@@ -10,32 +11,97 @@ export default function AlgorithmSettingsPage() {
   const [isExcludedWordsEditorOpen, setIsExcludedWordsEditorOpen] =
     useState(false);
   const [seed, setSeed] = useState(0);
+  const [advancedOptions, setAdvancedOptions] = useState<
+    Record<string, string>
+  >({
+    nearestNeighbors: "5",
+    zScoreThreshold: "1",
+    similarityThreshold: "0.95",
+    languageModel: "BAAI/bge-large-en-v1.5",
+  });
+  const [isAdvancedOptionsEditorOpen, setIsAdvancedOptionsEditorOpen] =
+    useState(false);
 
   const submitAlgorithmSettings = () => {
     console.log("Submitting settings...");
+    console.log({
+      autoChooseClusters,
+      maxClusters,
+      excludedWords,
+      seed,
+      language_model: advancedOptions.languageModel,
+      nearest_neighbors: parseInt(advancedOptions.nearestNeighbors),
+      z_score_threshold: parseFloat(advancedOptions.zScoreThreshold),
+      similarity_threshold: parseFloat(advancedOptions.similarityThreshold),
+    });
+
     window.python.setAlgorithmSettings(
       autoChooseClusters,
       maxClusters,
       excludedWords,
       seed,
+      advancedOptions.languageModel,
+      parseInt(advancedOptions.nearestNeighbors),
+      parseFloat(advancedOptions.zScoreThreshold),
+      parseFloat(advancedOptions.similarityThreshold),
     );
   };
 
-  const handleSave = (newWords: string[]) => {
+  // can move this into the component
+  const advancedOptionsConfig = [
+    {
+      key: "nearestNeighbors",
+      descriptor:
+        "Number of nearest neighbors to consider for outlier detection",
+      placeholder: "i.e. 5",
+      type: "number" as const,
+    },
+    {
+      key: "zScoreThreshold",
+      descriptor: "Z-score threshold for outlier detection",
+      placeholder: "i.e. 1",
+      type: "number" as const,
+    },
+    {
+      key: "similarityThreshold",
+      descriptor: "Similarity threshold for merging clusters",
+      placeholder: "i.e. 0.95",
+      type: "number" as const,
+    },
+    {
+      key: "languageModel",
+      descriptor:
+        "Language model to use for clustering (Sentence-Transformers name)",
+      placeholder: "i.e. BAAI/bge-large-en-v1.5",
+      type: "text" as const,
+    },
+  ];
+
+  const handleExcludedWordsSave = (newWords: string[]) => {
     setExcludedWords(newWords);
+    // You might want to save this to your backend or local storage here
+  };
+
+  const handleAdvancedOptionsSave = (values: Record<string, string>) => {
+    setAdvancedOptions(values);
     // You might want to save this to your backend or local storage here
   };
 
   return (
     <>
-      <Header>
-        <h1>Algorithm Settings</h1>
-      </Header>
+      <Header>Algorithm Settings</Header>
       <ExcludedWordsEditor
         isOpen={isExcludedWordsEditorOpen}
         onClose={() => setIsExcludedWordsEditorOpen(false)}
         initialWords={excludedWords}
-        onSave={handleSave}
+        onSave={handleExcludedWordsSave}
+      />
+      <AdvancedOptionsEditor
+        isOpen={isAdvancedOptionsEditorOpen}
+        onClose={() => setIsAdvancedOptionsEditorOpen(false)}
+        options={advancedOptionsConfig}
+        initialValues={advancedOptions}
+        onSave={handleAdvancedOptionsSave}
       />
       <div className="flex flex-col justify-start bg-blue-300 px-24">
         <div className="flex flex-col gap-8 bg-red-300">
@@ -77,7 +143,12 @@ export default function AlgorithmSettingsPage() {
           <div className="h-1 w-full bg-accent"></div>
         </div>
         <div className="flex items-center justify-between bg-green-300">
-          <div>Show Advanced Options</div>
+          <button
+            className="rounded-2xl bg-secondary p-2 px-4 text-background"
+            onClick={() => setIsAdvancedOptionsEditorOpen(true)}
+          >
+            Show Advanced Options
+          </button>
           <Link to="/clustering">
             <button
               className="w-48 rounded-full bg-primary p-4 px-8 text-background"

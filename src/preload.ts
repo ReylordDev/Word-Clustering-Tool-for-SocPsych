@@ -30,6 +30,10 @@ contextBridge.exposeInMainWorld("python", {
     maxClusters: number,
     excludedWords: string[],
     seed: number,
+    languageModel: string,
+    nearestNeighbors: number,
+    zScoreThreshold: number,
+    similarityThreshold: number,
   ) => {
     return await ipcRenderer.invoke(
       "python:setAlgorithmSettings",
@@ -37,6 +41,10 @@ contextBridge.exposeInMainWorld("python", {
       maxClusters,
       excludedWords,
       seed,
+      languageModel,
+      nearestNeighbors,
+      zScoreThreshold,
+      similarityThreshold,
     );
   },
 });

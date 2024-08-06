@@ -173,12 +173,20 @@ app.on("ready", async () => {
       maxClusters: number,
       excludedWords: string[],
       seed: number,
+      languageModel: string,
+      nearestNeighbors: number,
+      zScoreThreshold: number,
+      similarityThreshold: number,
     ) => {
       console.log({
         autoChooseClusters,
         maxClusters,
         excludedWords,
         seed,
+        languageModel,
+        nearestNeighbors,
+        zScoreThreshold,
+        similarityThreshold,
       });
       const response = await net.fetch(
         `http://localhost:8154/algorithm/settings`,
@@ -188,7 +196,11 @@ app.on("ready", async () => {
             auto_choose_clusters: autoChooseClusters,
             max_clusters: maxClusters,
             excluded_words: excludedWords,
-            seed,
+            seed: seed,
+            language_model: languageModel,
+            nearest_neighbors: nearestNeighbors,
+            z_score_threshold: zScoreThreshold,
+            similarity_threshold: similarityThreshold,
           }),
           headers: {
             "Content-Type": "application/json",
@@ -254,6 +266,10 @@ declare global {
         maxClusters: number,
         excludedWords: string[],
         seed: number,
+        languageModel: string,
+        nearestNeighbors: number,
+        zScoreThreshold: number,
+        similarityThreshold: number,
       ) => void;
     };
   }

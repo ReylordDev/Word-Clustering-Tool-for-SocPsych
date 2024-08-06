@@ -69,6 +69,10 @@ def set_algorithm_settings(
             excluded_words=settings.excluded_words,
             auto_cluster_count=settings.auto_cluster_count,
             max_clusters=settings.max_clusters,
+            language_model=settings.language_model,
+            nearest_neighbors=settings.nearest_neighbors,
+            z_score_threshold=settings.z_score_threshold,
+            similarity_threshold=settings.similarity_threshold,
         )
     else:
         ALGORITHM_SETTINGS = ManualAlgorithmSettings(
@@ -76,6 +80,10 @@ def set_algorithm_settings(
             excluded_words=settings.excluded_words,
             auto_cluster_count=settings.auto_cluster_count,
             cluster_count=settings.cluster_count,
+            language_model=settings.language_model,
+            nearest_neighbors=settings.nearest_neighbors,
+            z_score_threshold=settings.z_score_threshold,
+            similarity_threshold=settings.similarity_threshold,
         )
 
     return settings.model_dump()

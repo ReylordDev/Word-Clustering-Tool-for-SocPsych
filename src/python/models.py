@@ -22,6 +22,10 @@ class AlgorithmSettings(BaseModel):
     seed: int
     excluded_words: list[str]
     auto_cluster_count: bool
+    nearest_neighbors: int
+    z_score_threshold: float
+    similarity_threshold: float
+    language_model: str
 
 
 class AutoAlgorithmSettings(AlgorithmSettings):
