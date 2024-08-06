@@ -72,9 +72,15 @@ def read_input_file_new(
     return words, word_counts
 
 
-def embed_words(words: list[str], language_model) -> np.ndarray:
+def load_model(language_model: str) -> SentenceTransformer:
+    logger.info("STARTED: Loading language model")
+    model = SentenceTransformer(language_model)
+    logger.info("COMPLETED: Loading language model")
+    return model
+
+
+def embed_words(words: list[str], model: SentenceTransformer) -> np.ndarray:
     logger.info("STARTED: Embedding words")
-    model = SentenceTransformer(language_model, cache_folder=CACHE_FOLDER)
     norm_embeddings = model.encode(
         words, normalize_embeddings=True, convert_to_numpy=True
     )  # shape (no_of_unique_words, embedding_dim)
@@ -263,7 +269,9 @@ def main_new(
         path, delimiter, has_headers, selected_columns, excluded_words
     )
 
-    embeddings = embed_words(words, language_model)
+    model = load_model(language_model)
+
+    embeddings = embed_words(words, model)
 
     outliers, words_remaining, embeddings = outlier_detection(
         words, embeddings, nearest_neighbors, z_score_threshold

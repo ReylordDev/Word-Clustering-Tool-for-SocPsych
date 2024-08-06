@@ -70,14 +70,10 @@ def set_file_settings(settings: FileSettingsParam):
 @app.put("/algorithm/settings")
 def set_algorithm_settings(
     settings: Union[AutoAlgorithmSettings, ManualAlgorithmSettings],
-    auto: bool = False,
 ):
     logger.debug(f"Settings: {settings}")
     global ALGORITHM_SETTINGS
-    if auto:
-        assert isinstance(
-            settings, AutoAlgorithmSettings
-        ), "Settings must be AutoAlgorithmSettings if auto is True"
+    if isinstance(settings, AutoAlgorithmSettings):
         ALGORITHM_SETTINGS = AutoAlgorithmSettings(
             seed=settings.seed,
             excluded_words=settings.excluded_words,
@@ -89,9 +85,6 @@ def set_algorithm_settings(
             similarity_threshold=settings.similarity_threshold,
         )
     else:
-        assert isinstance(
-            settings, ManualAlgorithmSettings
-        ), "Settings must be ManualAlgorithmSettings if auto is False"
         ALGORITHM_SETTINGS = ManualAlgorithmSettings(
             seed=settings.seed,
             excluded_words=settings.excluded_words,

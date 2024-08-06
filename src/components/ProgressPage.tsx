@@ -6,6 +6,7 @@ export default function ProgressPage() {
   const [complete, setComplete] = useState(false);
   const [todoList, setTodoList] = useState<string[]>([
     "Reading input file",
+    "Loading language model",
     "Embedding words",
     "Outlier detection",
     "Finding number of clusters",
