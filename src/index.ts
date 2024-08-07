@@ -361,3 +361,7 @@ declare global {
     };
   }
 }
+
+if (process.platform == "linux") {
+  app.commandLine.appendSwitch("no-sandbox");
+}
