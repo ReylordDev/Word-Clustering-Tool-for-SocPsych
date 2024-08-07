@@ -119,6 +119,7 @@ const startServer = async () => {
     "8154",
   ];
   if (isDev()) {
+    // use the development server
     pythonArguments[2] = "src.python.server:app";
     pythonArguments.push("--reload");
   }

@@ -16,7 +16,7 @@ logger.add(
     "logs/python/server.log", rotation="10 MB", retention="10 days", level="DEBUG"
 )
 
-EXAMPLE_FILE_PATH = "example_data/Self-Generated_Motives_of_Social_Casino_Gamers.csv"
+EXAMPLE_FILE_PATH = "example_data/example.csv"
 
 FILE_SETTINGS: FileSettings = FileSettings(
     path="",
