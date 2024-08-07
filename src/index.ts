@@ -20,14 +20,6 @@ if (squirrel) {
   app.quit();
 }
 
-/**
- * Fix for SUID sandbox issues on Linux
- * See: https://github.com/electron/electron/issues/17972
- */
-if (process.platform == "linux") {
-  app.commandLine.appendSwitch("--no-sandbox");
-}
-
 const isDev = () => {
   return process.env["WEBPACK_SERVE"] === "true";
 };
