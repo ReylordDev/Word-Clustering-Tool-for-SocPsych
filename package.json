@@ -1,6 +1,6 @@
 {
   "name": "word-clustering-tool-for-socpsych",
-  "productName": "Word-Clustering-Tool-for-SocPsych",
+  "productName": "word-clustering-tool-for-socpsych",
   "version": "1.0.0",
   "description": "Desktop interface for clustering free-text responses, using language model embeddings and clustering algorithms. Includes functionality to determine the optimal number of clusters automatically.",
   "main": ".webpack/main",
