@@ -11,7 +11,6 @@ import { FuseV1Options, FuseVersion } from "@electron/fuses";
 import { mainConfig } from "./webpack.main.config";
 import { rendererConfig } from "./webpack.renderer.config";
 import path from "path";
-import fs from "fs";
 import { cp } from "fs/promises";
 
 const config: ForgeConfig = {
@@ -73,6 +72,19 @@ const config: ForgeConfig = {
           recursive: true,
         });
         console.log(`Copied example_data to ${outputPath}`);
+
+        await cp(
+          "setup_python_backend.py",
+          path.join(outputPath, "setup_python_backend.py"),
+        );
+        await cp(
+          "setup_python_backend.sh",
+          path.join(outputPath, "setup_python_backend.sh"),
+        );
+        await cp(
+          "setup_python_backend.ps1",
+          path.join(outputPath, "setup_python_backend.ps1"),
+        );
       }
     },
   },
