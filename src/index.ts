@@ -264,7 +264,7 @@ app.on("ready", async () => {
   ipcMain.handle("python:hasMinimalPythonVersion", async () => {
     return new Promise<boolean>((resolve, reject) => {
       exec(
-        'python -c "import sys; print(sys.version_info>=(3, 7))"',
+        'python3 -c "import sys; print(sys.version_info>=(3, 7))"',
         (error, stdout, stderr) => {
           if (error) {
             console.error(`Error: ${error.message}`);
@@ -291,7 +291,7 @@ app.on("ready", async () => {
       return;
     }
     startupScriptHasRun = true;
-    const setupScript = spawn("python", ["-u", "setup_python_backend.py"], {
+    const setupScript = spawn("python3", ["-u", "setup_python_backend.py"], {
       cwd: rootDir,
     });
 
