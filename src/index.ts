@@ -1,5 +1,5 @@
 import { app, BrowserWindow, ipcMain } from "electron";
-import { ChildProcess, spawn } from "child_process";
+import { ChildProcess, exec, spawn } from "child_process";
 import squirrel from "electron-squirrel-startup";
 import fs from "fs";
 import path from "path";
@@ -30,20 +30,13 @@ let rootDir = path.join(__dirname, "..", "..");
 if (!isDev()) {
   rootDir = path.join(__dirname, "..", "..", "..", "..");
 }
+console.log(`Root directory: ${rootDir}`);
 const venvPath = path.join(rootDir, ".venv");
 let script: ChildProcess | undefined;
 const progressMessages: string[] = [];
 const completedMessages: string[] = [];
-
-const checkPythonEnvironment = () => {
-  if (!fs.existsSync(venvPath)) {
-    console.error(
-      "Python environment not set up. Please run the setup script first.",
-    );
-    // TODO: Show this to the user
-    app.quit();
-  }
-};
+let mainWindow: BrowserWindow;
+let startupScriptHasRun = false;
 
 const parseLogMessage = (data: string, messageType: string) => {
   const regex = new RegExp(`${messageType}: [a-zA-Z\\s]*[a-zA-Z]`);
@@ -118,7 +111,9 @@ const startScript = async (
       (algorithmSettings as ManualAlgorithmSettings).clusterCount.toString(),
     );
   }
-  console.log(`Starting script with arguments: ${pythonArguments}`);
+
+  console.log(`Running script: ${pythonPath} ${pythonArguments.join(" ")}`);
+
   return new Promise<void>((resolve, reject) => {
     script = spawn(pythonPath, pythonArguments, {
       cwd: rootDir,
@@ -173,8 +168,6 @@ const createStartupWindow = () => {
   const startupWindow = new BrowserWindow({
     height: 600,
     width: 800,
-    frame: false,
-    resizable: false,
     webPreferences: {
       preload: STARTUP_WINDOW_PRELOAD_WEBPACK_ENTRY,
     },
@@ -188,13 +181,19 @@ const createStartupWindow = () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on("ready", async () => {
-  createStartupWindow();
-  // checkPythonEnvironment();
-  // console.log("App is ready.");
-
-  // createMainWindow();
+  const startupWindow = createStartupWindow();
 
   // IPC communication between main and renderer processes
+
+  ipcMain.handle("startup:complete", () => {
+    if (!mainWindow) {
+      mainWindow = createMainWindow();
+      startupWindow.hide();
+      mainWindow.on("close", () => {
+        startupWindow.close();
+      });
+    }
+  });
 
   ipcMain.handle("python:readFile", async (event, path: string) => {
     return new Promise<string>((resolve, reject) => {
@@ -227,6 +226,94 @@ app.on("ready", async () => {
     };
     return progress;
   });
+
+  ipcMain.handle("python:isPythonInstalled", async () => {
+    return new Promise<boolean>((resolve, reject) => {
+      if (process.platform === "win32") {
+        exec("where python", (error, stdout, stderr) => {
+          if (error) {
+            console.error(`Error: ${error.message}`);
+            reject(error);
+          }
+          if (stderr) {
+            console.error(`stderr: ${stderr}`);
+            reject(stderr);
+          }
+          if (stdout) {
+            resolve(true);
+          }
+        });
+      } else {
+        exec("command -v python3", (error, stdout, stderr) => {
+          if (error) {
+            console.error(`Error: ${error.message}`);
+            reject(error);
+          }
+          if (stderr) {
+            console.error(`stderr: ${stderr}`);
+            reject(stderr);
+          }
+          if (stdout) {
+            resolve(true);
+          }
+        });
+      }
+    });
+  });
+
+  ipcMain.handle("python:hasMinimalPythonVersion", async () => {
+    return new Promise<boolean>((resolve, reject) => {
+      exec(
+        'python -c "import sys; print(sys.version_info>=(3, 7))"',
+        (error, stdout, stderr) => {
+          if (error) {
+            console.error(`Error: ${error.message}`);
+            reject(error);
+          }
+          if (stderr) {
+            console.error(`stderr: ${stderr}`);
+            reject(stderr);
+          }
+          if (stdout) {
+            if (stdout.includes("True")) {
+              resolve(true);
+            } else {
+              resolve(false);
+            }
+          }
+        },
+      );
+    });
+  });
+
+  ipcMain.handle("python:runSetupScript", async () => {
+    if (startupScriptHasRun) {
+      return;
+    }
+    startupScriptHasRun = true;
+    const setupScript = spawn("python", ["-u", "setup_python_backend.py"], {
+      cwd: rootDir,
+    });
+
+    setupScript.on("error", (error) => {
+      console.error(`Error: ${error.message}`);
+    });
+
+    setupScript.stderr?.on("data", (data) => {
+      console.log(`stderr: ${data}`);
+    });
+
+    setupScript.stdout?.on("data", (data) => {
+      if (data.toString().includes("Requirement already satisfied")) {
+        return;
+      }
+      startupWindow.webContents.send(
+        "python:setupScriptMessage",
+        data.toString(),
+      );
+      console.log(`stdout: ${data}`);
+    });
+  });
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common
@@ -251,6 +338,9 @@ app.on("activate", () => {
 
 declare global {
   interface Window {
+    startup: {
+      complete: () => Promise<void>;
+    };
     python: {
       readFile: (path: string) => Promise<string>;
       startClustering: (
@@ -261,6 +351,12 @@ declare global {
         currentTask: string;
         completedMessages: string[];
       }>;
+      isPythonInstalled: () => Promise<boolean>;
+      hasMinimalPythonVersion: () => Promise<boolean>;
+      runSetupScript: () => Promise<void>;
+      onSetupScriptMessage: (
+        listener: (event: unknown, message: string) => void,
+      ) => void;
     };
   }
 }
