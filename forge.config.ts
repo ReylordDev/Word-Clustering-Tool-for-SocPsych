@@ -85,14 +85,6 @@ const config: ForgeConfig = {
           "setup_python_backend.py",
           path.join(outputPath, "setup_python_backend.py"),
         );
-        await cp(
-          "setup_python_backend.sh",
-          path.join(outputPath, "setup_python_backend.sh"),
-        );
-        await cp(
-          "setup_python_backend.ps1",
-          path.join(outputPath, "setup_python_backend.ps1"),
-        );
       }
     },
   },
