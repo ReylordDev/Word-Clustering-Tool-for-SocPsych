@@ -14,6 +14,8 @@ import {
 // whether you're running in development or production).
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
+declare const STARTUP_WINDOW_WEBPACK_ENTRY: string;
+declare const STARTUP_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (squirrel) {
@@ -43,26 +45,22 @@ const checkPythonEnvironment = () => {
   }
 };
 
-const parseProgressMessage = (data: string) => {
-  // Extract the progress message from the log message, e.g. "...STARTED: Reading input file..."
-  const progressRegex = /STARTED: [a-zA-z\s]*[a-zA-Z]/;
-  const match = data.match(progressRegex);
+const parseLogMessage = (data: string, messageType: string) => {
+  const regex = new RegExp(`${messageType}: [a-zA-Z\\s]*[a-zA-Z]`);
+  const match = data.match(regex);
   if (match) {
-    return match[0].replace("STARTED: ", "");
+    return match[0].replace(`${messageType}: `, "");
   }
   console.log(data);
   return undefined;
 };
 
+const parseProgressMessage = (data: string) => {
+  return parseLogMessage(data, "STARTED");
+};
+
 const parseCompletedMessage = (data: string) => {
-  // Extract the progress message from the log message, e.g. "...COMPLETED: Reading input file..."
-  const completedRegex = /COMPLETED: [a-zA-z\s]*[a-zA-Z]/;
-  const match = data.match(completedRegex);
-  if (match) {
-    return match[0].replace("COMPLETED: ", "");
-  }
-  console.log(data);
-  return undefined;
+  return parseLogMessage(data, "COMPLETED");
 };
 
 const startScript = async (
@@ -155,7 +153,7 @@ const startScript = async (
   });
 };
 
-const createWindow = () => {
+const createMainWindow = () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     height: 768,
@@ -171,15 +169,30 @@ const createWindow = () => {
   return mainWindow;
 };
 
+const createStartupWindow = () => {
+  const startupWindow = new BrowserWindow({
+    height: 600,
+    width: 800,
+    frame: false,
+    resizable: false,
+    webPreferences: {
+      preload: STARTUP_WINDOW_PRELOAD_WEBPACK_ENTRY,
+    },
+  });
+
+  startupWindow.loadURL(STARTUP_WINDOW_WEBPACK_ENTRY);
+  return startupWindow;
+};
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on("ready", async () => {
-  checkPythonEnvironment();
-  // await startServer();
-  console.log("App is ready.");
+  createStartupWindow();
+  // checkPythonEnvironment();
+  // console.log("App is ready.");
 
-  createWindow();
+  // createMainWindow();
 
   // IPC communication between main and renderer processes
 
@@ -229,7 +242,7 @@ app.on("activate", () => {
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow();
+    createMainWindow();
   }
 });
 
