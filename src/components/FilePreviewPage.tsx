@@ -2,21 +2,25 @@ import { Link } from "react-router-dom";
 import { Header } from "./Header";
 import { useEffect, useState } from "react";
 
-export default function FilePreviewPage() {
-  const [hasHeader, setHasHeader] = useState(true);
-  const [delimiter, setDelimiter] = useState(",");
+export default function FilePreviewPage({
+  file,
+  hasHeader,
+  setHasHeader,
+  delimiter,
+  setDelimiter,
+  selectedColumns,
+  setSelectedColumns,
+}: {
+  file: File | null;
+  hasHeader: boolean;
+  setHasHeader: (hasHeader: boolean) => void;
+  delimiter: string;
+  setDelimiter: (delimiter: string) => void;
+  selectedColumns: boolean[];
+  setSelectedColumns: (selectedColumns: boolean[]) => void;
+}) {
   const [previewData, setPreviewData] = useState<string[][]>([]);
-  const [selectedColumns, setSelectedColumns] = useState<boolean[]>([]);
-  const [filePath, setFilePath] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchFilePath = async () => {
-      window.python.fetchFilePath().then((path: string) => {
-        setFilePath(path);
-      });
-    };
-    fetchFilePath();
-  }, []);
+  const filePath = file?.path;
 
   console.log(filePath);
   console.log(hasHeader);
@@ -52,22 +56,23 @@ export default function FilePreviewPage() {
   console.log(headers);
 
   const toggleColumn = (index: number) => {
-    setSelectedColumns((prev) =>
-      prev.map((val, i) => (i === index ? !val : val)),
-    );
+    const newSelectedColumns = [...selectedColumns];
+    newSelectedColumns[index] = !newSelectedColumns[index];
+    setSelectedColumns(newSelectedColumns);
   };
 
-  const submitSettings = () => {
-    console.log("Submitting settings...");
-    console.log("Has header:", hasHeader);
-    console.log("Delimiter:", delimiter);
-    console.log("Selected columns:", selectedColumns);
-    window.python.setFileSettings({
-      delimiter,
-      hasHeader,
-      selectedColumns,
-    });
-  };
+  if (!file) {
+    return (
+      <>
+        <Header>File Settings</Header>
+        <div className="flex flex-col justify-start px-24">
+          <h1 className="text-center text-2xl font-bold">
+            No file selected. Please select a file first.
+          </h1>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
@@ -137,10 +142,7 @@ export default function FilePreviewPage() {
         <div className="flex items-center justify-end gap-2 p-4">
           <h5>When you are done:</h5>
           <Link to="/algorithm_settings">
-            <button
-              className="w-48 rounded-full bg-primary p-4 px-8 text-background"
-              onClick={submitSettings}
-            >
+            <button className="w-48 rounded-full bg-primary p-4 px-8 text-background">
               <h5>Continue</h5>
             </button>
           </Link>

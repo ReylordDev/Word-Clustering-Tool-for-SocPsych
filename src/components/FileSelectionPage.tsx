@@ -1,23 +1,16 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Header } from "./Header";
 import { FileSelector } from "./FileSelector";
-import { useState } from "react";
 
-export default function FileSelectionPage() {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const navigate = useNavigate();
-
-  const submitFile = () => {
-    if (selectedFile) {
-      console.log(selectedFile.path);
-      window.python.submitFilePath(selectedFile.path);
-    }
-  };
-
+export default function FileSelectionPage({
+  selectedFile: file,
+  setFile: setSelectedFile,
+}: {
+  selectedFile: File | null;
+  setFile: (file: File) => void;
+}) {
   const submitExampleFile = () => {
-    window.python.chooseExampleFile().then(() => {
-      navigate("/file_preview");
-    });
+    console.log("not implemented");
   };
 
   return (
@@ -25,10 +18,7 @@ export default function FileSelectionPage() {
       <Header>File Selection</Header>
       <div className="my-12"></div>
       <div className="flex items-center justify-around gap-12">
-        <FileSelector
-          selectedFile={selectedFile}
-          setSelectedFile={setSelectedFile}
-        />
+        <FileSelector selectedFile={file} setSelectedFile={setSelectedFile} />
         <div className="flex flex-col items-center text-center">
           <div className="my-2"></div>
           <h5>Start by selecting an input file.</h5>
@@ -57,12 +47,9 @@ export default function FileSelectionPage() {
       </div>
       <div className="my-12"></div>
       <div className="flex items-center justify-center">
-        <Link to={selectedFile ? "/file_preview" : ""}>
-          {selectedFile ? (
-            <button
-              className="w-48 rounded-full bg-primary p-4 px-8 text-background"
-              onClick={submitFile}
-            >
+        <Link to={file ? "/file_preview" : ""}>
+          {file ? (
+            <button className="w-48 rounded-full bg-primary p-4 px-8 text-background">
               <h5>Confirm</h5>
             </button>
           ) : (

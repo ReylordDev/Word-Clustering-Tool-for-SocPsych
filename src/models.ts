@@ -1,13 +1,18 @@
-export interface FileSettingsParam {
+export interface FileSettings {
+  path: string;
   delimiter: string;
   hasHeader: boolean;
   selectedColumns: boolean[];
 }
 
 interface AlgorithmSettings {
+  autoClusterCount: boolean;
   seed: number;
   excludedWords: string[];
-  autoClusterCount: boolean;
+  advancedOptions: AdvancedOptions;
+}
+
+export interface AdvancedOptions {
   nearestNeighbors: number;
   zScoreThreshold: number;
   similarityThreshold: number;

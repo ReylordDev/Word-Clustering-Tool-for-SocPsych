@@ -4,7 +4,7 @@
 import { contextBridge, ipcRenderer } from "electron";
 import {
   AutoAlgorithmSettings,
-  FileSettingsParam,
+  FileSettings,
   ManualAlgorithmSettings,
 } from "./models";
 
@@ -12,31 +12,18 @@ import {
 // the ipcRenderer without exposing the entire object
 
 contextBridge.exposeInMainWorld("python", {
-  submitFilePath: async (path: string) => {
-    return await ipcRenderer.invoke("python:submitFilePath", path);
-  },
-  chooseExampleFile: async () => {
-    return await ipcRenderer.invoke("python:chooseExampleFile");
-  },
-  fetchFilePath: async () => {
-    return await ipcRenderer.invoke("python:fetchFilePath");
-  },
   readFile: async (path: string) => {
     return await ipcRenderer.invoke("python:readFile", path);
   },
-  setFileSettings: async (fileSettings: FileSettingsParam) => {
-    return await ipcRenderer.invoke("python:setFileSettings", fileSettings);
-  },
-  setAlgorithmSettings: async (
-    algorithmSettings: AutoAlgorithmSettings | ManualAlgorithmSettings,
+  startClustering: async (
+    fileSettings: FileSettings,
+    AlgorithmSettings: AutoAlgorithmSettings | ManualAlgorithmSettings,
   ) => {
     return await ipcRenderer.invoke(
-      "python:setAlgorithmSettings",
-      algorithmSettings,
+      "python:startClustering",
+      fileSettings,
+      AlgorithmSettings,
     );
-  },
-  startClustering: async () => {
-    return await ipcRenderer.invoke("python:startClustering");
   },
   pollClusterProgress: async () => {
     return await ipcRenderer.invoke("python:pollClusterProgress");

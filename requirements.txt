@@ -1,6 +1,4 @@
-fastapi
 sentence-transformers
 scikit-learn
 loguru
-uvicorn
 numpy<2

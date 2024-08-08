@@ -4,24 +4,37 @@ import { useState } from "react";
 import ExcludedWordsEditor from "./ExcludedWordsEditor";
 import AdvancedOptionsEditor from "./AdvancedOptionsEditor";
 
-export default function AlgorithmSettingsPage() {
-  const [autoChooseClusters, setAutoChooseClusters] = useState(true);
-  const [maxClusters, setMaxClusters] = useState<number | undefined>(undefined);
-  const [clusterCount, setClusterCount] = useState<number | undefined>(
-    undefined,
-  );
-  const [excludedWords, setExcludedWords] = useState<string[]>([]);
+export default function AlgorithmSettingsPage({
+  autoChooseClusters,
+  setAutoChooseClusters,
+  maxClusters,
+  setMaxClusters,
+  clusterCount,
+  setClusterCount,
+  excludedWords,
+  setExcludedWords,
+  seed,
+  setSeed,
+  advancedOptions,
+  setAdvancedOptions,
+  startClustering,
+}: {
+  autoChooseClusters: boolean;
+  setAutoChooseClusters: (autoChooseClusters: boolean) => void;
+  maxClusters?: number;
+  setMaxClusters: (maxClusters: number | undefined) => void;
+  clusterCount?: number;
+  setClusterCount: (clusterCount: number | undefined) => void;
+  excludedWords: string[];
+  setExcludedWords: (excludedWords: string[]) => void;
+  seed: number;
+  setSeed: (seed: number) => void;
+  advancedOptions: Record<string, string>;
+  setAdvancedOptions: (advancedOptions: Record<string, string>) => void;
+  startClustering: () => void;
+}) {
   const [isExcludedWordsEditorOpen, setIsExcludedWordsEditorOpen] =
     useState(false);
-  const [seed, setSeed] = useState(0);
-  const [advancedOptions, setAdvancedOptions] = useState<
-    Record<string, string>
-  >({
-    nearestNeighbors: "5",
-    zScoreThreshold: "1",
-    similarityThreshold: "0.95",
-    languageModel: "BAAI/bge-large-en-v1.5",
-  });
   const [isAdvancedOptionsEditorOpen, setIsAdvancedOptionsEditorOpen] =
     useState(false);
 
@@ -40,19 +53,7 @@ export default function AlgorithmSettingsPage() {
       return;
     }
 
-    window.python.setAlgorithmSettings({
-      seed,
-      excludedWords,
-      nearestNeighbors: parseInt(advancedOptions.nearestNeighbors),
-      zScoreThreshold: parseFloat(advancedOptions.zScoreThreshold),
-      similarityThreshold: parseFloat(advancedOptions.similarityThreshold),
-      languageModel: advancedOptions.languageModel,
-      ...(autoChooseClusters
-        ? { autoClusterCount: true, maxClusters: maxClusters as number }
-        : { autoClusterCount: false, clusterCount: clusterCount as number }),
-    });
-
-    window.python.startClustering();
+    startClustering();
   };
 
   // can move this into the component

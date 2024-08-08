@@ -8,7 +8,9 @@ from sklearn.cluster import AgglomerativeClustering, KMeans
 from sklearn.metrics import silhouette_score
 import time
 from loguru import logger
+import argparse
 
+logger.add("logs/python/main.log", rotation="10 MB", retention="10 days", level="DEBUG")
 
 UPLOADS_DIR = "uploads"
 OUTPUTS_DIR = "static/outputs"
@@ -30,7 +32,7 @@ def read_input_file_new(
     path: str,
     delimiter: str,
     has_headers: bool,
-    selected_columns: list[bool],
+    selected_columns: list[int],
     excluded_words: list[str],
 ):
     logger.info("STARTED: Reading input file")
@@ -43,10 +45,7 @@ def read_input_file_new(
             logger.debug(f"Headers: {headers}")
         col_idxs: list[int] = []
 
-        # Currently the semantics are a bit off here
-        for i, val in enumerate(selected_columns):
-            if not val:
-                continue
+        for i in selected_columns:
             col_idxs.append(i)
         logger.debug(f"Column indexes: {col_idxs}")
 
@@ -253,14 +252,14 @@ def main_new(
     path: str,
     delimiter: str,
     has_headers: bool,
-    selected_columns: list[bool],
+    selected_columns: list[int],
     excluded_words: list[str],
     language_model: str,
     nearest_neighbors: int,
     z_score_threshold: float,
     automatic_k: bool,
     max_num_clusters: Optional[int],
-    seed: int,
+    seed: Optional[int],
     cluster_count: Optional[int],
     merge_threshold: float,
 ):
@@ -720,4 +719,99 @@ def main(
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description="Word Clustering Tool for SocPsych")
+    parser.add_argument(
+        "path",
+        type=str,
+        help="Path to the input file",
+    )
+    parser.add_argument(
+        "--delimiter",
+        type=str,
+        default=",",
+        help="Delimiter used in the input file (default: ,)",
+    )
+    parser.add_argument(
+        "--has_headers",
+        action="store_true",
+        help="Whether the input file has headers (default: False)",
+    )
+    parser.add_argument(
+        "--selected_columns",
+        nargs="+",
+        type=int,
+        default=[],
+        help="List of columns to consider for clustering (default: [])",
+    )
+    parser.add_argument(
+        "--excluded_words",
+        nargs="+",
+        default=[],
+        help="List of words to exclude from clustering (default: [])",
+    )
+    parser.add_argument(
+        "--language_model",
+        type=str,
+        default="BAAI/bge-large-en-v1.5",
+        help="Language model to use for embedding (default: BAAI/bge-large-en-v1.5)",
+    )
+    parser.add_argument(
+        "--nearest_neighbors",
+        type=int,
+        default=5,
+        help="Number of nearest neighbors to consider for outlier detection (default: 5)",
+    )
+    parser.add_argument(
+        "--z_score_threshold",
+        type=float,
+        default=1.0,
+        help="Threshold for outlier detection (default: 1.0)",
+    )
+    parser.add_argument(
+        "--automatic_k",
+        action="store_true",
+        help="Automatically determine the number of clusters",
+    )
+    parser.add_argument(
+        "--max_num_clusters",
+        type=int,
+        default=100,
+        help="Maximum number of clusters to consider (default: 100)",
+    )
+    parser.add_argument(
+        "--seed",
+        type=int,
+        default=None,
+        help="Random seed for reproducibility (default: None)",
+    )
+    parser.add_argument(
+        "--cluster_count",
+        type=int,
+        default=5,
+        help="Number of clusters to create (default: 5)",
+    )
+    parser.add_argument(
+        "--merge_threshold",
+        type=float,
+        default=1.0,
+        help="Threshold for merging clusters (default: 1.0)",
+    )
+
+    args = parser.parse_args()
+    logger.debug(args)
+
+    main_new(
+        path=args.path,
+        delimiter=args.delimiter,
+        has_headers=args.has_headers,
+        selected_columns=args.selected_columns,
+        excluded_words=args.excluded_words,
+        language_model=args.language_model,
+        nearest_neighbors=args.nearest_neighbors,
+        z_score_threshold=args.z_score_threshold,
+        automatic_k=args.automatic_k,
+        max_num_clusters=args.max_num_clusters,
+        seed=args.seed,
+        cluster_count=args.cluster_count,
+        merge_threshold=args.merge_threshold,
+    )
