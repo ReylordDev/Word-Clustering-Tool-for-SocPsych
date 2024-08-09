@@ -9,7 +9,7 @@ export default function ProgressPage() {
     "Loading language model",
     "Embedding words",
     "Outlier detection",
-    "Finding number of clusters",
+    "Finding number of clusters", // This might not be a todo
     "Clustering",
     "Merging clusters",
   ]);
@@ -31,12 +31,13 @@ export default function ProgressPage() {
                   (task) => !progress.completedMessages.includes(task),
                 ),
               );
-              if (progress.completedMessages.includes(progress.currentTask)) {
-                // Done
-                setComplete(true);
-              } else {
-                setCurrentTask(progress.currentTask);
-              }
+              setCurrentTask(progress.currentTask);
+            } else {
+              setCurrentTask("Clustering complete");
+            }
+            if (progress.completedMessages.includes("Clustering complete")) {
+              // Make sure that todo list and the backend are in sync
+              setComplete(true);
             }
           },
         );

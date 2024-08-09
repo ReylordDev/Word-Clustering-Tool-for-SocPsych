@@ -305,6 +305,9 @@ def main_new(
         path, K, cluster_idxs, embeddings, cluster_centers, words_remaining, delimiter
     )
 
+    # Make sure this syncs with the equivalent on the ProgressPage.tsx
+    logger.info("COMPLETED: Clustering complete")
+
 
 def read_input_file(
     col_delimiter: str = ",",
