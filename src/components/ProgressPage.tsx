@@ -33,7 +33,7 @@ export default function ProgressPage() {
               );
               setCurrentTask(progress.currentTask);
             } else {
-              setCurrentTask("Clustering complete");
+              setCurrentTask("");
             }
             if (progress.completedMessages.includes("Clustering complete")) {
               // Make sure that todo list and the backend are in sync

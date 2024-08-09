@@ -23,13 +23,21 @@ const isDev = () => {
 };
 
 let rootDir = path.join(__dirname, "..", "..");
+let dataDir = rootDir;
 if (!isDev()) {
+  // Production
   rootDir = path.join(__dirname, "..", "..", "..", "..");
+  dataDir = app.getPath("userData");
   console.log = log.log;
   console.error = log.error;
 }
+
+const venvPath = path.join(dataDir, ".venv");
+app.setAppLogsPath(path.join(dataDir, "logs"));
+
 console.log(`Root directory: ${rootDir}`);
-const venvPath = path.join(rootDir, ".venv");
+console.log(`Data directory: ${dataDir}`);
+
 let script: ChildProcess | undefined;
 const progressMessages: string[] = [];
 const completedMessages: string[] = [];
@@ -59,7 +67,7 @@ const parseLogMessage = (data: string, messageType: string) => {
   if (match) {
     return match[0].replace(`${messageType}: `, "");
   }
-  console.log(data);
+  console.log(data.replace("\n", ""));
   return undefined;
 };
 
@@ -102,11 +110,19 @@ const startScript = async (
   ];
   if (isDev()) {
     pythonArguments[1] = path.join(rootDir, "src", "python", "main.py");
+    pythonArguments.push("--log_level");
+    pythonArguments.push("DEBUG");
+  } else {
+    pythonArguments.push("--log_dir");
+    pythonArguments.push(path.join(dataDir, "logs", "python"));
+    pythonArguments.push("--output_dir");
+    pythonArguments.push(path.join(dataDir, "output"));
   }
   if (fileSettings.hasHeader) {
     pythonArguments.push("--has_headers");
   }
   pythonArguments.push("--selected_columns");
+  // TODO
   // This will be moved
   const selectedColumns = fileSettings.selectedColumns
     .map((selected, index) => (selected ? index : undefined))
@@ -314,9 +330,13 @@ app.on("ready", async () => {
       return;
     }
     startupScriptHasRun = true;
-    const setupScript = spawn("python3", ["-u", "setup_python_backend.py"], {
-      cwd: rootDir,
-    });
+    const setupScript = spawn(
+      "python3",
+      ["-u", "setup_python_backend.py", "--data_dir", dataDir],
+      {
+        cwd: rootDir,
+      },
+    );
 
     setupScript.on("error", (error) => {
       console.error(`Error: ${error.message}`);

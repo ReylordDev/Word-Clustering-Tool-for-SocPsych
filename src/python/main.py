@@ -1,4 +1,5 @@
 from collections import Counter
+import os
 import csv
 import json
 from typing import Optional
@@ -9,8 +10,6 @@ from sklearn.metrics import silhouette_score
 import time
 from loguru import logger
 import argparse
-
-logger.add("logs/python/main.log", rotation="10 MB", retention="10 days", level="DEBUG")
 
 UPLOADS_DIR = "uploads"
 OUTPUTS_DIR = "static/outputs"
@@ -23,7 +22,6 @@ PAIRWISE_SIMILARITIES_OUTPUT_FILE = f"{OUTPUTS_DIR}/pairwise_similarities.csv"
 OUTPUT_FILE_PATH = f"{OUTPUTS_DIR}/output.csv"
 STATS_FILE_PATH = f"{OUTPUTS_DIR}/stats.json"
 LANGUAGE_MODEL = "BAAI/bge-large-en-v1.5"
-
 
 FILE_PATH = ""
 
@@ -183,7 +181,8 @@ def merge(
 
 
 def output_clustering_results_new(
-    input_path: str,
+    input_file_name: str,
+    output_dir: str,
     K: int,
     cluster_idxs: np.ndarray,
     embeddings_normalized: np.ndarray,
@@ -191,7 +190,7 @@ def output_clustering_results_new(
     words: list[str],
     col_delimiter: str = ",",
 ):
-    clustering_output_file = input_path.replace(".csv", "_clustering_output.csv")
+    clustering_output_file = output_dir + f"/{input_file_name}_clustering_output.csv"
     with open(clustering_output_file, "w", encoding="utf-8") as f:
         writer = csv.writer(f, delimiter=col_delimiter, lineterminator="\n")
         writer.writerow(["word", "cluster_index", "similarity_to_center"])
@@ -262,6 +261,7 @@ def main_new(
     seed: Optional[int],
     cluster_count: Optional[int],
     merge_threshold: float,
+    output_dir: str,
 ):
     logger.info("Starting clustering")
     words, word_counts = read_input_file_new(
@@ -300,9 +300,24 @@ def main_new(
             merge_threshold, cluster_idxs, cluster_centers, embeddings, sample_weights
         )
 
+    if not os.path.exists(output_dir):
+        os.mkdir(output_dir)
+
+    input_file_name = os.path.basename(path).removesuffix(".csv")
+    output_dir = os.path.join(output_dir, input_file_name)
+    if not os.path.exists(output_dir):
+        os.mkdir(output_dir)
+
     # TODO: Output clustering results
     output_clustering_results_new(
-        path, K, cluster_idxs, embeddings, cluster_centers, words_remaining, delimiter
+        input_file_name,
+        output_dir,
+        K,
+        cluster_idxs,
+        embeddings,
+        cluster_centers,
+        words_remaining,
+        delimiter,
     )
 
     # Make sure this syncs with the equivalent on the ProgressPage.tsx
@@ -799,8 +814,34 @@ if __name__ == "__main__":
         default=1.0,
         help="Threshold for merging clusters (default: 1.0)",
     )
+    parser.add_argument(
+        "--log_dir",
+        type=str,
+        default="logs/python",
+        help="Directory to store log files (default: logs/python)",
+    )
+    parser.add_argument(
+        "--log_level",
+        type=str,
+        default="DEBUG",
+        help="Log level (default: INFO)",
+    )
+    parser.add_argument(
+        "--output_dir",
+        type=str,
+        default="outputs",
+        help="Directory to store output files (default: outputs)",
+    )
 
     args = parser.parse_args()
+
+    log_level = args.log_level
+
+    if args.log_dir:
+        logger.add(f"{args.log_dir}/main.log", rotation="10 MB", level=log_level)
+    else:
+        logger.add("logs/python/main.log", rotation="10 MB", level=log_level)
+
     logger.debug(args)
 
     main_new(
@@ -817,4 +858,5 @@ if __name__ == "__main__":
         seed=args.seed,
         cluster_count=args.cluster_count,
         merge_threshold=args.merge_threshold,
+        output_dir=args.output_dir,
     )
