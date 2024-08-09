@@ -17,11 +17,6 @@ declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const STARTUP_WINDOW_WEBPACK_ENTRY: string;
 declare const STARTUP_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 
-// Handle creating/removing shortcuts on Windows when installing/uninstalling.
-if (squirrel) {
-  app.quit();
-}
-
 const isDev = () => {
   return process.env["WEBPACK_SERVE"] === "true";
 };
@@ -37,6 +32,23 @@ const progressMessages: string[] = [];
 const completedMessages: string[] = [];
 let mainWindow: BrowserWindow;
 let startupScriptHasRun = false;
+
+// Force single instance application
+if (!app.requestSingleInstanceLock()) {
+  app.quit();
+} else {
+  app.on("second-instance", () => {
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore();
+      mainWindow.focus();
+    }
+  });
+}
+
+// Handle creating/removing shortcuts on Windows when installing/uninstalling.
+if (squirrel) {
+  app.quit();
+}
 
 const parseLogMessage = (data: string, messageType: string) => {
   const regex = new RegExp(`${messageType}: [a-zA-Z\\s]*[a-zA-Z]`);
