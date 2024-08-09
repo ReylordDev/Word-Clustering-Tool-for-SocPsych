@@ -1,5 +1,6 @@
 import { app, BrowserWindow, ipcMain } from "electron";
 import { ChildProcess, exec, spawn } from "child_process";
+import log from "electron-log/main";
 import squirrel from "electron-squirrel-startup";
 import fs from "fs";
 import path from "path";
@@ -24,6 +25,8 @@ const isDev = () => {
 let rootDir = path.join(__dirname, "..", "..");
 if (!isDev()) {
   rootDir = path.join(__dirname, "..", "..", "..", "..");
+  console.log = log.log;
+  console.error = log.error;
 }
 console.log(`Root directory: ${rootDir}`);
 const venvPath = path.join(rootDir, ".venv");
@@ -152,16 +155,18 @@ const startScript = async (
         }
         completedMessages.push(completedMessage);
       }
-      console.log(`stderr: ${data}`);
+      const dataString = data.toString() as string;
+      console.log(`stderr: ${dataString.replace("\n", "")}`);
     });
     script.stdout?.on("data", (data) => {
-      console.log(`stdout: ${data}`);
+      const dataString = data.toString() as string;
+      console.log(`stdout: ${dataString.replace("\n", "")}`);
     });
   });
 };
 
 const createMainWindow = () => {
-  // Create the browser window.
+  console.log("Creating main window");
   const mainWindow = new BrowserWindow({
     height: 768,
     width: 1024,
@@ -172,11 +177,13 @@ const createMainWindow = () => {
 
   // and load the index.html of the app.
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
+  console.log(`Main window url: ${MAIN_WINDOW_WEBPACK_ENTRY}`);
 
   return mainWindow;
 };
 
 const createStartupWindow = () => {
+  console.log("Creating startup window");
   const startupWindow = new BrowserWindow({
     height: 600,
     width: 800,
@@ -186,6 +193,8 @@ const createStartupWindow = () => {
   });
 
   startupWindow.loadURL(STARTUP_WINDOW_WEBPACK_ENTRY);
+  console.log(`Startup window url: ${STARTUP_WINDOW_WEBPACK_ENTRY}`);
+
   return startupWindow;
 };
 
@@ -193,11 +202,13 @@ const createStartupWindow = () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on("ready", async () => {
+  console.log("App is ready");
   const startupWindow = createStartupWindow();
 
   // IPC communication between main and renderer processes
 
   ipcMain.handle("startup:complete", () => {
+    console.log("Startup complete");
     if (!mainWindow) {
       mainWindow = createMainWindow();
       startupWindow.hide();
@@ -323,7 +334,8 @@ app.on("ready", async () => {
         "python:setupScriptMessage",
         data.toString(),
       );
-      console.log(`stdout: ${data}`);
+      const dataString = data.toString() as string;
+      console.log(`stdout: ${dataString.replace("\n", "")}`);
     });
   });
 });
