@@ -252,6 +252,12 @@ def save_amended_file(
     with open(output_file_path, "w", encoding="utf-8") as f:
         writer = csv.writer(f, delimiter=delimiter, lineterminator="\n")
         if has_headers:
+            # add the new columns to the header
+            for i in selected_columns:
+                selected_header = rows[0][i]
+                rows[0].append(f"{selected_header}_cluster_index")
+
+            # write the header
             writer.writerow(rows[0])
         writer.writerows(rows)
 
