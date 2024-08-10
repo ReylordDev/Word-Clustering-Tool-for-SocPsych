@@ -132,7 +132,7 @@ const startScript = async (
   });
   if (algorithmSettings.autoClusterCount) {
     pythonArguments.push("--automatic_k");
-    pythonArguments.push("--max_clusters");
+    pythonArguments.push("--max_num_clusters");
     pythonArguments.push(
       (algorithmSettings as AutoAlgorithmSettings).maxClusters.toString(),
     );
