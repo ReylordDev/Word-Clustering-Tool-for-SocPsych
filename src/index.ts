@@ -344,6 +344,10 @@ app.on("ready", async () => {
 
     setupScript.stderr?.on("data", (data) => {
       console.log(`stderr: ${data}`);
+      startupWindow.webContents.send(
+        "python:setupScriptMessage",
+        data.toString(),
+      );
     });
 
     setupScript.stdout?.on("data", (data) => {
