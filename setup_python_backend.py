@@ -33,11 +33,14 @@ def install_requirements(pip_path):
 
 
 def main(data_dir=None):
-    check_python_version()
-    venv_dir = create_venv(data_dir)
-    pip_path = get_pip_path(venv_dir)
-    install_requirements(pip_path)
-    print("Setup completed successfully. The application is ready to use.")
+    try:
+        check_python_version()
+        venv_dir = create_venv(data_dir)
+        pip_path = get_pip_path(venv_dir)
+        install_requirements(pip_path)
+        print("Setup completed successfully. The application is ready to use.")
+    except Exception as e:
+        print("An error occurred during setup:", e)
 
 
 if __name__ == "__main__":
