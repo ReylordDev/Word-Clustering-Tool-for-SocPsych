@@ -26,7 +26,7 @@
  * ```
  */
 
-import "./output.css";
+import "../output.css";
 
 // Add this to the end of the existing file
-import "./startup-react-renderer";
+import "./react-renderer";

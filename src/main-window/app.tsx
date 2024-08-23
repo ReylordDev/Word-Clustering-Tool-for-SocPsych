@@ -1,18 +1,18 @@
 import { MemoryRouter as Router, Routes, Route } from "react-router-dom";
 import { useState } from "react";
 
-import LandingPage from "./components/LandingPage";
-import FileSelectionPage from "./components/FileSelectionPage";
-import FilePreviewPage from "./components/FilePreviewPage";
-import AlgorithmSettingsPage from "./components/AlgorithmSettingsPage";
-import ProgressPage from "./components/ProgressPage";
-import ResultsPage from "./components/ResultsPage";
+import LandingPage from "../components/LandingPage";
+import FileSelectionPage from "../components/FileSelectionPage";
+import FilePreviewPage from "../components/FilePreviewPage";
+import AlgorithmSettingsPage from "../components/AlgorithmSettingsPage";
+import ProgressPage from "../components/ProgressPage";
+import ResultsPage from "../components/ResultsPage";
 import {
   FileSettings,
   AutoAlgorithmSettings,
   ManualAlgorithmSettings,
   AdvancedOptions,
-} from "./models";
+} from "../models";
 
 export default function App() {
   const [file, setFile] = useState<File | null>(null);

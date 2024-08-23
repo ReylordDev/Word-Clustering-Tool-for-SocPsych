@@ -3,6 +3,7 @@ import { MakerSquirrel } from "@electron-forge/maker-squirrel";
 import { MakerZIP } from "@electron-forge/maker-zip";
 import { MakerDeb } from "@electron-forge/maker-deb";
 import { MakerRpm } from "@electron-forge/maker-rpm";
+import { MakerWix } from "@electron-forge/maker-wix";
 import { AutoUnpackNativesPlugin } from "@electron-forge/plugin-auto-unpack-natives";
 import { WebpackPlugin } from "@electron-forge/plugin-webpack";
 import { FusesPlugin } from "@electron-forge/plugin-fuses";
@@ -20,6 +21,7 @@ const config: ForgeConfig = {
   rebuildConfig: {},
   makers: [
     new MakerSquirrel({}),
+    new MakerWix({}),
     new MakerZIP({}),
     new MakerRpm({}),
     new MakerDeb({}),
@@ -32,19 +34,19 @@ const config: ForgeConfig = {
         config: rendererConfig,
         entryPoints: [
           {
-            html: "./src/index.html",
-            js: "./src/renderer.ts",
+            html: "./src/main-window/index.html",
+            js: "./src/main-window/renderer.ts",
             name: "main_window",
             preload: {
-              js: "./src/preload.ts",
+              js: "./src/main-window/preload.ts",
             },
           },
           {
-            html: "./src/startup.html",
-            js: "./src/startup-renderer.ts",
+            html: "./src/startup-window/index.html",
+            js: "./src/startup-window/renderer.ts",
             name: "startup_window",
             preload: {
-              js: "./src/startup-preload.ts",
+              js: "./src/startup-window/preload.ts",
             },
           },
         ],
