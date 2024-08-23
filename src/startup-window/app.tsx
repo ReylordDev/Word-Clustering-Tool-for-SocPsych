@@ -295,11 +295,9 @@ function MinimalPythonVersion() {
 
 function SetupScript({
   setupScriptMessages,
-  modalIsOpen,
   setModalIsOpen,
 }: {
   setupScriptMessages: string[];
-  modalIsOpen: boolean;
   setModalIsOpen: (isOpen: boolean) => void;
 }) {
   // stdout: Creating virtual environment in /path/to/app/.venv
@@ -561,7 +559,6 @@ export default function App() {
         <MinimalPythonVersion />
         <SetupScript
           setupScriptMessages={setupScriptMessages}
-          modalIsOpen={modalIsOpen}
           setModalIsOpen={setModelIsOpen}
         />
       </div>
