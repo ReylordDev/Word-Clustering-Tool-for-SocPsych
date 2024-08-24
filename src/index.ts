@@ -280,7 +280,7 @@ app.on("ready", async () => {
             console.error(`stderr: ${stderr}`);
             reject(stderr);
           }
-          if (stdout.toLowerCase().includes("python")) {
+          if (stdout) {
             console.log(`stdout: ${stdout}`);
             resolve(true);
           }

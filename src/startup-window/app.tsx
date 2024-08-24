@@ -62,9 +62,14 @@ function MessagesModal({
 function PythonStatus() {
   const [pythonExists, setPythonExists] = useState<Status>("unknown");
   useEffect(() => {
-    window.python.isPythonInstalled().then((result) => {
-      result ? setPythonExists("success") : setPythonExists("failure");
-    });
+    window.python
+      .isPythonInstalled()
+      .then((result) => {
+        result ? setPythonExists("success") : setPythonExists("failure");
+      })
+      .catch(() => {
+        setPythonExists("failure");
+      });
   }, []);
   switch (pythonExists) {
     case "unknown":
@@ -183,14 +188,19 @@ function MinimalPythonVersion() {
     useState<Status>("unknown");
 
   useEffect(() => {
-    window.python.hasMinimalPythonVersion().then((result) => {
-      if (result) {
-        setHasMinimalPythonVersion("success");
-        window.python.runSetupScript();
-      } else {
+    window.python
+      .hasMinimalPythonVersion()
+      .then((result) => {
+        if (result) {
+          setHasMinimalPythonVersion("success");
+          window.python.runSetupScript();
+        } else {
+          setHasMinimalPythonVersion("failure");
+        }
+      })
+      .catch(() => {
         setHasMinimalPythonVersion("failure");
-      }
-    });
+      });
   }, []);
 
   switch (hasMinimalPythonVersion) {
