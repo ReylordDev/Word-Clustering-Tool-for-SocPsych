@@ -269,6 +269,8 @@ app.on("ready", async () => {
   ipcMain.handle("python:isPythonInstalled", async () => {
     return new Promise<boolean>((resolve, reject) => {
       if (process.platform === "win32") {
+        // this seem to work
+        // TODO: Fix this
         exec("where python", (error, stdout, stderr) => {
           if (error) {
             console.error(`Error: ${error.message}`);

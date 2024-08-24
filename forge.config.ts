@@ -4,6 +4,7 @@ import { MakerZIP } from "@electron-forge/maker-zip";
 import { MakerDeb } from "@electron-forge/maker-deb";
 import { MakerRpm } from "@electron-forge/maker-rpm";
 import { MakerWix } from "@electron-forge/maker-wix";
+import { PublisherGithub } from "@electron-forge/publisher-github";
 import { AutoUnpackNativesPlugin } from "@electron-forge/plugin-auto-unpack-natives";
 import { WebpackPlugin } from "@electron-forge/plugin-webpack";
 import { FusesPlugin } from "@electron-forge/plugin-fuses";
@@ -13,6 +14,10 @@ import { mainConfig } from "./webpack.main.config";
 import { rendererConfig } from "./webpack.renderer.config";
 import path from "path";
 import { cp } from "fs/promises";
+
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const config: ForgeConfig = {
   packagerConfig: {
@@ -25,6 +30,15 @@ const config: ForgeConfig = {
     new MakerZIP({}),
     new MakerRpm({}),
     new MakerDeb({}),
+  ],
+  publishers: [
+    new PublisherGithub({
+      repository: {
+        owner: "ReylordDev",
+        name: "Word-Clustering-Tool-for-SocPsych",
+      },
+      prerelease: true,
+    }),
   ],
   plugins: [
     new AutoUnpackNativesPlugin({}),
