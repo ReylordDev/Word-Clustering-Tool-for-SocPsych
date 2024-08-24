@@ -153,7 +153,7 @@ const startScript = async (
       console.error(`Error: ${error.message}`);
       reject(error);
     });
-    resolve(); // temporary
+    resolve(); // todo: check if this is correct
     script.stderr?.on("data", (data) => {
       if (data.includes("STARTED: ")) {
         const progressMessage = parseProgressMessage(data.toString());
@@ -269,9 +269,7 @@ app.on("ready", async () => {
   ipcMain.handle("python:isPythonInstalled", async () => {
     return new Promise<boolean>((resolve, reject) => {
       if (process.platform === "win32") {
-        // this does not seem to work
-        // TODO: Fix this
-        exec("python", (error, stdout, stderr) => {
+        exec("python -V", (error, stdout, stderr) => {
           if (error) {
             console.error(`Error: ${error.message}`);
             reject(error);
@@ -282,8 +280,8 @@ app.on("ready", async () => {
           }
           if (stdout) {
             console.log(`stdout: ${stdout}`);
-            resolve(true);
           }
+          resolve(true);
         });
       } else {
         exec("command -v python3", (error, stdout, stderr) => {
@@ -354,6 +352,9 @@ app.on("ready", async () => {
     });
 
     setupScript.stdout?.on("data", (data) => {
+      if (data.includes("Requirement already satisfied")) {
+        return;
+      }
       startupWindow.webContents.send(
         "python:setupScriptMessage",
         data.toString(),
