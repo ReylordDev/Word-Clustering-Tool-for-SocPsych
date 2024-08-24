@@ -271,7 +271,7 @@ app.on("ready", async () => {
       if (process.platform === "win32") {
         // this does not seem to work
         // TODO: Fix this
-        exec("where python", (error, stdout, stderr) => {
+        exec("python", (error, stdout, stderr) => {
           if (error) {
             console.error(`Error: ${error.message}`);
             reject(error);
@@ -280,7 +280,7 @@ app.on("ready", async () => {
             console.error(`stderr: ${stderr}`);
             reject(stderr);
           }
-          if (stdout) {
+          if (stdout.toLowerCase().includes("python")) {
             console.log(`stdout: ${stdout}`);
             resolve(true);
           }
