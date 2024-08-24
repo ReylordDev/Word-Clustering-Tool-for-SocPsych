@@ -2,3 +2,4 @@ sentence-transformers
 scikit-learn
 loguru
 numpy<2
+wheel
