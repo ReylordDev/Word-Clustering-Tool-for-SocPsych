@@ -167,6 +167,8 @@ function PythonStatus() {
               >
                 <span className="text-blue-500 underline">python.org</span>
               </a>
+              <br></br>
+              (or from the Microsoft Store for Windows users)
             </p>
           </div>
         </div>
@@ -292,6 +294,8 @@ function MinimalPythonVersion() {
               >
                 <span className="text-blue-500 underline">python.org</span>
               </a>
+              <br></br>
+              (or from the Microsoft Store for Windows users)
             </p>
           </div>
         </div>

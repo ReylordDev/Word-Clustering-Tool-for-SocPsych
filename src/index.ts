@@ -269,7 +269,7 @@ app.on("ready", async () => {
   ipcMain.handle("python:isPythonInstalled", async () => {
     return new Promise<boolean>((resolve, reject) => {
       if (process.platform === "win32") {
-        // this seem to work
+        // this does not seem to work
         // TODO: Fix this
         exec("where python", (error, stdout, stderr) => {
           if (error) {
@@ -281,6 +281,7 @@ app.on("ready", async () => {
             reject(stderr);
           }
           if (stdout) {
+            console.log(`stdout: ${stdout}`);
             resolve(true);
           }
         });
@@ -353,9 +354,6 @@ app.on("ready", async () => {
     });
 
     setupScript.stdout?.on("data", (data) => {
-      if (data.toString().includes("Requirement already satisfied")) {
-        return;
-      }
       startupWindow.webContents.send(
         "python:setupScriptMessage",
         data.toString(),
