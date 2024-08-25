@@ -84,21 +84,16 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        {/* <Route path="/" element={<LandingPage />} /> */}
+        <Route path="/" element={<LandingPage />} />
         <Route
           path="/file"
           element={<FileSelectionPage selectedFile={file} setFile={setFile} />}
         />
         <Route
-          // path="/file_preview"
-          path="/"
+          path="/file_preview"
           element={
             <FilePreviewPage
-              file={
-                file ?? {
-                  path: "./example_data/example_short.csv",
-                }
-              }
+              file={file}
               hasHeader={hasHeader}
               setHasHeader={setHasHeader}
               delimiter={delimiter}

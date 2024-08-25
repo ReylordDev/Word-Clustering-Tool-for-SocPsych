@@ -3,6 +3,8 @@ import { Header } from "./Header";
 import { useEffect, useState } from "react";
 import Toggle from "./Toggle";
 import ColumnHeader from "./ColumnHeader";
+import Button from "./Button";
+import { ArrowRightCircle } from "lucide-react";
 
 export default function FilePreviewPage({
   file,
@@ -23,8 +25,6 @@ export default function FilePreviewPage({
 }) {
   const [previewData, setPreviewData] = useState<string[][]>([]);
   const filePath = file?.path;
-  // TODO: revert this
-  setDelimiter(";");
 
   console.log(filePath);
   console.log(hasHeader);
@@ -120,7 +120,7 @@ export default function FilePreviewPage({
                       <>
                         <th
                           key={index}
-                          className="border-r border-dashed border-r-text p-1"
+                          className="border-b border-r border-dashed border-b-text border-r-text p-1"
                         >
                           <ColumnHeader
                             key={index}
@@ -135,16 +135,15 @@ export default function FilePreviewPage({
               <tbody>
                 {displayData &&
                   displayData.map((row, rowIndex) => (
-                    <tr
-                      key={rowIndex}
-                      className={rowIndex % 2 === 0 ? "bg-white" : "bg-gray-50"}
-                    >
+                    <tr key={rowIndex}>
                       {row.map((cell, cellIndex) => (
                         <td
                           key={cellIndex}
-                          className="border border-gray-300 p-2"
+                          className="border-r border-dashed border-r-text p-1"
                         >
-                          {cell}
+                          <p className="line-clamp-1 max-w-64 text-center">
+                            {cell}
+                          </p>
                         </td>
                       ))}
                     </tr>
@@ -157,9 +156,13 @@ export default function FilePreviewPage({
           {/* TODO: fix the case for 1 column selected */}
           <p>{selectedColumns.length} columns selected</p>
           <Link to="/algorithm_settings">
-            <button className="w-48 rounded-full bg-primary p-4 px-8 text-background">
-              <h5>Continue</h5>
-            </button>
+            <Button
+              onClick={() => null}
+              className="rounded-md"
+              disabled={selectedColumns.length <= 0}
+            >
+              {["Continue", <ArrowRightCircle size={20} />]}
+            </Button>
           </Link>
         </div>
       </div>

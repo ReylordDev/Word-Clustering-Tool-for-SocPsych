@@ -654,6 +654,17 @@ video {
   margin-top: 0.5rem;
 }
 
+.mr-2 {
+  margin-right: 0.5rem;
+}
+
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
 .block {
   display: block;
 }
@@ -708,6 +719,10 @@ video {
   height: 100vh;
 }
 
+.h-5 {
+  height: 1.25rem;
+}
+
 .max-h-60 {
   max-height: 15rem;
 }
@@ -760,6 +775,14 @@ video {
   width: 100vw;
 }
 
+.w-5 {
+  width: 1.25rem;
+}
+
+.w-40 {
+  width: 10rem;
+}
+
 .max-w-52 {
   max-width: 13rem;
 }
@@ -770,6 +793,14 @@ video {
 
 .max-w-full {
   max-width: 100%;
+}
+
+.max-w-60 {
+  max-width: 15rem;
+}
+
+.max-w-64 {
+  max-width: 16rem;
 }
 
 .flex-grow-0 {
@@ -881,8 +912,28 @@ video {
   overflow-x: clip;
 }
 
+.text-ellipsis {
+  text-overflow: ellipsis;
+}
+
+.text-clip {
+  text-overflow: clip;
+}
+
 .text-wrap {
   text-wrap: wrap;
+}
+
+.text-nowrap {
+  text-wrap: nowrap;
+}
+
+.break-words {
+  overflow-wrap: break-word;
+}
+
+.break-all {
+  word-break: break-all;
 }
 
 .rounded {
@@ -929,6 +980,10 @@ video {
   border-right-width: 1px;
 }
 
+.border-b {
+  border-bottom-width: 1px;
+}
+
 .border-dashed {
   border-style: dashed;
 }
@@ -949,6 +1004,10 @@ video {
 
 .border-r-text {
   border-right-color: var(--text);
+}
+
+.border-b-text {
+  border-bottom-color: var(--text);
 }
 
 .bg-accent {
@@ -1098,6 +1157,11 @@ video {
   padding-bottom: 0.5rem;
 }
 
+.px-1 {
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+}
+
 .pl-5 {
   padding-left: 1.25rem;
 }
@@ -1145,6 +1209,10 @@ video {
 
 .font-normal {
   font-weight: 400;
+}
+
+.font-semibold {
+  font-weight: 600;
 }
 
 .italic {
@@ -1492,6 +1560,11 @@ button {
   background-color: rgb(251 207 232 / var(--tw-bg-opacity));
 }
 
+.hover\:bg-purple-800:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(107 33 168 / var(--tw-bg-opacity));
+}
+
 .hover\:bg-none:hover {
   background-image: none;
 }
@@ -1534,4 +1607,12 @@ button {
 
 .focus\:ring-opacity-50:focus {
   --tw-ring-opacity: 0.5;
+}
+
+.disabled\:cursor-not-allowed:disabled {
+  cursor: not-allowed;
+}
+
+.disabled\:opacity-50:disabled {
+  opacity: 0.5;
 }
