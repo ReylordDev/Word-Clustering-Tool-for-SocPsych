@@ -2,21 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  :root {
-    --text: #160622;
-    --background: #f9f4fd;
-    --primary: #932dd8;
-    --secondary: #e986c6;
-    --accent: #e15a84;
-  }
-  .dark {
-    --text: #eddcf9;
-    --background: #08020d;
-    --primary: #8e27d3;
-    --secondary: #791656;
-    --accent: #a41e48;
-  }
+:root {
+  --text: #160622;
+  --background: #f9f4fd;
+  --primary: #932dd8;
+  --secondary: #e986c6;
+  --accent: #e15a84;
+}
+.dark {
+  --text: #eddcf9;
+  --background: #08020d;
+  --primary: #8e27d3;
+  --secondary: #791656;
+  --accent: #a41e48;
 }
 
 @font-face {
