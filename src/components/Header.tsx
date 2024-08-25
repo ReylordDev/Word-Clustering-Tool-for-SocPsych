@@ -16,7 +16,7 @@ export function Header({ index }: { index: number }) {
       <Link to={"/"} className="no-drag">
         <Sigma size={32} />
       </Link>
-      <div className="flex items-center">
+      <div className="flex items-center gap-2">
         <Link
           to={index > 0 ? `/${routes[index - 1]}` : `/${routes[0]}`}
           className="no-drag"
