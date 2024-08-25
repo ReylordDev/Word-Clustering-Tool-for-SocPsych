@@ -64,7 +64,7 @@ export default function FilePreviewPage({
   if (!file) {
     return (
       <>
-        <Header>File Settings</Header>
+        <Header index={2} />
         <div className="flex flex-col justify-start px-24">
           <h1 className="text-center text-2xl font-bold">
             No file selected. Please select a file first.
@@ -76,7 +76,7 @@ export default function FilePreviewPage({
 
   return (
     <>
-      <Header>File Settings</Header>
+      <Header index={2} />
       <div className="flex flex-col justify-start px-24">
         <div className="flex items-center justify-between bg-red-300 p-4">
           <div className="flex items-center space-x-2">

@@ -48,7 +48,7 @@ export default function ProgressPage() {
 
   return (
     <>
-      <Header>Clustering In Progress</Header>
+      <Header index={4} />
       <div className="flex flex-col items-center justify-start gap-4 px-24">
         {complete && (
           <>

@@ -29,3 +29,15 @@ contextBridge.exposeInMainWorld("python", {
     return await ipcRenderer.invoke("python:pollClusterProgress");
   },
 });
+
+contextBridge.exposeInMainWorld("control", {
+  close: () => {
+    ipcRenderer.send("control:close");
+  },
+  minimize: () => {
+    ipcRenderer.send("control:minimize");
+  },
+  maximize: () => {
+    ipcRenderer.send("control:maximize");
+  },
+});

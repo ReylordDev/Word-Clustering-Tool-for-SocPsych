@@ -96,7 +96,7 @@ export default function AlgorithmSettingsPage({
 
   return (
     <>
-      <Header>Algorithm Settings</Header>
+      <Header index={3} />
       <ExcludedWordsEditor
         isOpen={isExcludedWordsEditorOpen}
         onClose={() => setIsExcludedWordsEditorOpen(false)}

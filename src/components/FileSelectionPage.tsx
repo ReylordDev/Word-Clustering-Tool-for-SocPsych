@@ -15,7 +15,7 @@ export default function FileSelectionPage({
 
   return (
     <>
-      <Header>File Selection</Header>
+      <Header index={1} />
       <div className="my-12"></div>
       <div className="flex items-center justify-around gap-12">
         <FileSelector selectedFile={file} setSelectedFile={setSelectedFile} />

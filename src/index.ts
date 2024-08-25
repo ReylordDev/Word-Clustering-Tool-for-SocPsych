@@ -186,6 +186,12 @@ const createMainWindow = () => {
   const mainWindow = new BrowserWindow({
     height: 768,
     width: 1024,
+    titleBarStyle: "hidden",
+    titleBarOverlay: {
+      color: "#f9f4fd",
+      symbolColor: "#140621",
+      height: 60,
+    },
     webPreferences: {
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
     },
@@ -219,20 +225,23 @@ const createStartupWindow = () => {
 // Some APIs can only be used after this event occurs.
 app.on("ready", async () => {
   console.log("App is ready");
-  const startupWindow = createStartupWindow();
+  // REVERT THIS BEFORE MERGING
+  mainWindow = createMainWindow();
+  let startupWindow: any;
+  // const startupWindow = createStartupWindow();
 
-  // IPC communication between main and renderer processes
+  // // IPC communication between main and renderer processes
 
-  ipcMain.handle("startup:complete", () => {
-    console.log("Startup complete");
-    if (!mainWindow) {
-      mainWindow = createMainWindow();
-      startupWindow.hide();
-      mainWindow.on("close", () => {
-        startupWindow.close();
-      });
-    }
-  });
+  // ipcMain.handle("startup:complete", () => {
+  //   console.log("Startup complete");
+  //   if (!mainWindow) {
+  //     mainWindow = createMainWindow();
+  //     startupWindow.hide();
+  //     mainWindow.on("close", () => {
+  //       startupWindow.close();
+  //     });
+  //   }
+  // });
 
   ipcMain.handle("python:readFile", async (event, path: string) => {
     return new Promise<string>((resolve, reject) => {
@@ -363,6 +372,16 @@ app.on("ready", async () => {
       console.log(`stdout: ${dataString.replace("\n", "")}`);
     });
   });
+
+  ipcMain.on("control:minimize", () => mainWindow.minimize());
+  ipcMain.on("control:maximize", () => {
+    if (mainWindow.isMaximized()) {
+      mainWindow.unmaximize();
+    } else {
+      mainWindow.maximize();
+    }
+  });
+  ipcMain.on("control:close", () => mainWindow.close());
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common
@@ -406,6 +425,11 @@ declare global {
       onSetupScriptMessage: (
         listener: (event: unknown, message: string) => void,
       ) => void;
+    };
+    control: {
+      minimize: () => void;
+      maximize: () => void;
+      close: () => void;
     };
   }
 }

@@ -82,3 +82,15 @@ h5 {
 small {
   font-size: 0.75rem; /* 12px */
 }
+
+.draggable {
+  -webkit-app-region: drag;
+}
+
+.no-drag {
+  -webkit-app-region: no-drag;
+}
+
+button {
+  -webkit-app-region: no-drag;
+}
