@@ -37,7 +37,7 @@ export function Header({ index }: { index: number }) {
       <div className="flex">
         <Link to={"/file"} className="no-drag">
           <div className="flex flex-col">
-            <p className="px-2 font-semibold">File Preview</p>
+            <p className="px-2">File Selection</p>
             {index >= 1 ? (
               <div className="mx-1 h-1 rounded bg-primary"></div>
             ) : (
@@ -47,7 +47,7 @@ export function Header({ index }: { index: number }) {
         </Link>
         <Link to={"/file_preview"} className="no-drag">
           <div className="flex flex-col">
-            <p className="px-2 font-semibold">File Preview</p>
+            <p className="px-2">File Preview</p>
             {index >= 2 ? (
               <div className="mx-1 h-1 rounded bg-primary"></div>
             ) : (
@@ -57,7 +57,7 @@ export function Header({ index }: { index: number }) {
         </Link>
         <Link to={"/algorithm_settings"} className="no-drag">
           <div className="flex flex-col">
-            <p className="px-2 font-semibold">Algorithm Settings</p>
+            <p className="px-2">Algorithm Settings</p>
             {index >= 3 ? (
               <div className="mx-1 h-1 rounded bg-primary"></div>
             ) : (
@@ -67,7 +67,7 @@ export function Header({ index }: { index: number }) {
         </Link>
         <Link to={"/clustering"} className="no-drag">
           <div className="flex flex-col">
-            <p className="px-2 font-semibold">Progress</p>
+            <p className="px-2">Progress</p>
             {index >= 4 ? (
               <div className="mx-1 h-1 rounded bg-primary"></div>
             ) : (
@@ -77,7 +77,7 @@ export function Header({ index }: { index: number }) {
         </Link>
         <Link to={"/results"} className="no-drag">
           <div className="flex flex-col">
-            <p className="px-2 font-semibold">Results</p>
+            <p className="px-2">Results</p>
             {index >= 5 ? (
               <div className="mx-1 h-1 rounded bg-primary"></div>
             ) : (
