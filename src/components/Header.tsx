@@ -35,56 +35,47 @@ export function Header({ index }: { index: number }) {
         </Link>
       </div>
       <div className="flex">
-        <Link to={"/file"} className="no-drag">
-          <div className="flex flex-col">
-            <p className="px-2">File Selection</p>
-            {index >= 1 ? (
-              <div className="mx-1 h-1 rounded bg-primary"></div>
-            ) : (
-              <div className="mx-1 h-1 rounded bg-primary opacity-25"></div>
-            )}
-          </div>
-        </Link>
-        <Link to={"/file_preview"} className="no-drag">
-          <div className="flex flex-col">
-            <p className="px-2">File Preview</p>
-            {index >= 2 ? (
-              <div className="mx-1 h-1 rounded bg-primary"></div>
-            ) : (
-              <div className="mx-1 h-1 rounded bg-primary opacity-25"></div>
-            )}
-          </div>
-        </Link>
-        <Link to={"/algorithm_settings"} className="no-drag">
-          <div className="flex flex-col">
-            <p className="px-2">Algorithm Settings</p>
-            {index >= 3 ? (
-              <div className="mx-1 h-1 rounded bg-primary"></div>
-            ) : (
-              <div className="mx-1 h-1 rounded bg-primary opacity-25"></div>
-            )}
-          </div>
-        </Link>
-        <Link to={"/clustering"} className="no-drag">
-          <div className="flex flex-col">
-            <p className="px-2">Progress</p>
-            {index >= 4 ? (
-              <div className="mx-1 h-1 rounded bg-primary"></div>
-            ) : (
-              <div className="mx-1 h-1 rounded bg-primary opacity-25"></div>
-            )}
-          </div>
-        </Link>
-        <Link to={"/results"} className="no-drag">
-          <div className="flex flex-col">
-            <p className="px-2">Results</p>
-            {index >= 5 ? (
-              <div className="mx-1 h-1 rounded bg-primary"></div>
-            ) : (
-              <div className="mx-1 h-1 rounded bg-primary opacity-25"></div>
-            )}
-          </div>
-        </Link>
+        <div className="flex flex-col">
+          <p className="px-2">File Selection</p>
+          {index >= 1 ? (
+            <div className="mx-1 h-1 rounded bg-primary"></div>
+          ) : (
+            <div className="mx-1 h-1 rounded bg-primary opacity-25"></div>
+          )}
+        </div>
+
+        <div className="flex flex-col">
+          <p className="px-2">File Preview</p>
+          {index >= 2 ? (
+            <div className="mx-1 h-1 rounded bg-primary"></div>
+          ) : (
+            <div className="mx-1 h-1 rounded bg-primary opacity-25"></div>
+          )}
+        </div>
+        <div className="flex flex-col">
+          <p className="px-2">Algorithm Settings</p>
+          {index >= 3 ? (
+            <div className="mx-1 h-1 rounded bg-primary"></div>
+          ) : (
+            <div className="mx-1 h-1 rounded bg-primary opacity-25"></div>
+          )}
+        </div>
+        <div className="flex flex-col">
+          <p className="px-2">Progress</p>
+          {index >= 4 ? (
+            <div className="mx-1 h-1 rounded bg-primary"></div>
+          ) : (
+            <div className="mx-1 h-1 rounded bg-primary opacity-25"></div>
+          )}
+        </div>
+        <div className="flex flex-col">
+          <p className="px-2">Results</p>
+          {index >= 5 ? (
+            <div className="mx-1 h-1 rounded bg-primary"></div>
+          ) : (
+            <div className="mx-1 h-1 rounded bg-primary opacity-25"></div>
+          )}
+        </div>
       </div>
       <div id="tutorial-mode"></div>
       <div className="flex items-center gap-2">
