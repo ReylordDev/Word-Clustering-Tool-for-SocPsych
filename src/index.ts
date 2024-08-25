@@ -187,11 +187,11 @@ const createMainWindow = () => {
     height: 768,
     width: 1024,
     titleBarStyle: "hidden",
-    titleBarOverlay: {
-      color: "#f9f4fd",
-      symbolColor: "#140621",
-      height: 60,
-    },
+    // titleBarOverlay: {
+    //   color: "#f9f4fd",
+    //   symbolColor: "#140621",
+    //   height: 60,
+    // },
     webPreferences: {
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
     },
