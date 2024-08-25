@@ -2,7 +2,7 @@ export interface FileSettings {
   path: string;
   delimiter: string;
   hasHeader: boolean;
-  selectedColumns: boolean[];
+  selectedColumns: number[];
 }
 
 interface AlgorithmSettings {

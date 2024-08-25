@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Header } from "./Header";
 import { useEffect, useState } from "react";
+import Toggle from "./Toggle";
 
 export default function FilePreviewPage({
   file,
@@ -16,8 +17,8 @@ export default function FilePreviewPage({
   setHasHeader: (hasHeader: boolean) => void;
   delimiter: string;
   setDelimiter: (delimiter: string) => void;
-  selectedColumns: boolean[];
-  setSelectedColumns: (selectedColumns: boolean[]) => void;
+  selectedColumns: number[];
+  setSelectedColumns: (selectedColumns: number[]) => void;
 }) {
   const [previewData, setPreviewData] = useState<string[][]>([]);
   const filePath = file?.path;
@@ -40,7 +41,6 @@ export default function FilePreviewPage({
         console.log(lines.length);
         const parsedData = lines.map((line) => line.split(delimiter));
         setPreviewData(parsedData.slice(0, 6)); // Get first 6 rows (including header if present)
-        setSelectedColumns(new Array(parsedData[0].length).fill(true));
       } catch (error) {
         console.error("Error fetching preview data:", error);
       }
@@ -56,9 +56,9 @@ export default function FilePreviewPage({
   console.log(headers);
 
   const toggleColumn = (index: number) => {
-    const newSelectedColumns = [...selectedColumns];
-    newSelectedColumns[index] = !newSelectedColumns[index];
-    setSelectedColumns(newSelectedColumns);
+    selectedColumns.includes(index)
+      ? setSelectedColumns(selectedColumns.filter((col) => col !== index))
+      : setSelectedColumns([...selectedColumns, index]);
   };
 
   if (!file) {
@@ -78,24 +78,29 @@ export default function FilePreviewPage({
     <>
       <Header index={2} />
       <div className="flex flex-col justify-start px-24">
-        <div className="flex items-center justify-between bg-red-300 p-4">
-          <div className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              id="hasHeader"
-              checked={hasHeader}
-              onChange={(e) => setHasHeader(e.target.checked)}
-            />
-            <label htmlFor="hasHeader">Has header row</label>
+        <h1 className="flex items-center justify-center p-10 text-4xl">
+          File Preview
+        </h1>
+        <div className="flex items-center justify-between p-4">
+          <div className="flex items-start">
+            <div className="flex max-w-72 flex-col">
+              <p>The file contains a header row</p>
+              <p className="text-wrap text-sm font-normal text-gray-500">
+                Whether the first line of data already contains responses.
+              </p>
+            </div>
+            <Toggle initialState={hasHeader} onToggle={setHasHeader} />
           </div>
-          <div className="flex items-center space-x-2">
-            <label htmlFor="separator">Separator:</label>
+          <div className="flex w-60 flex-col">
+            <label htmlFor="separator" className="px-2">
+              <p>Select the line separator</p>
+            </label>
             <input
               type="text"
               id="separator"
               value={delimiter}
               onChange={(e) => setDelimiter(e.target.value)}
-              className="w-16"
+              className="rounded-md border border-gray-300 p-2 pl-5"
             />
           </div>
         </div>
@@ -109,7 +114,7 @@ export default function FilePreviewPage({
                       <div className="flex items-center space-x-2">
                         <input
                           type="checkbox"
-                          checked={selectedColumns[index]}
+                          checked={selectedColumns.includes(index)}
                           onChange={() => toggleColumn(index)}
                           className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                         />
@@ -140,7 +145,8 @@ export default function FilePreviewPage({
           </table>
         </div>
         <div className="flex items-center justify-end gap-2 p-4">
-          <h5>When you are done:</h5>
+          {/* TODO: fix the case for 1 column selected */}
+          <p>{selectedColumns.length} columns selected</p>
           <Link to="/algorithm_settings">
             <button className="w-48 rounded-full bg-primary p-4 px-8 text-background">
               <h5>Continue</h5>

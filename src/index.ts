@@ -122,12 +122,7 @@ const startScript = async (
     pythonArguments.push("--has_headers");
   }
   pythonArguments.push("--selected_columns");
-  // TODO
-  // This will be moved
-  const selectedColumns = fileSettings.selectedColumns
-    .map((selected, index) => (selected ? index : undefined))
-    .filter((index) => index !== undefined) as number[];
-  selectedColumns.forEach((index) => {
+  fileSettings.selectedColumns.forEach((index) => {
     pythonArguments.push(index.toString());
   });
   if (algorithmSettings.autoClusterCount) {

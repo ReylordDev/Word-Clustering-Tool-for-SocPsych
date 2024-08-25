@@ -18,7 +18,7 @@ export default function App() {
   const [file, setFile] = useState<File | null>(null);
   const [hasHeader, setHasHeader] = useState(true);
   const [delimiter, setDelimiter] = useState(",");
-  const [selectedColumns, setSelectedColumns] = useState<boolean[]>([]);
+  const [selectedColumns, setSelectedColumns] = useState<number[]>([]);
   const [autoChooseClusters, setAutoChooseClusters] = useState(true);
   const [maxClusters, setMaxClusters] = useState<number | undefined>(undefined);
   const [clusterCount, setClusterCount] = useState<number | undefined>(
@@ -84,16 +84,21 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<LandingPage />} />
+        {/* <Route path="/" element={<LandingPage />} /> */}
         <Route
           path="/file"
           element={<FileSelectionPage selectedFile={file} setFile={setFile} />}
         />
         <Route
-          path="/file_preview"
+          // path="/file_preview"
+          path="/"
           element={
             <FilePreviewPage
-              file={file}
+              file={
+                file ?? {
+                  path: "./example_data/example_short.csv",
+                }
+              }
               hasHeader={hasHeader}
               setHasHeader={setHasHeader}
               delimiter={delimiter}
