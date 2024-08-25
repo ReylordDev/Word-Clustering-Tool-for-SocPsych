@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Header } from "./Header";
 import { useEffect, useState } from "react";
 import Toggle from "./Toggle";
+import ColumnHeader from "./ColumnHeader";
 
 export default function FilePreviewPage({
   file,
@@ -22,6 +23,8 @@ export default function FilePreviewPage({
 }) {
   const [previewData, setPreviewData] = useState<string[][]>([]);
   const filePath = file?.path;
+  // TODO: revert this
+  setDelimiter(";");
 
   console.log(filePath);
   console.log(hasHeader);
@@ -77,8 +80,8 @@ export default function FilePreviewPage({
   return (
     <>
       <Header index={2} />
-      <div className="flex flex-col justify-start px-24">
-        <h1 className="flex items-center justify-center p-10 text-4xl">
+      <div className="flex flex-col justify-start gap-4 px-24">
+        <h1 className="flex items-center justify-center p-8 text-4xl">
           File Preview
         </h1>
         <div className="flex items-center justify-between p-4">
@@ -100,49 +103,55 @@ export default function FilePreviewPage({
               id="separator"
               value={delimiter}
               onChange={(e) => setDelimiter(e.target.value)}
-              className="rounded-md border border-gray-300 p-2 pl-5"
+              className="rounded-md border border-gray-300 p-2 pl-5 focus:outline-none focus:ring focus:ring-primary focus:ring-opacity-50"
             />
           </div>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse overflow-hidden rounded-lg">
-            <thead className="bg-gray-100">
-              <tr>
-                {headers &&
-                  headers.map((header, index) => (
-                    <th key={index} className="border border-gray-300 p-2">
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          checked={selectedColumns.includes(index)}
-                          onChange={() => toggleColumn(index)}
-                          className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-                        />
-                        <span>{header}</span>
-                      </div>
-                    </th>
-                  ))}
-              </tr>
-            </thead>
-            <tbody>
-              {displayData &&
-                displayData.map((row, rowIndex) => (
-                  <tr
-                    key={rowIndex}
-                    className={rowIndex % 2 === 0 ? "bg-white" : "bg-gray-50"}
-                  >
-                    {row.map((cell, cellIndex) => (
-                      <td
-                        key={cellIndex}
-                        className="border border-gray-300 p-2"
-                      >
-                        {cell}
-                      </td>
+        <div className="flex flex-col gap-2">
+          <p>
+            Select all columns that contain responses to open-ended questions
+          </p>
+          <div className="overflow-x-auto">
+            <table className="w-full overflow-hidden rounded-lg">
+              <thead>
+                <tr>
+                  {headers &&
+                    headers.map((header, index) => (
+                      <>
+                        <th
+                          key={index}
+                          className="border-r border-dashed border-r-text p-1"
+                        >
+                          <ColumnHeader
+                            key={index}
+                            onChange={() => toggleColumn(index)}
+                            title={header}
+                          />
+                        </th>
+                      </>
                     ))}
-                  </tr>
-                ))}
-            </tbody>
-          </table>
+                </tr>
+              </thead>
+              <tbody>
+                {displayData &&
+                  displayData.map((row, rowIndex) => (
+                    <tr
+                      key={rowIndex}
+                      className={rowIndex % 2 === 0 ? "bg-white" : "bg-gray-50"}
+                    >
+                      {row.map((cell, cellIndex) => (
+                        <td
+                          key={cellIndex}
+                          className="border border-gray-300 p-2"
+                        >
+                          {cell}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
         </div>
         <div className="flex items-center justify-end gap-2 p-4">
           {/* TODO: fix the case for 1 column selected */}
