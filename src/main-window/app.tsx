@@ -15,7 +15,10 @@ import {
 } from "../models";
 
 export default function App() {
-  const [file, setFile] = useState<File | null>(null);
+  const [file, setFile] = useState<File | null>(
+    // { path: "../example_data/example_short.csv"}
+    null,
+  );
   const [hasHeader, setHasHeader] = useState(true);
   const [delimiter, setDelimiter] = useState(",");
   const [selectedColumns, setSelectedColumns] = useState<number[]>([]);
@@ -34,6 +37,7 @@ export default function App() {
     similarityThreshold: "0.95",
     languageModel: "BAAI/bge-large-en-v1.5",
   });
+  const [startTime, setStartTime] = useState<number | null>(null);
   console.log("Mother State, File: ", file?.path);
   console.log("Mother State, hasHeader: ", hasHeader);
   console.log("Mother State, delimiter: ", delimiter);
@@ -79,6 +83,7 @@ export default function App() {
 
     console.log("Starting clustering...");
     window.python.startClustering(fileSettings, algorithm_settings);
+    setStartTime(Date.now());
   };
 
   return (
@@ -123,8 +128,11 @@ export default function App() {
             />
           }
         />
-        <Route path="/clustering" element={<ProgressPage />} />
-        <Route path="/" element={<ProgressPage />} />
+        <Route
+          // path="/clustering"
+          path="/"
+          element={<ProgressPage startTime={startTime} />}
+        />
         <Route path="/results" element={<ResultsPage />} />
       </Routes>
     </Router>
