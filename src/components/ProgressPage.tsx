@@ -3,6 +3,7 @@ import { Header } from "./Header";
 import { useState, useEffect } from "react";
 import { Clock, Check, Square } from "lucide-react";
 import { formatTime } from "../utils";
+import IndeterminateLoadingBar from "./IndeterminateLoadingBar";
 
 export default function ProgressPage({
   startTime,
@@ -166,7 +167,9 @@ export default function ProgressPage({
             ))}
           </div>
         </div>
-        <div>Loading Bar</div>
+        <div className="w-full px-24">
+          <IndeterminateLoadingBar />
+        </div>
         <div>Hints</div>
       </div>
     </>
