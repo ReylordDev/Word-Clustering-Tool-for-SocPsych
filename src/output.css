@@ -978,6 +978,10 @@ video {
   border-color: rgb(30 41 59 / var(--tw-border-opacity));
 }
 
+.border-primary {
+  border-color: var(--primary);
+}
+
 .border-b-text {
   border-bottom-color: var(--text);
 }

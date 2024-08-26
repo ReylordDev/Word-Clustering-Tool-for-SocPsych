@@ -40,14 +40,10 @@ console.log(`Data directory: ${dataDir}`);
 
 let script: ChildProcess | undefined;
 // const todoMessages: string[] = [];
-// const progressMessages: string[] = [];
+// const progressMessage: string = [];
 // const completedMessages: string[] = [];
-const todoMessages: string[] = ["Loading Model", "Embedding Words"];
-const progressMessages: string[] = [
-  "Reading File",
-  "Downloading Model",
-  "Loading Model",
-];
+const todoMessages: string[] = ["Embedding Words"];
+const progressMessages: string[] = ["Loading Model"];
 const completedMessages: string[] = ["Reading File", "Downloading Model"];
 let mainWindow: BrowserWindow;
 let startupScriptHasRun = false;
@@ -176,7 +172,7 @@ const startScript = async (
           console.log("Progress message parsing failed.");
           return;
         }
-        progressMessages.push(progressMessage);
+        progressMessages[0] = progressMessage;
       }
       if (data.includes("COMPLETED: ")) {
         const completedMessage = parseCompletedMessage(data.toString());

@@ -85,6 +85,19 @@ export default function ProgressPage({
             ))}
           </div>
           <div className="flex flex-col justify-start gap-2">
+            {progress.progressMessages[0] && (
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <Square
+                    size={24}
+                    className="rounded border-2 border-primary bg-background text-background"
+                  />
+                  <div className="text-lg">{progress.progressMessages[0]}</div>
+                </div>
+              </div>
+            )}
+          </div>
+          <div className="flex flex-col justify-start gap-2">
             {progress.todoMessages.map((message, index) => (
               <div className="flex items-center justify-between">
                 <div className="flex gap-4">
