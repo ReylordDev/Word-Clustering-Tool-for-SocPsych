@@ -259,7 +259,7 @@ def save_amended_file(
 
             # write the header
             writer.writerow(rows[0])
-        writer.writerows(rows)
+        writer.writerows(rows[1:])
 
 
 @logger.catch
