@@ -62,6 +62,7 @@ export default function ProgressPage({
   }, []);
 
   if (!startTime) {
+    // startTime = Date.now();
     return (
       <>
         <Header index={4} />
@@ -97,7 +98,7 @@ export default function ProgressPage({
   return (
     <>
       <Header index={4} />
-      <div className="flex flex-col items-center justify-start gap-4 px-24">
+      <div className="flex flex-col items-center justify-start gap-12 px-24">
         <div className="flex w-full items-center justify-between p-8">
           <h1 className="text-4xl">Clustering in Progress</h1>
           <div className="flex items-center justify-start gap-2">
@@ -170,7 +171,10 @@ export default function ProgressPage({
         <div className="w-full px-24">
           <IndeterminateLoadingBar />
         </div>
-        <div>Hints</div>
+        <p className="text-md px-24 text-center opacity-75">
+          Hint: Before using a model for the first time, a time-intensive
+          download has to be completed during the model-loading step.
+        </p>
       </div>
     </>
   );
