@@ -127,7 +127,6 @@ export default function App() {
         />
         <Route
           path="/clustering"
-          // path="/"
           element={<ProgressPage startTime={startTime} />}
         />
         <Route path="/results" element={<ResultsPage />} />

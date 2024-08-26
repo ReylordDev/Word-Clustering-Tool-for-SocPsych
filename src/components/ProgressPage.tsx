@@ -30,7 +30,6 @@ export default function ProgressPage({
   useEffect(() => {
     let currentTaskInterval: NodeJS.Timeout;
     const interval = setInterval(() => {
-      // Poll the backend here
       window.python.pollClusterProgress().then((progress) => {
         console.log(progress);
         setPendingTasks(progress.pendingTasks);
@@ -62,7 +61,6 @@ export default function ProgressPage({
   }, []);
 
   if (!startTime) {
-    // startTime = Date.now();
     return (
       <>
         <Header index={4} />
