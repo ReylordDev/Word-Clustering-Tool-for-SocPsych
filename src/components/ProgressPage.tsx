@@ -12,9 +12,9 @@ export default function ProgressPage({
   const [complete, setComplete] = useState(false);
   const [timeElapsed, setTimeElapsed] = useState<number>(0);
   const [pendingTasks, setPendingTasks] = useState<string[]>([]);
-  const [currentTasks, setCurrentTasks] = useState<[string, number][]>([]);
+  const [currentTask, setCurrentTask] = useState<[string, number] | null>(null);
   const [completedTasks, setCompletedTasks] = useState<[string, number][]>([]);
-  const [currentProgressTimer, setCurrentProgressTimer] = useState<number>(0);
+  const [currentTaskTimer, setCurrentTaskTimer] = useState<number>(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -33,15 +33,19 @@ export default function ProgressPage({
       window.python.pollClusterProgress().then((progress) => {
         console.log(progress);
         setPendingTasks(progress.pendingTasks);
-        if (progress.currentTasks[0] != currentTasks[0]) {
+        if (progress.currentTask) {
           clearInterval(currentTaskInterval);
           currentTaskInterval = setInterval(() => {
-            setCurrentProgressTimer(
-              Math.floor((Date.now() - progress.currentTasks[0][1]) / 1000),
-            );
+            if (progress.currentTask)
+              setCurrentTaskTimer(
+                Math.floor((Date.now() - progress.currentTask[1]) / 1000),
+              );
+            else {
+              clearInterval(currentTaskInterval);
+            }
           }, 500);
         }
-        setCurrentTasks(progress.currentTasks);
+        setCurrentTask(progress.currentTask);
         setCompletedTasks(progress.completedTasks);
         if (
           progress.completedTasks.filter((value) =>
@@ -129,7 +133,7 @@ export default function ProgressPage({
               );
             })}
           </div>
-          {currentTasks[0] && (
+          {currentTask && (
             <div className="flex flex-col justify-start gap-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
@@ -137,11 +141,11 @@ export default function ProgressPage({
                     size={24}
                     className="rounded border-2 border-primary bg-background text-background"
                   />
-                  <div className="text-lg">{currentTasks[0][0]}</div>
+                  <div className="text-lg">{currentTask[0]}</div>
                 </div>
                 <div className="flex justify-start gap-2">
                   <Clock className="text-primary" />
-                  <p className="min-w-28">{formatTime(currentProgressTimer)}</p>
+                  <p className="min-w-28">{formatTime(currentTaskTimer)}</p>
                 </div>
               </div>
             </div>

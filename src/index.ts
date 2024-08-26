@@ -40,7 +40,7 @@ console.log(`Data directory: ${dataDir}`);
 
 let script: ChildProcess | undefined;
 const pendingTasks: string[] = [];
-const currentTasks: [string, number][] = [];
+let currentTask: [string, number] | null = null;
 const completedTasks: [string, number][] = [];
 let mainWindow: BrowserWindow;
 let startupScriptHasRun = false;
@@ -169,7 +169,7 @@ const startScript = async (
           console.log("Progress message parsing failed.");
           return;
         }
-        currentTasks[0] = [progressMessage, Date.now()];
+        currentTask = [progressMessage, Date.now()];
         pendingTasks.map((message, index) => {
           if (message === progressMessage) {
             pendingTasks.splice(index, 1);
@@ -187,8 +187,8 @@ const startScript = async (
             pendingTasks.splice(index, 1);
           }
         });
-        if (currentTasks[0][0] === completedMessage) {
-          currentTasks.shift();
+        if (currentTask && currentTask[0] === completedMessage) {
+          currentTask = null;
         }
         completedTasks.push([completedMessage, Date.now()]);
       }
@@ -289,7 +289,7 @@ app.on("ready", async () => {
   ipcMain.handle("python:pollClusterProgress", () => {
     return {
       pendingTasks,
-      currentTasks,
+      currentTask,
       completedTasks,
     };
   });
@@ -436,7 +436,7 @@ declare global {
       ) => Promise<void>;
       pollClusterProgress: () => Promise<{
         pendingTasks: string[];
-        currentTasks: [string, number][];
+        currentTask: [string, number] | null;
         completedTasks: [string, number][];
       }>;
       isPythonInstalled: () => Promise<boolean>;
