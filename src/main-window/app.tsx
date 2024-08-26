@@ -84,7 +84,7 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<LandingPage />} />
+        {/* <Route path="/" element={<LandingPage />} /> */}
         <Route
           path="/file"
           element={<FileSelectionPage selectedFile={file} setFile={setFile} />}
@@ -124,6 +124,7 @@ export default function App() {
           }
         />
         <Route path="/clustering" element={<ProgressPage />} />
+        <Route path="/" element={<ProgressPage />} />
         <Route path="/results" element={<ResultsPage />} />
       </Routes>
     </Router>

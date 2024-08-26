@@ -220,20 +220,22 @@ const createStartupWindow = () => {
 // Some APIs can only be used after this event occurs.
 app.on("ready", async () => {
   console.log("App is ready");
-  const startupWindow = createStartupWindow();
+  mainWindow = createMainWindow();
+  let startupWindow: any;
+  // const startupWindow = createStartupWindow();
 
-  // IPC communication between main and renderer processes
+  // // IPC communication between main and renderer processes
 
-  ipcMain.handle("startup:complete", () => {
-    console.log("Startup complete");
-    if (!mainWindow) {
-      mainWindow = createMainWindow();
-      startupWindow.hide();
-      mainWindow.on("close", () => {
-        startupWindow.close();
-      });
-    }
-  });
+  // ipcMain.handle("startup:complete", () => {
+  //   console.log("Startup complete");
+  //   if (!mainWindow) {
+  //     mainWindow = createMainWindow();
+  //     startupWindow.hide();
+  //     mainWindow.on("close", () => {
+  //       startupWindow.close();
+  //     });
+  //   }
+  // });
 
   ipcMain.handle("python:readFile", async (event, path: string) => {
     return new Promise<string>((resolve, reject) => {
