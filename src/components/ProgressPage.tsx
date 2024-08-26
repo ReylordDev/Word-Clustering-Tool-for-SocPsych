@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Header } from "./Header";
 import { useState, useEffect } from "react";
 import { Clock, Check, Square } from "lucide-react";
@@ -16,6 +16,7 @@ export default function ProgressPage({
   const [currentTask, setCurrentTask] = useState<[string, number] | null>(null);
   const [completedTasks, setCompletedTasks] = useState<[string, number][]>([]);
   const [currentTaskTimer, setCurrentTaskTimer] = useState<number>(0);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -74,23 +75,7 @@ export default function ProgressPage({
   }
 
   if (complete) {
-    return (
-      <>
-        <Header index={4} />
-        <div className="flex flex-col items-center justify-start gap-4 px-24">
-          <div className="mt-24 flex w-full justify-center p-8">
-            <h1 className="text-4xl">Clustering Complete</h1>
-          </div>
-          <div className="flex w-full justify-center gap-4">
-            <Link to="/results">
-              <button className="rounded-lg bg-primary p-4 text-2xl text-background">
-                View Results
-              </button>
-            </Link>
-          </div>
-        </div>
-      </>
-    );
+    navigate("/results");
   }
 
   return (
