@@ -15,10 +15,7 @@ import {
 } from "../models";
 
 export default function App() {
-  const [file, setFile] = useState<File | null>(
-    // { path: "../example_data/example_short.csv"}
-    null,
-  );
+  const [file, setFile] = useState<File | null>(null);
   const [hasHeader, setHasHeader] = useState(true);
   const [delimiter, setDelimiter] = useState(",");
   const [selectedColumns, setSelectedColumns] = useState<number[]>([]);
@@ -89,7 +86,7 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        {/* <Route path="/" element={<LandingPage />} /> */}
+        <Route path="/" element={<LandingPage />} />
         <Route
           path="/file"
           element={<FileSelectionPage selectedFile={file} setFile={setFile} />}
@@ -129,8 +126,8 @@ export default function App() {
           }
         />
         <Route
-          // path="/clustering"
-          path="/"
+          path="/clustering"
+          // path="/"
           element={<ProgressPage startTime={startTime} />}
         />
         <Route path="/results" element={<ResultsPage />} />

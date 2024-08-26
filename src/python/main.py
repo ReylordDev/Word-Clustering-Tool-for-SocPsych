@@ -8,8 +8,9 @@ from sklearn.cluster import AgglomerativeClustering, KMeans
 from sklearn.metrics import silhouette_score
 from loguru import logger
 import argparse
+import time
 
-process_steps = {
+progression_messages = {
     "process_input_file": "Reading input file",
     "download_model": "Downloading language model",
     "load_model": "Loading language model",
@@ -22,10 +23,6 @@ process_steps = {
 }
 
 
-def is_model_downloaded(model_name: str):
-    pass
-
-
 def process_input_file(
     path: str,
     delimiter: str,
@@ -33,7 +30,7 @@ def process_input_file(
     selected_columns: list[int],
     excluded_words: list[str],
 ):
-    logger.info(f"STARTED: {process_steps['process_input_file']}")
+    logger.info(f"STARTED: {progression_messages['process_input_file']}")
     rows: list[list[str]] = []
     word_counts: Counter[str] = Counter()
     with open(path, encoding="utf-8") as f:
@@ -62,7 +59,7 @@ def process_input_file(
                 word_counts[response] += 1
     unique_word_count = len(word_counts)
     words = list(word_counts.keys())
-    logger.info(f"COMPLETED: {process_steps['process_input_file']}")
+    logger.info(f"COMPLETED: {progression_messages['process_input_file']}")
     logger.debug(f"Number of rows: {len(rows)}")
     logger.debug(f"Number of unique words: {unique_word_count}")
 
@@ -70,19 +67,19 @@ def process_input_file(
 
 
 def load_model(language_model: str) -> SentenceTransformer:
-    logger.info(f"STARTED: {process_steps['load_model']}")
+    logger.info(f"STARTED: {progression_messages['load_model']}")
     model = SentenceTransformer(language_model)
-    logger.info(f"COMPLETED: {process_steps['load_model']}")
+    logger.info(f"COMPLETED: {progression_messages['load_model']}")
     return model
 
 
 def embed_words(words: list[str], model: SentenceTransformer) -> np.ndarray:
-    logger.info(f"STARTED: {process_steps['embed_words']}")
+    logger.info(f"STARTED: {progression_messages['embed_words']}")
     norm_embeddings = model.encode(
         words, normalize_embeddings=True, convert_to_numpy=True
     )  # shape (no_of_unique_words, embedding_dim)
     norm_embeddings = np.array(norm_embeddings)  # Type casting (only for IDE)
-    logger.info(f"COMPLETED: {process_steps['embed_words']}")
+    logger.info(f"COMPLETED: {progression_messages['embed_words']}")
     return norm_embeddings
 
 
@@ -92,7 +89,7 @@ def detect_outliers(
     outlier_k: int,
     outlier_detection_threshold: float,
 ) -> tuple[list[str], list[str], np.ndarray]:
-    logger.info(f"STARTED: {process_steps['detect_outliers']}")
+    logger.info(f"STARTED: {progression_messages['detect_outliers']}")
     # compute the overall cosine similarity matrix between all embeddings
     S = np.dot(norm_embeddings, norm_embeddings.T)
     # get the average cosine similarities to the OUTLIER_K nearest neighbors for
@@ -117,7 +114,7 @@ def detect_outliers(
         words_remaining.append(words[i])
 
     outliers = list(set(words) - set(words_remaining))
-    logger.info(f"COMPLETED: {process_steps['detect_outliers']}")
+    logger.info(f"COMPLETED: {progression_messages['detect_outliers']}")
     logger.debug(f"Number of outliers: {len(outliers)}")
     logger.debug(f"Outliers: {outliers}")
     return outliers, words_remaining, norm_embeddings[remaining_indexes, :]
@@ -147,7 +144,7 @@ def merge(
     embeddings: np.ndarray,
     sample_weights: np.ndarray,
 ):
-    logger.info(f"STARTED: {process_steps['merge']}")
+    logger.info(f"STARTED: {progression_messages['merge']}")
     # merge the closest clusters using Agglomorative Clustering
     # until everything is closer than the threshold
     meta_clustering = AgglomerativeClustering(
@@ -176,7 +173,7 @@ def merge(
     cluster_centers = centers_new / np.linalg.norm(
         centers_new, axis=1, keepdims=True, ord=2
     )
-    logger.info(f"COMPLETED: {process_steps['merge']}")
+    logger.info(f"COMPLETED: {progression_messages['merge']}")
     return cluster_idxs, cluster_centers
 
 
@@ -297,18 +294,25 @@ def main(
 ):
     logger.info("Starting clustering")
 
-    logger.info(f"TODO: {process_steps['process_input_file']}")
-    if is_model_downloaded(language_model):
-        logger.info(f"TODO: {process_steps['download_model']}")
-    logger.info(f"TODO: {process_steps['load_model']}")
-    logger.info(f"TODO: {process_steps['embed_words']}")
-    logger.info(f"TODO: {process_steps['detect_outliers']}")
+    stderr_flush_delay = 0.1
+    logger.info(f"TODO: {progression_messages['process_input_file']}")
+    time.sleep(stderr_flush_delay)
+    logger.info(f"TODO: {progression_messages['load_model']}")
+    time.sleep(stderr_flush_delay)
+    logger.info(f"TODO: {progression_messages['embed_words']}")
+    time.sleep(stderr_flush_delay)
+    logger.info(f"TODO: {progression_messages['detect_outliers']}")
+    time.sleep(stderr_flush_delay)
     if automatic_k:
-        logger.info(f"TODO: {process_steps['find_number_of_clusters']}")
-    logger.info(f"TODO: {process_steps['cluster']}")
+        logger.info(f"TODO: {progression_messages['find_number_of_clusters']}")
+        time.sleep(stderr_flush_delay)
+    logger.info(f"TODO: {progression_messages['cluster']}")
+    time.sleep(stderr_flush_delay)
     if merge_threshold is not None and merge_threshold < 1.0:
-        logger.info(f"TODO: {process_steps['merge']}")
-    logger.info(f"TODO: {process_steps['results']}")
+        logger.info(f"TODO: {progression_messages['merge']}")
+        time.sleep(stderr_flush_delay)
+    logger.info(f"TODO: {progression_messages['results']}")
+    time.sleep(stderr_flush_delay)
 
     words, word_counts, rows = process_input_file(
         path, delimiter, has_headers, selected_columns, excluded_words
@@ -346,7 +350,7 @@ def main(
             merge_threshold, cluster_idxs, cluster_centers, embeddings, sample_weights
         )
 
-    logger.info(f"STARTED: {process_steps['results']}")
+    logger.info(f"STARTED: {progression_messages['results']}")
 
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
@@ -381,7 +385,7 @@ def main(
     )
 
     # Make sure this syncs with the equivalent on the ProgressPage.tsx
-    logger.info(f"COMPLETED: {process_steps['results']}")
+    logger.info(f"COMPLETED: {progression_messages['results']}")
 
 
 def find_number_of_clusters(
@@ -390,7 +394,7 @@ def find_number_of_clusters(
     sample_weights: Optional[np.ndarray] = None,
     seed: Optional[int] = None,
 ) -> int:
-    logger.info(f"STARTED: {process_steps['find_number_of_clusters']}")
+    logger.info(f"STARTED: {progression_messages['find_number_of_clusters']}")
     # set up the list of Ks we want to try
     if max_num_clusters < 50:
         # for max_num_clusters < 50, we try every possible value
@@ -435,7 +439,7 @@ def find_number_of_clusters(
     # AND high BIC score.
     K = K_values[np.argmax(sils * bics)]
 
-    logger.info(f"COMPLETED: {process_steps['find_number_of_clusters']}")
+    logger.info(f"COMPLETED: {progression_messages['find_number_of_clusters']}")
     return K
 
 

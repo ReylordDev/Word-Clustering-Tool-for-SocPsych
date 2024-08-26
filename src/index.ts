@@ -39,12 +39,9 @@ console.log(`Root directory: ${rootDir}`);
 console.log(`Data directory: ${dataDir}`);
 
 let script: ChildProcess | undefined;
-// const todoMessages: string[] = [];
-// const progressMessage: string = [];
-// const completedMessages: string[] = [];
-const todoMessages: string[] = ["Embedding Words"];
-const progressMessages: string[] = ["Loading Model"];
-const completedMessages: string[] = ["Reading File", "Downloading Model"];
+const pendingTasks: string[] = [];
+const currentTasks: [string, number][] = [];
+const completedTasks: [string, number][] = [];
 let mainWindow: BrowserWindow;
 let startupScriptHasRun = false;
 
@@ -164,7 +161,7 @@ const startScript = async (
           console.log("Todo message parsing failed.");
           return;
         }
-        todoMessages.push(todoMessage);
+        pendingTasks.push(todoMessage);
       }
       if (data.includes("STARTED: ")) {
         const progressMessage = parseProgressMessage(data.toString());
@@ -172,7 +169,12 @@ const startScript = async (
           console.log("Progress message parsing failed.");
           return;
         }
-        progressMessages[0] = progressMessage;
+        currentTasks[0] = [progressMessage, Date.now()];
+        pendingTasks.map((message, index) => {
+          if (message === progressMessage) {
+            pendingTasks.splice(index, 1);
+          }
+        });
       }
       if (data.includes("COMPLETED: ")) {
         const completedMessage = parseCompletedMessage(data.toString());
@@ -180,8 +182,15 @@ const startScript = async (
           console.log("Completed message parsing failed.");
           return;
         }
-        todoMessages.filter((message) => message !== completedMessage);
-        completedMessages.push(completedMessage);
+        pendingTasks.map((message, index) => {
+          if (message === completedMessage) {
+            pendingTasks.splice(index, 1);
+          }
+        });
+        if (currentTasks[0][0] === completedMessage) {
+          currentTasks.shift();
+        }
+        completedTasks.push([completedMessage, Date.now()]);
       }
       const dataString = data.toString() as string;
       console.log(`stderr: ${dataString.replace("\n", "")}`);
@@ -279,9 +288,9 @@ app.on("ready", async () => {
 
   ipcMain.handle("python:pollClusterProgress", () => {
     return {
-      todoMessages,
-      progressMessages,
-      completedMessages,
+      pendingTasks,
+      currentTasks,
+      completedTasks,
     };
   });
 
@@ -426,9 +435,9 @@ declare global {
         AlgorithmSettings: AutoAlgorithmSettings | ManualAlgorithmSettings,
       ) => Promise<void>;
       pollClusterProgress: () => Promise<{
-        todoMessages: string[];
-        progressMessages: string[];
-        completedMessages: string[];
+        pendingTasks: string[];
+        currentTasks: [string, number][];
+        completedTasks: [string, number][];
       }>;
       isPythonInstalled: () => Promise<boolean>;
       hasMinimalPythonVersion: () => Promise<boolean>;

@@ -9,18 +9,12 @@ export default function ProgressPage({
 }: {
   startTime: number | null;
 }) {
-  startTime = 1724679359899;
   const [complete, setComplete] = useState(false);
   const [timeElapsed, setTimeElapsed] = useState<number>(0);
-  const [progress, setProgress] = useState<{
-    todoMessages: string[];
-    progressMessages: string[];
-    completedMessages: string[];
-  }>({
-    todoMessages: [],
-    progressMessages: [],
-    completedMessages: [],
-  });
+  const [pendingTasks, setPendingTasks] = useState<string[]>([]);
+  const [currentTasks, setCurrentTasks] = useState<[string, number][]>([]);
+  const [completedTasks, setCompletedTasks] = useState<[string, number][]>([]);
+  const [currentProgressTimer, setCurrentProgressTimer] = useState<number>(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -33,13 +27,31 @@ export default function ProgressPage({
   }, [startTime]);
 
   useEffect(() => {
+    let currentTaskInterval: NodeJS.Timeout;
     const interval = setInterval(() => {
       // Poll the backend here
       window.python.pollClusterProgress().then((progress) => {
         console.log(progress);
-        setProgress(progress);
+        setPendingTasks(progress.pendingTasks);
+        if (progress.currentTasks[0] != currentTasks[0]) {
+          clearInterval(currentTaskInterval);
+          currentTaskInterval = setInterval(() => {
+            setCurrentProgressTimer(
+              Math.floor((Date.now() - progress.currentTasks[0][1]) / 1000),
+            );
+          }, 500);
+        }
+        setCurrentTasks(progress.currentTasks);
+        setCompletedTasks(progress.completedTasks);
+        if (
+          progress.completedTasks.filter((value) =>
+            value[0].includes("Saving clustering results"),
+          ).length > 0
+        ) {
+          setComplete(true);
+        }
       });
-    }, 3000);
+    }, 1000);
 
     return () => clearInterval(interval);
   }, []);
@@ -57,6 +69,26 @@ export default function ProgressPage({
     );
   }
 
+  if (complete) {
+    return (
+      <>
+        <Header index={4} />
+        <div className="flex flex-col items-center justify-start gap-4 px-24">
+          <div className="mt-24 flex w-full justify-center p-8">
+            <h1 className="text-4xl">Clustering Complete</h1>
+          </div>
+          <div className="flex w-full justify-center gap-4">
+            <Link to="/results">
+              <button className="rounded-lg bg-primary p-4 text-2xl text-background">
+                View Results
+              </button>
+            </Link>
+          </div>
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       <Header index={4} />
@@ -68,37 +100,54 @@ export default function ProgressPage({
             <p className="text-right text-xl">{formatTime(timeElapsed)}</p>
           </div>
         </div>
-        <div className="flex flex-col justify-start gap-4">
-          <div className="flex flex-col justify-start gap-2">
-            {progress.completedMessages.map((message, index) => (
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <Check
-                    size={24}
-                    className="rounded bg-slate-800 text-background"
-                  />
-                  <div key={index} className="text-lg line-through">
-                    {message}
+        <div className="flex min-w-[500px] flex-col justify-start gap-4 p-4">
+          <div className="flex w-full flex-col gap-2">
+            {completedTasks.map((message, index) => {
+              const previousTime = completedTasks[index - 1]
+                ? completedTasks[index - 1][1]
+                : startTime;
+              return (
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <Check
+                      size={24}
+                      className="rounded bg-slate-800 text-background"
+                    />
+                    <div key={index} className="text-lg line-through">
+                      {message[0]}
+                    </div>
+                  </div>
+                  <div className="flex justify-start gap-2">
+                    <Clock />
+                    <p className="min-w-28">
+                      {formatTime(
+                        Math.floor((message[1] - previousTime) / 1000),
+                      )}
+                    </p>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
-          <div className="flex flex-col justify-start gap-2">
-            {progress.progressMessages[0] && (
+          {currentTasks[0] && (
+            <div className="flex flex-col justify-start gap-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <Square
                     size={24}
                     className="rounded border-2 border-primary bg-background text-background"
                   />
-                  <div className="text-lg">{progress.progressMessages[0]}</div>
+                  <div className="text-lg">{currentTasks[0][0]}</div>
+                </div>
+                <div className="flex justify-start gap-2">
+                  <Clock className="text-primary" />
+                  <p className="min-w-28">{formatTime(currentProgressTimer)}</p>
                 </div>
               </div>
-            )}
-          </div>
+            </div>
+          )}
           <div className="flex flex-col justify-start gap-2">
-            {progress.todoMessages.map((message, index) => (
+            {pendingTasks.map((message, index) => (
               <div className="flex items-center justify-between">
                 <div className="flex gap-4">
                   <Check
