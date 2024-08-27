@@ -205,7 +205,7 @@ def save_clustering_output(
     words: list[str],
     col_delimiter: str = ",",
 ):
-    clustering_output_file = output_dir + f"/{input_file_name}_clustering_output.csv"
+    clustering_output_file = f"{output_dir}/clustering_output.csv"
     with open(clustering_output_file, "w", encoding="utf-8") as f:
         writer = csv.writer(f, delimiter=col_delimiter, lineterminator="\n")
         writer.writerow(["word", "cluster_index", "similarity_to_center"])
@@ -242,9 +242,7 @@ def save_pairwise_similarities(
     centers_normalized: np.ndarray,
     col_delimiter: str = ",",
 ):
-    pairwise_similarities_file = (
-        output_dir + f"/{input_file_name}_pairwise_similarities.csv"
-    )
+    pairwise_similarities_file = f"{output_dir}/pairwise_similarities.csv"
     # compute the pairwise similarities between all cluster centers
     S = np.dot(centers_normalized, centers_normalized.T)
 
