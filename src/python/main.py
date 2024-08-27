@@ -1,4 +1,5 @@
 from collections import Counter
+import json
 import os
 import csv
 from typing import Optional
@@ -21,6 +22,8 @@ progression_messages = {
     "merge": "Merging clusters",
     "results": "Saving clustering results",
 }
+
+timestamps: dict[str, int] = {}
 
 
 def process_input_file(
@@ -60,6 +63,7 @@ def process_input_file(
     unique_word_count = len(word_counts)
     words = list(word_counts.keys())
     logger.info(f"COMPLETED: {progression_messages['process_input_file']}")
+    timestamps["process_input_file"] = int(time.time())
     logger.debug(f"Number of rows: {len(rows)}")
     logger.debug(f"Number of unique words: {unique_word_count}")
 
@@ -70,6 +74,7 @@ def load_model(language_model: str) -> SentenceTransformer:
     logger.info(f"STARTED: {progression_messages['load_model']}")
     model = SentenceTransformer(language_model)
     logger.info(f"COMPLETED: {progression_messages['load_model']}")
+    timestamps["load_model"] = int(time.time())
     return model
 
 
@@ -80,6 +85,7 @@ def embed_words(words: list[str], model: SentenceTransformer) -> np.ndarray:
     )  # shape (no_of_unique_words, embedding_dim)
     norm_embeddings = np.array(norm_embeddings)  # Type casting (only for IDE)
     logger.info(f"COMPLETED: {progression_messages['embed_words']}")
+    timestamps["embed_words"] = int(time.time())
     return norm_embeddings
 
 
@@ -115,6 +121,7 @@ def detect_outliers(
 
     outliers = list(set(words) - set(words_remaining))
     logger.info(f"COMPLETED: {progression_messages['detect_outliers']}")
+    timestamps["detect_outliers"] = int(time.time())
     logger.debug(f"Number of outliers: {len(outliers)}")
     logger.debug(f"Outliers: {outliers}")
     return outliers, words_remaining, norm_embeddings[remaining_indexes, :]
@@ -174,6 +181,7 @@ def merge(
         centers_new, axis=1, keepdims=True, ord=2
     )
     logger.info(f"COMPLETED: {progression_messages['merge']}")
+    timestamps["merge"] = int(time.time())
     return cluster_idxs, cluster_centers
 
 
@@ -275,6 +283,68 @@ def save_amended_file(
         writer.writerows(rows[1:])
 
 
+def find_number_of_clusters(
+    embeddings_normalized: np.ndarray,
+    max_num_clusters: int,
+    sample_weights: Optional[np.ndarray] = None,
+    seed: Optional[int] = None,
+) -> int:
+    logger.info(f"STARTED: {progression_messages['find_number_of_clusters']}")
+    # set up the list of Ks we want to try
+    if max_num_clusters < 50:
+        # for max_num_clusters < 50, we try every possible value
+        K_values = list(range(2, max_num_clusters + 1))
+    elif max_num_clusters < 100:
+        # for max_num_clusters >= 50, we try every fifth value
+        K_values = list(range(2, 51)) + list(range(55, max_num_clusters + 1, 5))
+    else:
+        # for max_num_clusters >= 100, we try every tenth value
+        K_values = (
+            list(range(2, 51))
+            + list(range(55, 101, 5))
+            + list(range(110, max_num_clusters + 1, 10))
+        )
+
+    sils = []
+    bics = []
+    for K in K_values:
+        logger.info(f"Computing K = {K}")
+        clustering = KMeans(n_clusters=K, n_init=10, random_state=seed)
+        clustering.fit(embeddings_normalized, sample_weight=sample_weights)
+        sil = silhouette_score(np.asarray(embeddings_normalized), clustering.labels_)
+        sils.append(sil)
+        # compute the BIC score, which is a combination of the distance of each
+        # word to its cluster center - provided by the clustering itself -
+        bic = -clustering.score(embeddings_normalized)
+        # ... and the number of parameters in our model, estimated by K
+        bic += K
+        bics.append(bic)
+
+    # post-process both scales between 0 and 1 to be easier to
+    # read visually
+    sils = np.array(sils)
+    sils = (sils - np.min(sils)) / (np.max(sils) - np.min(sils))
+
+    bics = -np.array(bics)
+    bics = (bics - np.min(bics)) / (np.max(bics) - np.min(bics))
+
+    # identify the number of clusters automatically by selecting
+    # the K that achieves the best product of both silhouette score
+    # and BIC. The product is chosen to achieve both high silhoutte
+    # AND high BIC score.
+    K = K_values[np.argmax(sils * bics)]
+
+    logger.info(f"COMPLETED: {progression_messages['find_number_of_clusters']}")
+    timestamps["find_number_of_clusters"] = int(time.time())
+    return K
+
+
+def save_timestamps(output_dir: str):
+    timestamps_file = output_dir + "/timestamps.json"
+    with open(timestamps_file, "w") as f:
+        json.dump(timestamps, f)
+
+
 @logger.catch
 def main(
     path: str,
@@ -293,6 +363,7 @@ def main(
     output_dir: str,
 ):
     logger.info("Starting clustering")
+    timestamps["start"] = int(time.time())
 
     stderr_flush_delay = 0.1
     logger.info(f"TODO: {progression_messages['process_input_file']}")
@@ -386,146 +457,8 @@ def main(
 
     # Make sure this syncs with the equivalent on the ProgressPage.tsx
     logger.info(f"COMPLETED: {progression_messages['results']}")
-
-
-def find_number_of_clusters(
-    embeddings_normalized: np.ndarray,
-    max_num_clusters: int,
-    sample_weights: Optional[np.ndarray] = None,
-    seed: Optional[int] = None,
-) -> int:
-    logger.info(f"STARTED: {progression_messages['find_number_of_clusters']}")
-    # set up the list of Ks we want to try
-    if max_num_clusters < 50:
-        # for max_num_clusters < 50, we try every possible value
-        K_values = list(range(2, max_num_clusters + 1))
-    elif max_num_clusters < 100:
-        # for max_num_clusters >= 50, we try every fifth value
-        K_values = list(range(2, 51)) + list(range(55, max_num_clusters + 1, 5))
-    else:
-        # for max_num_clusters >= 100, we try every tenth value
-        K_values = (
-            list(range(2, 51))
-            + list(range(55, 101, 5))
-            + list(range(110, max_num_clusters + 1, 10))
-        )
-
-    sils = []
-    bics = []
-    for K in K_values:
-        logger.info(f"Computing K = {K}")
-        clustering = KMeans(n_clusters=K, n_init=10, random_state=seed)
-        clustering.fit(embeddings_normalized, sample_weight=sample_weights)
-        sil = silhouette_score(np.asarray(embeddings_normalized), clustering.labels_)
-        sils.append(sil)
-        # compute the BIC score, which is a combination of the distance of each
-        # word to its cluster center - provided by the clustering itself -
-        bic = -clustering.score(embeddings_normalized)
-        # ... and the number of parameters in our model, estimated by K
-        bic += K
-        bics.append(bic)
-
-    # post-process both scales between 0 and 1 to be easier to
-    # read visually
-    sils = np.array(sils)
-    sils = (sils - np.min(sils)) / (np.max(sils) - np.min(sils))
-
-    bics = -np.array(bics)
-    bics = (bics - np.min(bics)) / (np.max(bics) - np.min(bics))
-
-    # identify the number of clusters automatically by selecting
-    # the K that achieves the best product of both silhouette score
-    # and BIC. The product is chosen to achieve both high silhoutte
-    # AND high BIC score.
-    K = K_values[np.argmax(sils * bics)]
-
-    logger.info(f"COMPLETED: {progression_messages['find_number_of_clusters']}")
-    return K
-
-
-def output_clustering_results(
-    clustering_output_file: str,
-    K: int,
-    cluster_idxs: np.ndarray,
-    embeddings_normalized: np.ndarray,
-    centers_normalized: np.ndarray,
-    words: list[str],
-    col_delimiter: str = ",",
-):
-    with open(clustering_output_file, "w", encoding="utf-8") as f:
-        writer = csv.writer(f, delimiter=col_delimiter, lineterminator="\n")
-        writer.writerow(["word", "cluster_index", "similarity_to_center"])
-        # similarity to center refers to the distance from embedding to the
-        # cluster mean which is a measure of how representative
-        # the word is for the cluster
-
-        for k in range(K):
-            # get the indices of all words in cluster k
-            in_cluster_k = np.where(cluster_idxs == k)[0]
-
-            if len(in_cluster_k) == 0:
-                continue
-
-            # compute the cosine similarity of the embeddings of all words
-            # in cluster k to the mean of cluster k
-            sim = np.dot(
-                embeddings_normalized[in_cluster_k, :], centers_normalized[k, :]
-            )
-            # iterate over all words in cluster k - but sort descendingly
-            # by the cosine similarity because we may want to label clusters by
-            # the most similar words
-            for i in np.argsort(-sim):
-                cluster_col_idx = in_cluster_k[i]
-                word = words[cluster_col_idx]
-                k = cluster_idxs[cluster_col_idx]
-                s = sim[i].item()
-                writer.writerow([word, k, s])
-
-
-def output_pairwise_similarities(
-    pairwise_similarities_file: str,
-    centers_normalized: np.ndarray,
-    col_delimiter: str = ",",
-):
-    # compute the pairwise similarities between all cluster centers
-    S = np.dot(centers_normalized, centers_normalized.T)
-
-    # # get the indexes of the pair of clusters with the highest similarity
-    # S_copy = S.copy()
-    # # Set diagonal elements to a value less than 1.0 to exclude them from argmax
-    # np.fill_diagonal(S_copy, -1)
-    # # Get the index of the maximum value closest to 1.0
-    # max_index = np.unravel_index(np.argmax(S_copy, axis=None), S_copy.shape)
-    np.savetxt(pairwise_similarities_file, S, fmt="%.2f", delimiter=col_delimiter)
-
-
-def output_cluster_indices(
-    output_file_path: str,
-    num_words_per_row: int,
-    col_idxs: list[int],
-    out_col_idxs: list[int],
-    words: list[str],
-    cluster_idxs: np.ndarray,
-    rows: list[list[str]],
-    headers: list[str],
-    col_delimiter: str = ",",
-):
-    word_idx_map = {word: idx for idx, word in enumerate(words)}
-    for user_entry in rows:
-        for i in range(num_words_per_row):
-            # get the next word provided by the current participant
-            word = user_entry[col_idxs[i]]
-            cluster_col_idx = word_idx_map.get(word)
-            if cluster_col_idx is None:
-                user_entry[out_col_idxs[i]] = ""
-                continue
-            k = cluster_idxs[cluster_col_idx]
-            user_entry[out_col_idxs[i]] = k
-
-    with open(output_file_path, "w", encoding="utf-8") as f:
-        writer = csv.writer(f, delimiter=col_delimiter, lineterminator="\n")
-        writer.writerow(headers)
-        writer.writerows(rows)
+    timestamps["results"] = int(time.time())
+    save_timestamps(output_dir)
 
 
 if __name__ == "__main__":
