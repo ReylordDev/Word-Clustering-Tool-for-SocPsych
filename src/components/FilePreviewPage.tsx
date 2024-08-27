@@ -160,9 +160,9 @@ export default function FilePreviewPage({
               onClick={() => null}
               className="rounded-md"
               disabled={selectedColumns.length <= 0}
-            >
-              {["Continue", <ArrowRightCircle size={20} />]}
-            </Button>
+              text="Continue"
+              rightIcon={<ArrowRightCircle size={20} />}
+            />
           </Link>
         </div>
       </div>

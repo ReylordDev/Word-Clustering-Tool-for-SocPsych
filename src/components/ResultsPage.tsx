@@ -9,10 +9,21 @@ import {
   Maximize2,
 } from "lucide-react";
 import Button from "./Button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { formatTime } from "../utils";
 
-function TotalTimeDropdown() {
+function TotalTimeDropdown({
+  processSteps,
+  startTime,
+}: {
+  processSteps: { name: string; time: number }[];
+  startTime: number;
+}) {
   const [open, setOpen] = useState(true);
+
+  if (processSteps.length === 0) {
+    return null;
+  }
 
   return (
     <div className="flex w-full flex-col justify-start">
@@ -25,31 +36,74 @@ function TotalTimeDropdown() {
             setOpen(!open);
           }}
           leftIcon={<Clock />}
-          text="14:34 min"
+          text={formatTime(
+            Math.floor(
+              (processSteps[processSteps.length - 1].time - startTime) / 1000,
+            ),
+          )}
           rightIcon={open ? <ChevronDown /> : <ChevronUp />}
         />
       </div>
       {open && (
-        <div className="flex flex-col p-4 px-8">
-          <div className="flex justify-between">
-            <div className="flex items-center gap-2">
-              <Check
-                className="rounded bg-slate-800 text-background"
-                size={20}
-              />
-              Reading File
-            </div>
-            <div className="flex items-center gap-2">
-              <Clock size={20} />0 sec
-            </div>
-          </div>
+        <div className="flex flex-col gap-1 p-4 pl-8">
+          {processSteps.map((step, index) => {
+            const previousTime =
+              index > 0 ? processSteps[index - 1].time : startTime;
+            return (
+              <div key={index} className="flex justify-between">
+                <div className="flex items-center gap-2">
+                  <Check
+                    className="rounded bg-slate-800 text-background"
+                    size={20}
+                  />
+                  {step.name}
+                </div>
+                <div className="flex min-w-28 items-center gap-2">
+                  <Clock size={20} />
+                  {formatTime(Math.floor((step.time - previousTime) / 1000))}
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
   );
 }
 
-export default function ResultsPage() {
+export default function ResultsPage({
+  startTime,
+}: {
+  startTime: number | null;
+}) {
+  const [processSteps, setProcessSteps] = useState<
+    { name: string; time: number }[]
+  >([]);
+  useEffect(() => {
+    window.python.pollClusterProgress().then((progress) => {
+      progress.completedTasks.map((task) => {
+        setProcessSteps((prev) => [...prev, { name: task[0], time: task[1] }]);
+      });
+    });
+  }, []);
+
+  if (!startTime) {
+    return (
+      <>
+        <Header index={5} />
+        <div className="my-8" />
+        <div className="flex flex-col justify-start px-32">
+          <h1 className="text-5xl">Results</h1>
+          <div className="flex items-center justify-center gap-4">
+            <p className="py-2 text-xl font-semibold text-primary">
+              No clustering process started.
+            </p>
+          </div>
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       <Header index={5} />
@@ -125,7 +179,10 @@ export default function ResultsPage() {
               rightIcon={<Maximize2 />}
             />
           </div>
-          <TotalTimeDropdown />
+          <TotalTimeDropdown
+            processSteps={processSteps}
+            startTime={startTime}
+          />
         </div>
       </div>
     </>
