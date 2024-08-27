@@ -275,6 +275,23 @@ app.on("ready", async () => {
     });
   });
 
+  ipcMain.handle("python:readJsonFile", async (event, path: string) => {
+    return new Promise<unknown>((resolve, reject) => {
+      fs.readFile(path, "utf-8", (err, data) => {
+        if (err) {
+          console.error(err);
+          reject(err);
+        }
+        try {
+          resolve(JSON.parse(data));
+        } catch (error) {
+          console.error(error);
+          reject(error);
+        }
+      });
+    });
+  });
+
   ipcMain.handle(
     "python:startClustering",
     (
@@ -430,6 +447,7 @@ declare global {
     };
     python: {
       readFile: (path: string) => Promise<string>;
+      readJsonFile: (path: string) => Promise<unknown>;
       startClustering: (
         fileSettings: FileSettings,
         AlgorithmSettings: AutoAlgorithmSettings | ManualAlgorithmSettings,

@@ -132,8 +132,17 @@ export default function App() {
         <Route
           path="/results"
           // path="/"
-          element={<ResultsPage startTime={startTime} />}
-          // element={<ResultsPage startTime={501590112} />}
+          element={
+            <ResultsPage
+              startTime={startTime}
+              nearest_neighbors={parseInt(advancedOptions.nearest_neighbors)}
+            />
+          }
+          // element={
+          //   <ResultsPage
+          //     startTime={501590112}
+          //   />
+          // }
         />
       </Routes>
     </Router>

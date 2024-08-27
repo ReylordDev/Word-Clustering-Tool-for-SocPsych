@@ -15,6 +15,9 @@ contextBridge.exposeInMainWorld("python", {
   readFile: async (path: string) => {
     return await ipcRenderer.invoke("python:readFile", path);
   },
+  readJsonFile: async (path: string) => {
+    return await ipcRenderer.invoke("python:readJsonFile", path);
+  },
   startClustering: async (
     fileSettings: FileSettings,
     AlgorithmSettings: AutoAlgorithmSettings | ManualAlgorithmSettings,

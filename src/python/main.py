@@ -94,7 +94,7 @@ def detect_outliers(
     norm_embeddings: np.ndarray,
     outlier_k: int,
     outlier_detection_threshold: float,
-) -> tuple[dict[str, tuple[float, float]], list[str], np.ndarray]:
+) -> tuple[list[dict], list[str], np.ndarray]:
     logger.info(f"STARTED: {progression_messages['detect_outliers']}")
     # compute the overall cosine similarity matrix between all embeddings
     S = np.dot(norm_embeddings, norm_embeddings.T)
@@ -111,12 +111,18 @@ def detect_outliers(
         avg_neighbor_sim
     ) - outlier_detection_threshold * np.std(avg_neighbor_sim)
 
-    outlier_stats = {}
+    outlier_stats = []
     outlier_bools = avg_neighbor_sim < outlier_threshold
     outliers = [responses[i] for i in np.where(outlier_bools)[0].tolist()]
     for i, response in enumerate(outliers):
         sim = avg_neighbor_sim[np.where(outlier_bools)[0][i]]
-        outlier_stats[response] = (sim, outlier_threshold)
+        outlier_stats.append(
+            {
+                "response": response,
+                "similarity": float(sim),
+                "threshold": float(outlier_threshold),
+            }
+        )
 
     # take only the remaining words
     remaining_indexes = np.where(np.logical_not(outlier_bools))[0]
@@ -343,13 +349,8 @@ def find_number_of_clusters(
     return K
 
 
-def save_outliers(output_dir: str, outlier_stats: dict[str, tuple[float, float]]):
-    outlier_stats = {
-        k: (float(sim), float(threshold))
-        for k, (sim, threshold) in sorted(
-            outlier_stats.items(), key=lambda item: item[1][0], reverse=True
-        )
-    }
+def save_outliers(output_dir: str, outlier_stats: list[dict]):
+    outlier_stats.sort(key=lambda x: x["similarity"], reverse=True)
     outliers_file = output_dir + "/outliers.json"
     with open(outliers_file, "w") as f:
         json.dump(outlier_stats, f)
