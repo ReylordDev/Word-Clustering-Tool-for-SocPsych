@@ -1,22 +1,29 @@
 const Button = ({
-  children,
+  text,
   onClick,
   className = "",
   disabled = false,
+  primary = true,
+  leftIcon,
+  rightIcon,
 }: {
-  children: [string, JSX.Element?];
+  text: string;
   onClick: () => void;
   className?: string;
   disabled?: boolean;
+  primary?: boolean;
+  leftIcon?: JSX.Element;
+  rightIcon?: JSX.Element;
 }) => {
   return (
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`flex items-center justify-center rounded-md bg-primary px-4 py-2 text-white hover:bg-purple-800 disabled:cursor-not-allowed disabled:opacity-50 ${className} `}
+      className={`flex ${primary ? "bg-primary hover:bg-purple-800" : "bg-secondary hover:bg-pink-500"} items-center justify-center gap-2 rounded-md px-4 py-2 text-white disabled:cursor-not-allowed disabled:opacity-50 ${className} `}
     >
-      <p className="mr-2 font-normal">{children[0]}</p>
-      {children[1]}
+      {leftIcon}
+      <p className="font-normal">{text}</p>
+      {rightIcon}
     </button>
   );
 };
