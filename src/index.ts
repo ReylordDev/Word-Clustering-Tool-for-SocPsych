@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow, ipcMain, shell } from "electron";
 import { ChildProcess, exec, spawn } from "child_process";
 import log from "electron-log/main";
 import squirrel from "electron-squirrel-startup";
@@ -431,6 +431,12 @@ app.on("ready", async () => {
     return outputDir;
   });
 
+  ipcMain.handle("python:openOutputDir", () => {
+    if (outputDir) {
+      return shell.openPath(outputDir);
+    }
+  });
+
   ipcMain.on("control:minimize", () => mainWindow.minimize());
   ipcMain.on("control:maximize", () => {
     if (mainWindow.isMaximized()) {
@@ -483,6 +489,7 @@ declare global {
       hasMinimalPythonVersion: () => Promise<boolean>;
       runSetupScript: () => Promise<void>;
       getOutputDir: () => Promise<string | undefined>;
+      openOutputDir: () => Promise<string>;
       onSetupScriptMessage: (
         listener: (event: unknown, message: string) => void,
       ) => void;

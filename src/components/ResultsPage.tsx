@@ -56,6 +56,7 @@ function OutliersModal({
   }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     // This is awkward because sometimes we show the option to expand the text even if there is nothing to expand
+    // TODO: Refactor this to be more elegant
     const shouldTruncate = outlier.response.length > 100;
 
     return (
@@ -281,7 +282,7 @@ export default function ResultsPage({
             <Button
               primary={false}
               onClick={() => {
-                console.log("Open Folder");
+                window.python.openOutputDir();
               }}
               rightIcon={<Folder />}
               text="Open Folder"

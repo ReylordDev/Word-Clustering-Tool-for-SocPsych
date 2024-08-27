@@ -267,7 +267,7 @@ def save_amended_file(
     has_headers: bool,
     cluster_idxs: np.ndarray,
 ):
-    output_file_path = output_dir + f"/{input_file_name}_output.csv"
+    output_file_path = f"{output_dir}/output.csv"
     word_idx_map = {word: idx for idx, word in enumerate(words)}
     for row in rows[1:]:
         for i in selected_columns:
