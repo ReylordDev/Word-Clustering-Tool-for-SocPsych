@@ -444,9 +444,11 @@ def main(
         os.mkdir(output_dir)
 
     input_file_name = os.path.basename(path).removesuffix(".csv")
+    input_file_name += f"_{timestamps['start']}"
     output_dir = os.path.join(output_dir, input_file_name)
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
+    logger.info(f"OUTPUT_DIR: {os.path.abspath(output_dir)}")
 
     save_clustering_output(
         input_file_name,
@@ -573,7 +575,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--output_dir",
         type=str,
-        default="outputs",
+        default="output",
         help="Directory to store output files (default: outputs)",
     )
 

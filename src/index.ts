@@ -44,6 +44,7 @@ let currentTask: [string, number] | null = null;
 const completedTasks: [string, number][] = [];
 let mainWindow: BrowserWindow;
 let startupScriptHasRun = false;
+let outputDir: string | undefined;
 
 // Force single instance application
 if (!app.requestSingleInstanceLock()) {
@@ -62,13 +63,13 @@ if (squirrel) {
   app.quit();
 }
 
-const parseLogMessage = (data: string, messageType: string) => {
-  const regex = new RegExp(`${messageType}: [a-zA-Z\\s]*[a-zA-Z]`);
-  const match = data.match(regex);
-  if (match) {
-    return match[0].replace(`${messageType}: `, "");
+const parseLogMessage = (messageLog: string, messageType: string) => {
+  const delimiter = `${messageType}: `;
+  const parts = messageLog.split(delimiter);
+
+  if (parts.length > 1) {
+    return parts[1].replace("\x1B[0m\r\n", "");
   }
-  console.log(data.replace("\n", ""));
   return undefined;
 };
 
@@ -82,6 +83,10 @@ const parseProgressMessage = (data: string) => {
 
 const parseCompletedMessage = (data: string) => {
   return parseLogMessage(data, "COMPLETED");
+};
+
+const parseOutputDirMessage = (data: string) => {
+  return parseLogMessage(data, "OUTPUT_DIR");
 };
 
 const startScript = async (
@@ -117,6 +122,8 @@ const startScript = async (
     pythonArguments[1] = path.join(rootDir, "src", "python", "main.py");
     pythonArguments.push("--log_level");
     pythonArguments.push("DEBUG");
+    pythonArguments.push("--output_dir");
+    pythonArguments.push("output");
   } else {
     pythonArguments.push("--log_dir");
     pythonArguments.push(path.join(dataDir, "logs", "python"));
@@ -191,6 +198,17 @@ const startScript = async (
           currentTask = null;
         }
         completedTasks.push([completedMessage, Date.now()]);
+      }
+      if (data.includes("OUTPUT_DIR: ")) {
+        console.log("Output dir message received");
+        console.log(data.toString());
+        outputDir = parseOutputDirMessage(data.toString());
+        console.log(outputDir);
+        if (!outputDir) {
+          console.log("Output dir parsing failed.");
+          return;
+        }
+        console.log(`Output directory: ${outputDir}`);
       }
       const dataString = data.toString() as string;
       console.log(`stderr: ${dataString.replace("\n", "")}`);
@@ -409,6 +427,10 @@ app.on("ready", async () => {
     });
   });
 
+  ipcMain.handle("python:getOutputDir", async () => {
+    return outputDir;
+  });
+
   ipcMain.on("control:minimize", () => mainWindow.minimize());
   ipcMain.on("control:maximize", () => {
     if (mainWindow.isMaximized()) {
@@ -460,6 +482,7 @@ declare global {
       isPythonInstalled: () => Promise<boolean>;
       hasMinimalPythonVersion: () => Promise<boolean>;
       runSetupScript: () => Promise<void>;
+      getOutputDir: () => Promise<string | undefined>;
       onSetupScriptMessage: (
         listener: (event: unknown, message: string) => void,
       ) => void;

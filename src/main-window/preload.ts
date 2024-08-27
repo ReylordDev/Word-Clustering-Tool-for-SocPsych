@@ -28,6 +28,9 @@ contextBridge.exposeInMainWorld("python", {
       AlgorithmSettings,
     );
   },
+  getOutputDir: async () => {
+    return await ipcRenderer.invoke("python:getOutputDir");
+  },
   pollClusterProgress: async () => {
     return await ipcRenderer.invoke("python:pollClusterProgress");
   },

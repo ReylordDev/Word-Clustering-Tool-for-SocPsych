@@ -55,7 +55,8 @@ function OutliersModal({
     threshold: number;
   }) => {
     const [isExpanded, setIsExpanded] = useState(false);
-    const shouldTruncate = outlier.response.length > 68;
+    // This is awkward because sometimes we show the option to expand the text even if there is nothing to expand
+    const shouldTruncate = outlier.response.length > 100;
 
     return (
       <div className="rounded-lg border border-dashed border-accent p-4">
@@ -212,18 +213,29 @@ function TotalTimeDropdown({
 }
 
 export default function ResultsPage({
-  outputDir = "./outputs/example_short",
   startTime,
   nearest_neighbors,
 }: {
-  outputDir: string;
   startTime: number | null;
   nearest_neighbors: number;
 }) {
+  const [outputDir, setOutputDir] = useState<string | undefined>(undefined);
   const [outliersModalOpen, setOutliersModalOpen] = useState(false);
   const [processSteps, setProcessSteps] = useState<
     { name: string; time: number }[]
   >([]);
+
+  useEffect(() => {
+    window.python
+      .getOutputDir()
+      .then((dir) => {
+        if (dir) setOutputDir(dir);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }, []);
+
   useEffect(() => {
     window.python.pollClusterProgress().then((progress) => {
       progress.completedTasks.map((task) => {
@@ -232,7 +244,7 @@ export default function ResultsPage({
     });
   }, []);
 
-  if (!startTime) {
+  if (!startTime || !outputDir) {
     return (
       <>
         <Header index={5} />

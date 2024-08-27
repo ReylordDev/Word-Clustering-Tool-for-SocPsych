@@ -135,6 +135,8 @@ export default function App() {
           element={
             <ResultsPage
               startTime={startTime}
+              // nearest neighbor doesn't work right now
+              // TODO: Fix this after finishing the algorithm settings page
               nearest_neighbors={parseInt(advancedOptions.nearest_neighbors)}
             />
           }
