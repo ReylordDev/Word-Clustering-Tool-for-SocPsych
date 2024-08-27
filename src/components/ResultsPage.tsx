@@ -293,7 +293,7 @@ export default function ResultsPage({
             <Button
               primary={false}
               onClick={() => {
-                console.log("Open Updated Input File");
+                window.python.showIteminFile(outputDir + "/output.csv");
               }}
               text="View File"
               rightIcon={<File />}

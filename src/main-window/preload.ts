@@ -15,6 +15,9 @@ contextBridge.exposeInMainWorld("python", {
   readFile: async (path: string) => {
     return await ipcRenderer.invoke("python:readFile", path);
   },
+  showItemInFolder: async (path: string) => {
+    return await ipcRenderer.invoke("python:showItemInFolder", path);
+  },
   readJsonFile: async (path: string) => {
     return await ipcRenderer.invoke("python:readJsonFile", path);
   },

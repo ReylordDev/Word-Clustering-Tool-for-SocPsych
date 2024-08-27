@@ -293,6 +293,10 @@ app.on("ready", async () => {
     });
   });
 
+  ipcMain.handle("python:showItemInFolder", async (event, path: string) => {
+    return shell.showItemInFolder(path);
+  });
+
   ipcMain.handle("python:readJsonFile", async (event, path: string) => {
     return new Promise<unknown>((resolve, reject) => {
       fs.readFile(path, "utf-8", (err, data) => {
@@ -475,6 +479,7 @@ declare global {
     };
     python: {
       readFile: (path: string) => Promise<string>;
+      showIteminFile: (path: string) => Promise<void>;
       readJsonFile: (path: string) => Promise<unknown>;
       startClustering: (
         fileSettings: FileSettings,
