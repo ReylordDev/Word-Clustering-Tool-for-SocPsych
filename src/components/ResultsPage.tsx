@@ -17,11 +17,13 @@ import { formatTime } from "../utils";
 function OutliersModal({
   path,
   nearest_neighbors,
+  zScoreThreshold,
   modalIsOpen: isOpen,
   setModalIsOpen: setIsOpen,
 }: {
   path: string;
   nearest_neighbors: number;
+  zScoreThreshold: number;
   modalIsOpen: boolean;
   setModalIsOpen: (isOpen: boolean) => void;
 }) {
@@ -144,7 +146,8 @@ function OutliersModal({
                 <span className="font-semibold">{outliers.length}</span> outlier
                 responses.<br></br> These responses have a lower similarity to
                 their <span className="font-semibold">{nearest_neighbors}</span>{" "}
-                nearest neighbors compared to the threshold.
+                nearest neighbors compared to the threshold (Z-score:{" "}
+                {zScoreThreshold}).
               </p>
             </div>
           </div>
@@ -215,12 +218,13 @@ function TotalTimeDropdown({
 
 export default function ResultsPage({
   startTime,
-  nearest_neighbors,
 }: {
   startTime: number | null;
-  nearest_neighbors: number;
 }) {
   const [outputDir, setOutputDir] = useState<string | undefined>(undefined);
+  const [args, setArgs] = useState<
+    { nearestNeighbors: number; zScoreThreshold: number } | undefined
+  >(undefined);
   const [outliersModalOpen, setOutliersModalOpen] = useState(false);
   const [processSteps, setProcessSteps] = useState<
     { name: string; time: number }[]
@@ -238,6 +242,15 @@ export default function ResultsPage({
   }, []);
 
   useEffect(() => {
+    window.python
+      .readJsonFile(`${outputDir}/args.json`)
+      .then((args) => setArgs(args as any))
+      .catch((err) => {
+        console.error(err);
+      });
+  }, []);
+
+  useEffect(() => {
     window.python.pollClusterProgress().then((progress) => {
       progress.completedTasks.map((task) => {
         setProcessSteps((prev) => [...prev, { name: task[0], time: task[1] }]);
@@ -245,7 +258,7 @@ export default function ResultsPage({
     });
   }, []);
 
-  if (!startTime || !outputDir) {
+  if (!startTime || !args || !outputDir) {
     return (
       <>
         <Header index={5} />
@@ -266,7 +279,8 @@ export default function ResultsPage({
     <>
       <OutliersModal
         path={`${outputDir}/outliers.json`}
-        nearest_neighbors={nearest_neighbors}
+        nearest_neighbors={args.nearestNeighbors}
+        zScoreThreshold={args.zScoreThreshold}
         modalIsOpen={outliersModalOpen}
         setModalIsOpen={setOutliersModalOpen}
       />
@@ -293,7 +307,7 @@ export default function ResultsPage({
             <Button
               primary={false}
               onClick={() => {
-                window.python.showIteminFile(outputDir + "/output.csv");
+                window.python.showItemInFolder(outputDir + "/output.csv");
               }}
               text="View File"
               rightIcon={<File />}

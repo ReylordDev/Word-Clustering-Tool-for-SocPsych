@@ -2,7 +2,7 @@ from collections import Counter
 import json
 import os
 import csv
-from typing import Optional
+from typing import Any, Optional
 import numpy as np
 from sentence_transformers import SentenceTransformer
 from sklearn.cluster import AgglomerativeClustering, KMeans
@@ -360,6 +360,12 @@ def save_timestamps(output_dir: str):
         json.dump(timestamps, f)
 
 
+def save_args(args_dict: dict[str, Any], output_dir: str):
+    args_file = output_dir + "/args.json"
+    with open(args_file, "w") as f:
+        json.dump(args_dict, f)
+
+
 @logger.catch
 def main(
     path: str,
@@ -376,6 +382,7 @@ def main(
     cluster_count: Optional[int],
     merge_threshold: float,
     output_dir: str,
+    args_dict: dict[str, Any],
 ):
     logger.info("Starting clustering")
     timestamps["start"] = int(time.time())
@@ -473,6 +480,8 @@ def main(
         has_headers,
         cluster_idxs,
     )
+
+    save_args(args_dict, output_dir)
 
     # Make sure this syncs with the equivalent on the ProgressPage.tsx
     logger.info(f"COMPLETED: {progression_messages['results']}")
@@ -586,7 +595,7 @@ if __name__ == "__main__":
     else:
         logger.add("logs/python/main.log", rotation="10 MB", level=log_level)
 
-    logger.debug(args)
+    args_dict = vars(args)
 
     main(
         path=args.path,
@@ -603,4 +612,5 @@ if __name__ == "__main__":
         cluster_count=args.cluster_count,
         merge_threshold=args.merge_threshold,
         output_dir=args.output_dir,
+        args_dict=args_dict,
     )

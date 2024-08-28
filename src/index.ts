@@ -479,7 +479,7 @@ declare global {
     };
     python: {
       readFile: (path: string) => Promise<string>;
-      showIteminFile: (path: string) => Promise<void>;
+      showItemInFolder: (path: string) => Promise<void>;
       readJsonFile: (path: string) => Promise<unknown>;
       startClustering: (
         fileSettings: FileSettings,
