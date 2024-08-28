@@ -32,9 +32,7 @@ const ClusterAssignmentModal = ({
     const fetchPreviewData = async () => {
       try {
         const input = await window.python.readFile(path);
-        console.log(input.length);
         const lines = input.split("\n");
-        console.log(lines.length);
         const parsedData = lines.map((line) => line.split(delimiter));
         parsedData.shift(); // Remove header
         let clusterAssignments = parsedData.map(
@@ -57,7 +55,7 @@ const ClusterAssignmentModal = ({
     };
 
     fetchPreviewData();
-  }, [path, delimiter]);
+  }, []);
 
   const groupedResponses: ClusterGroup[] = clusterResponses.reduce(
     (acc, response) => {
@@ -97,7 +95,7 @@ const ClusterAssignmentModal = ({
             <X size={36} />
           </button>
         </div>
-        <div className="max-h-[60vh] space-y-4 overflow-y-auto p-6">
+        <div className="max-h-[60vh] flex-grow space-y-4 overflow-y-auto p-6">
           {groupedResponses.map((group) => (
             <div
               key={group.clusterIndex}

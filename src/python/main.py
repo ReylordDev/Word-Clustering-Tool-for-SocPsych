@@ -239,12 +239,11 @@ def save_cluster_assignments(
 
 
 def save_pairwise_similarities(
-    input_file_name: str,
     output_dir: str,
     centers_normalized: np.ndarray,
     col_delimiter: str = ",",
 ):
-    pairwise_similarities_file = f"{output_dir}/pairwise_similarities.csv"
+    pairwise_similarities_file = f"{output_dir}/pairwise_similarities.json"
     # compute the pairwise similarities between all cluster centers
     S = np.dot(centers_normalized, centers_normalized.T)
 
@@ -254,7 +253,12 @@ def save_pairwise_similarities(
     # np.fill_diagonal(S_copy, -1)
     # # Get the index of the maximum value closest to 1.0
     # max_index = np.unravel_index(np.argmax(S_copy, axis=None), S_copy.shape)
-    np.savetxt(pairwise_similarities_file, S, fmt="%.2f", delimiter=col_delimiter)
+    # np.savetxt(pairwise_similarities_file, S, fmt="%.2f", delimiter=col_delimiter)
+    output_dict = {}
+    for i, row in enumerate(S):
+        output_dict[i] = {j: float(sim) for j, sim in enumerate(row) if i != j}
+    with open(pairwise_similarities_file, "w") as f:
+        json.dump(output_dict, f)
 
 
 def save_amended_file(
@@ -470,7 +474,7 @@ def main(
         delimiter,
     )
 
-    save_pairwise_similarities(input_file_name, output_dir, cluster_centers, delimiter)
+    save_pairwise_similarities(output_dir, cluster_centers, delimiter)
 
     save_outliers(output_dir, outlier_stats)
 

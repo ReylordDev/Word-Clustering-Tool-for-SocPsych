@@ -14,6 +14,7 @@ import { useState, useEffect } from "react";
 import { formatTime } from "../utils";
 import OutliersModal from "./OutliersModal";
 import { Args } from "../models";
+import ClusterSimilarityModal from "./ClusterSimilaritiesModal";
 
 function TotalTimeDropdown({
   processSteps,
@@ -80,12 +81,14 @@ export default function ResultsPage({
   startTime: number | null;
 }) {
   const [outputDir, setOutputDir] = useState<string | undefined>(
-    // "C:\\Users\\Luis\\Projects\\Word-Clustering-Tool-for-SocPsych\\output\\example_1724835257",
-    undefined,
+    "C:\\Users\\Luis\\Projects\\Word-Clustering-Tool-for-SocPsych\\output\\example_short_1724854526",
+    // undefined,
   );
   const [args, setArgs] = useState<Args | undefined>(undefined);
   const [clusterAssignmentsModalOpen, setClusterAssignmentsModalOpen] =
     useState(false);
+  const [clusterSimilarityModalOpen, setClusterSimilarityModalOpen] =
+    useState(true);
   const [outliersModalOpen, setOutliersModalOpen] = useState(false);
   const [processSteps, setProcessSteps] = useState<
     { name: string; time: number }[]
@@ -148,18 +151,25 @@ export default function ResultsPage({
 
   return (
     <>
+      <ClusterAssignmentModal
+        path={`${outputDir}/cluster_assignments.csv`}
+        delimiter={args.delimiter}
+        isOpen={clusterAssignmentsModalOpen}
+        setIsOpen={setClusterAssignmentsModalOpen}
+      />
+      <ClusterSimilarityModal
+        similaritiesPath={`${outputDir}/pairwise_similarities.json`}
+        clusterAssignmentsPath={`${outputDir}/cluster_assignments.csv`}
+        delimiter={args.delimiter}
+        isOpen={clusterSimilarityModalOpen}
+        setIsOpen={setClusterSimilarityModalOpen}
+      />
       <OutliersModal
         path={`${outputDir}/outliers.json`}
         nearestNeighbors={args.nearestNeighbors}
         zScoreThreshold={args.zScoreThreshold}
         isOpen={outliersModalOpen}
         setIsOpen={setOutliersModalOpen}
-      />
-      <ClusterAssignmentModal
-        path={`${outputDir}/cluster_assignments.csv`}
-        delimiter={args.delimiter}
-        isOpen={clusterAssignmentsModalOpen}
-        setIsOpen={setClusterAssignmentsModalOpen}
       />
       <Header index={5} />
       <div className="my-8" />
@@ -213,7 +223,7 @@ export default function ResultsPage({
             <Button
               primary={false}
               onClick={() => {
-                console.log("Open Pairwise Cluster Similarities");
+                setClusterSimilarityModalOpen(true);
               }}
               text="View Table"
               rightIcon={<Maximize2 />}
