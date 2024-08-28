@@ -3,13 +3,13 @@ import { AlertCircle, X, ChevronUp, ChevronDown } from "lucide-react";
 
 function OutliersModal({
   path,
-  nearestneighbors: nearest_neighbors,
+  nearestNeighbors,
   zScoreThreshold,
   isOpen,
   setIsOpen,
 }: {
   path: string;
-  nearestneighbors: number;
+  nearestNeighbors: number;
   zScoreThreshold: number;
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
@@ -132,9 +132,9 @@ function OutliersModal({
                 Displaying{" "}
                 <span className="font-semibold">{outliers.length}</span> outlier
                 responses.<br></br> These responses have a lower similarity to
-                their <span className="font-semibold">{nearest_neighbors}</span>{" "}
+                their <span className="font-semibold">{nearestNeighbors}</span>{" "}
                 nearest neighbors compared to the threshold (Z-score:{" "}
-                {zScoreThreshold}).
+                <span className="font-semibold">{zScoreThreshold}</span>).
               </p>
             </div>
           </div>

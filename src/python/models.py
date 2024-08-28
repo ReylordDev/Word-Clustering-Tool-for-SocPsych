@@ -41,3 +41,22 @@ class AutoAlgorithmSettings(AlgorithmSettings):
 class ManualAlgorithmSettings(AlgorithmSettings):
     auto_cluster_count: bool = False
     cluster_count: int
+
+
+class Args(CamelModel):
+    path: str
+    delimiter: str
+    has_headers: bool
+    selected_columns: list[int]
+    excluded_words: list[str]
+    language_model: str
+    nearest_neighbors: int
+    z_score_threshold: float
+    automatic_k: bool
+    max_num_clusters: int
+    seed: int
+    cluster_count: int
+    merge_threshold: float
+    log_dir: str
+    log_level: str
+    output_dir: str

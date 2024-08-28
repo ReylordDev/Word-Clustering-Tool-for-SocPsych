@@ -11,6 +11,8 @@ from loguru import logger
 import argparse
 import time
 
+from models import Args
+
 progression_messages = {
     "process_input_file": "Reading input file",
     "download_model": "Downloading language model",
@@ -361,9 +363,11 @@ def save_timestamps(output_dir: str):
 
 
 def save_args(args_dict: dict[str, Any], output_dir: str):
+    args: Args = Args(**args_dict)
     args_file = output_dir + "/args.json"
     with open(args_file, "w") as f:
-        json.dump(args_dict, f)
+        json_args = args.model_dump_json(by_alias=True)
+        f.write(json_args)
 
 
 @logger.catch

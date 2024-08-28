@@ -80,8 +80,8 @@ export default function ResultsPage({
   startTime: number | null;
 }) {
   const [outputDir, setOutputDir] = useState<string | undefined>(
-    "C:\\Users\\Luis\\Projects\\Word-Clustering-Tool-for-SocPsych\\output\\example_1724835257",
-    // undefined,
+    // "C:\\Users\\Luis\\Projects\\Word-Clustering-Tool-for-SocPsych\\output\\example_1724835257",
+    undefined,
   );
   const [args, setArgs] = useState<Args | undefined>(undefined);
   const [clusterAssignmentsModalOpen, setClusterAssignmentsModalOpen] =
@@ -104,12 +104,19 @@ export default function ResultsPage({
 
   useEffect(() => {
     if (!outputDir) return;
-    window.python
-      .readJsonFile(`${outputDir}/args.json`)
-      .then((args) => setArgs(args as Args))
-      .catch((err) => {
-        console.error(err);
-      });
+    try {
+      window.python
+        .readJsonFile(`${outputDir}/args.json`)
+        .then((args) => {
+          console.log(args);
+          setArgs(args as Args);
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    } catch (err) {
+      console.error(err);
+    }
   }, [outputDir]);
 
   useEffect(() => {
@@ -137,11 +144,13 @@ export default function ResultsPage({
     );
   }
 
+  console.log(args);
+
   return (
     <>
       <OutliersModal
         path={`${outputDir}/outliers.json`}
-        nearestneighbors={args.nearestNeighbors}
+        nearestNeighbors={args.nearestNeighbors}
         zScoreThreshold={args.zScoreThreshold}
         isOpen={outliersModalOpen}
         setIsOpen={setOutliersModalOpen}

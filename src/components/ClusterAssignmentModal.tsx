@@ -28,8 +28,6 @@ const ClusterAssignmentModal = ({
     [],
   );
 
-  console.log(clusterResponses);
-
   useEffect(() => {
     const fetchPreviewData = async () => {
       try {
