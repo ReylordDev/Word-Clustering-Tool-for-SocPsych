@@ -88,7 +88,7 @@ export default function ResultsPage({
   const [clusterAssignmentsModalOpen, setClusterAssignmentsModalOpen] =
     useState(false);
   const [clusterSimilarityModalOpen, setClusterSimilarityModalOpen] =
-    useState(true);
+    useState(false);
   const [outliersModalOpen, setOutliersModalOpen] = useState(false);
   const [processSteps, setProcessSteps] = useState<
     { name: string; time: number }[]
