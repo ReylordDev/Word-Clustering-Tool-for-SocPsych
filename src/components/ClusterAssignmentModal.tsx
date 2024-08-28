@@ -27,7 +27,6 @@ const ClusterAssignmentModal = ({
   const [clusterResponses, setClusterResponses] = useState<ClusterResponse[]>(
     [],
   );
-  const precision = 3;
 
   console.log(clusterResponses);
 
@@ -86,70 +85,70 @@ const ClusterAssignmentModal = ({
     );
   };
 
+  if (!isOpen) return null;
+
   return (
-    isOpen && (
-      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4">
-        <div className="w-full max-w-3xl rounded-lg bg-background shadow-xl">
-          <div className="flex items-center justify-between border-b p-6">
-            <h2 className="text-3xl font-semibold">Cluster Assignments</h2>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="text-gray-400 hover:text-text focus:outline-none"
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4">
+      <div className="w-full max-w-3xl rounded-lg bg-background shadow-xl">
+        <div className="flex items-center justify-between border-b p-6">
+          <h2 className="text-3xl font-semibold">Cluster Assignments</h2>
+          <button
+            onClick={() => setIsOpen(false)}
+            className="text-gray-400 hover:text-text focus:outline-none"
+          >
+            <X size={36} />
+          </button>
+        </div>
+        <div className="max-h-[60vh] space-y-4 overflow-y-auto p-6">
+          {groupedResponses.map((group) => (
+            <div
+              key={group.clusterIndex}
+              className="overflow-hidden rounded-lg border border-dashed border-accent hover:bg-pink-100"
             >
-              <X size={36} />
-            </button>
-          </div>
-          <div className="max-h-[60vh] space-y-4 overflow-y-auto p-6">
-            {groupedResponses.map((group) => (
-              <div
-                key={group.clusterIndex}
-                className="overflow-hidden rounded-lg border border-dashed border-accent"
+              <button
+                onClick={() => toggleCluster(group.clusterIndex)}
+                className="flex w-full items-center justify-between bg-opacity-10 p-4 hover:bg-opacity-20"
               >
-                <button
-                  onClick={() => toggleCluster(group.clusterIndex)}
-                  className="flex w-full items-center justify-between bg-opacity-10 p-4 hover:bg-opacity-20"
-                >
-                  <p className="text-xl font-semibold">
-                    Cluster {group.clusterIndex + 1}
-                  </p>
-                  {expandedClusters.includes(group.clusterIndex) ? (
-                    <ChevronUp className="text-text" size={20} />
-                  ) : (
-                    <ChevronDown className="text-text" size={20} />
-                  )}
-                </button>
-                {expandedClusters.includes(group.clusterIndex) && (
-                  <div className="p-4">
-                    {group.responses.map((response, index) => (
-                      <div key={index} className="rounded bg-background p-3">
-                        {/* TODO: Better Line Clamping */}
-                        <p className="line-clamp-2">"{response.response}"</p>
-                        <div className="mt-2 flex items-center justify-between px-2 text-sm">
-                          <p>
-                            Similarity to cluster center:{" "}
-                            <span className="font-semibold">
-                              {(response.similarity * 100).toFixed(2)}%
-                            </span>
-                          </p>
-                          <div className="h-2.5 w-1/2 rounded-full bg-gray-200">
-                            <div
-                              className="h-2.5 rounded-full bg-accent"
-                              style={{
-                                width: `${response.similarity * 100}%`,
-                              }}
-                            ></div>
-                          </div>
+                <p className="text-xl font-semibold">
+                  Cluster {group.clusterIndex + 1}
+                </p>
+                {expandedClusters.includes(group.clusterIndex) ? (
+                  <ChevronUp className="text-text" size={20} />
+                ) : (
+                  <ChevronDown className="text-text" size={20} />
+                )}
+              </button>
+              {expandedClusters.includes(group.clusterIndex) && (
+                <div className="p-4">
+                  {group.responses.map((response, index) => (
+                    <div key={index} className="rounded bg-background p-3">
+                      {/* TODO: Better Line Clamping */}
+                      <p className="line-clamp-2">"{response.response}"</p>
+                      <div className="mt-2 flex items-center justify-between px-2 text-sm">
+                        <p>
+                          Similarity to cluster center:{" "}
+                          <span className="font-semibold">
+                            {(response.similarity * 100).toFixed(1)}%
+                          </span>
+                        </p>
+                        <div className="h-2.5 w-1/2 rounded-full bg-gray-200">
+                          <div
+                            className="h-2.5 rounded-full bg-accent"
+                            style={{
+                              width: `${response.similarity * 100}%`,
+                            }}
+                          ></div>
                         </div>
                       </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       </div>
-    )
+    </div>
   );
 };
 

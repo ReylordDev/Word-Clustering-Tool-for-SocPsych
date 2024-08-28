@@ -7,156 +7,13 @@ import {
   Folder,
   File,
   Maximize2,
-  X,
-  AlertCircle,
 } from "lucide-react";
 import Button from "./Button";
 import ClusterAssignmentModal from "./ClusterAssignmentModal";
 import { useState, useEffect } from "react";
 import { formatTime } from "../utils";
-
-function OutliersModal({
-  path,
-  nearest_neighbors,
-  zScoreThreshold,
-  isOpen,
-  setIsOpen,
-}: {
-  path: string;
-  nearest_neighbors: number;
-  zScoreThreshold: number;
-  isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
-}) {
-  const [outliers, setOutliers] = useState<
-    { response: string; similarity: number }[]
-  >([]);
-  const [threshold, setThreshold] = useState<number>(0.95);
-  const precision = 3;
-
-  useEffect(() => {
-    window.python.readJsonFile(path).then((value: unknown) => {
-      const data = value as {
-        response: string;
-        similarity: number;
-        threshold: number;
-      }[];
-      setOutliers(
-        data.map((outlier) => ({
-          response: outlier.response,
-          similarity: outlier.similarity,
-        })),
-      );
-      setThreshold(data[0].threshold);
-    });
-  }, []);
-
-  const OutlierCard = ({
-    outlier,
-  }: {
-    outlier: { response: string; similarity: number };
-    threshold: number;
-  }) => {
-    const [isExpanded, setIsExpanded] = useState(false);
-    // This is awkward because sometimes we show the option to expand the text even if there is nothing to expand
-    // TODO: Refactor this to be more elegant
-    const shouldTruncate = outlier.response.length > 100;
-
-    return (
-      <div className="rounded-lg border border-dashed border-accent p-4">
-        <div className="flex items-start space-x-3">
-          <AlertCircle className="mt-0.5 flex-shrink-0 text-accent" size={20} />
-          <div className="flex-grow">
-            <p
-              className={`${shouldTruncate && !isExpanded ? "line-clamp-2" : ""}`}
-            >
-              "{outlier.response}"
-            </p>
-            {shouldTruncate && (
-              <button
-                onClick={() => setIsExpanded(!isExpanded)}
-                className="mt-1 flex items-center text-sm text-blue-500"
-              >
-                {isExpanded ? (
-                  <>
-                    <ChevronUp size={16} />
-                    <span>Show less</span>
-                  </>
-                ) : (
-                  <>
-                    <ChevronDown size={16} />
-                    <span>Read more</span>
-                  </>
-                )}
-              </button>
-            )}
-            <div className="mt-2 flex justify-between px-2 text-sm">
-              <p>
-                Similarity:{" "}
-                <span className="font-semibold">
-                  {outlier.similarity.toFixed(precision)}
-                </span>
-              </p>
-              <p>
-                Threshold:{" "}
-                <span className="font-semibold">
-                  {threshold.toFixed(precision)}
-                </span>
-              </p>
-            </div>
-            <div className="mt-2 h-2.5 w-full rounded-full bg-gray-200">
-              <div
-                className="h-2.5 rounded-full bg-accent"
-                style={{
-                  width: `${(outlier.similarity / threshold) * 100}%`,
-                }}
-              ></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  return (
-    <>
-      {isOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4">
-          <div className="w-full max-w-2xl rounded-lg bg-background shadow-xl">
-            <div className="flex items-center justify-between border-b p-6">
-              <h2 className="text-3xl font-semibold">Response Outliers</h2>
-              <button
-                onClick={() => setIsOpen(false)}
-                className="text-gray-400 hover:text-text focus:outline-none"
-              >
-                <X size={36} />
-              </button>
-            </div>
-            <div className="max-h-[60vh] space-y-4 overflow-y-auto p-6">
-              {outliers.map((outlier, index) => (
-                <OutlierCard
-                  key={index}
-                  outlier={outlier}
-                  threshold={threshold}
-                />
-              ))}
-            </div>
-            <div className="rounded-b-lg border-t px-6 py-4">
-              <p>
-                Displaying{" "}
-                <span className="font-semibold">{outliers.length}</span> outlier
-                responses.<br></br> These responses have a lower similarity to
-                their <span className="font-semibold">{nearest_neighbors}</span>{" "}
-                nearest neighbors compared to the threshold (Z-score:{" "}
-                {zScoreThreshold}).
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-    </>
-  );
-}
+import OutliersModal from "./OutliersModal";
+import { Args } from "../models";
 
 function TotalTimeDropdown({
   processSteps,
@@ -223,12 +80,10 @@ export default function ResultsPage({
   startTime: number | null;
 }) {
   const [outputDir, setOutputDir] = useState<string | undefined>(
-    "C:\\Users\\Luis\\Projects\\Word-Clustering-Tool-for-SocPsych\\output\\example_short_1724830418",
+    "C:\\Users\\Luis\\Projects\\Word-Clustering-Tool-for-SocPsych\\output\\example_1724835257",
+    // undefined,
   );
-  const [args, setArgs] = useState<
-    | { delimiter: string; nearestNeighbors: number; zScoreThreshold: number }
-    | undefined
-  >(undefined);
+  const [args, setArgs] = useState<Args | undefined>(undefined);
   const [clusterAssignmentsModalOpen, setClusterAssignmentsModalOpen] =
     useState(false);
   const [outliersModalOpen, setOutliersModalOpen] = useState(false);
@@ -236,25 +91,26 @@ export default function ResultsPage({
     { name: string; time: number }[]
   >([]);
 
-  // useEffect(() => {
-  //   window.python
-  //     .getOutputDir()
-  //     .then((dir) => {
-  //       if (dir) setOutputDir(dir);
-  //     })
-  //     .catch((err) => {
-  //       console.error(err);
-  //     });
-  // }, []);
-
   useEffect(() => {
     window.python
-      .readJsonFile(`${outputDir}/args.json`)
-      .then((args) => setArgs(args as any))
+      .getOutputDir()
+      .then((dir) => {
+        if (dir) setOutputDir(dir);
+      })
       .catch((err) => {
         console.error(err);
       });
   }, []);
+
+  useEffect(() => {
+    if (!outputDir) return;
+    window.python
+      .readJsonFile(`${outputDir}/args.json`)
+      .then((args) => setArgs(args as Args))
+      .catch((err) => {
+        console.error(err);
+      });
+  }, [outputDir]);
 
   useEffect(() => {
     window.python.pollClusterProgress().then((progress) => {
@@ -285,7 +141,7 @@ export default function ResultsPage({
     <>
       <OutliersModal
         path={`${outputDir}/outliers.json`}
-        nearest_neighbors={args.nearestNeighbors}
+        nearestneighbors={args.nearestNeighbors}
         zScoreThreshold={args.zScoreThreshold}
         isOpen={outliersModalOpen}
         setIsOpen={setOutliersModalOpen}
@@ -308,7 +164,14 @@ export default function ResultsPage({
             <Button
               primary={false}
               onClick={() => {
-                window.python.openOutputDir();
+                window.python.openOutputDir(outputDir).then((errorMessage) => {
+                  if (errorMessage) {
+                    console.error(
+                      "Error opening output directory",
+                      errorMessage,
+                    );
+                  }
+                });
               }}
               rightIcon={<Folder />}
               text="Open Folder"

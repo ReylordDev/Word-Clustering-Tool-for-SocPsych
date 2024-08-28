@@ -205,7 +205,7 @@ def save_cluster_assignments(
     words: list[str],
     col_delimiter: str = ",",
 ):
-    output_file = f"{output_dir}/clustering_output.csv"
+    output_file = f"{output_dir}/cluster_assignments.csv"
     with open(output_file, "w", encoding="utf-8") as f:
         writer = csv.writer(f, delimiter=col_delimiter, lineterminator="\n")
         writer.writerow(["response", "cluster_index", "similarity_to_center"])

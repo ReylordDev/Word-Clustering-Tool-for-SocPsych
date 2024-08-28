@@ -34,8 +34,8 @@ contextBridge.exposeInMainWorld("python", {
   getOutputDir: async () => {
     return await ipcRenderer.invoke("python:getOutputDir");
   },
-  openOutputDir: async () => {
-    return await ipcRenderer.invoke("python:openOutputDir");
+  openOutputDir: async (outputDir: string) => {
+    return await ipcRenderer.invoke("python:openOutputDir", outputDir);
   },
   pollClusterProgress: async () => {
     return await ipcRenderer.invoke("python:pollClusterProgress");

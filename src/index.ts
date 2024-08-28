@@ -435,10 +435,9 @@ app.on("ready", async () => {
     return outputDir;
   });
 
-  ipcMain.handle("python:openOutputDir", () => {
-    if (outputDir) {
-      return shell.openPath(outputDir);
-    }
+  ipcMain.handle("python:openOutputDir", (event, outputDir: string) => {
+    console.log(`Opening output directory: ${outputDir}`);
+    return shell.openPath(outputDir);
   });
 
   ipcMain.on("control:minimize", () => mainWindow.minimize());
@@ -494,7 +493,7 @@ declare global {
       hasMinimalPythonVersion: () => Promise<boolean>;
       runSetupScript: () => Promise<void>;
       getOutputDir: () => Promise<string | undefined>;
-      openOutputDir: () => Promise<string>;
+      openOutputDir: (outputDir: string) => Promise<string>;
       onSetupScriptMessage: (
         listener: (event: unknown, message: string) => void,
       ) => void;
