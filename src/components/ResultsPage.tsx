@@ -11,6 +11,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import Button from "./Button";
+import ClusterAssignmentModal from "./ClusterAssignmentModal";
 import { useState, useEffect } from "react";
 import { formatTime } from "../utils";
 
@@ -18,14 +19,14 @@ function OutliersModal({
   path,
   nearest_neighbors,
   zScoreThreshold,
-  modalIsOpen: isOpen,
-  setModalIsOpen: setIsOpen,
+  isOpen,
+  setIsOpen,
 }: {
   path: string;
   nearest_neighbors: number;
   zScoreThreshold: number;
-  modalIsOpen: boolean;
-  setModalIsOpen: (isOpen: boolean) => void;
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
 }) {
   const [outliers, setOutliers] = useState<
     { response: string; similarity: number }[]
@@ -221,25 +222,30 @@ export default function ResultsPage({
 }: {
   startTime: number | null;
 }) {
-  const [outputDir, setOutputDir] = useState<string | undefined>(undefined);
+  const [outputDir, setOutputDir] = useState<string | undefined>(
+    "C:\\Users\\Luis\\Projects\\Word-Clustering-Tool-for-SocPsych\\output\\example_short_1724830418",
+  );
   const [args, setArgs] = useState<
-    { nearestNeighbors: number; zScoreThreshold: number } | undefined
+    | { delimiter: string; nearestNeighbors: number; zScoreThreshold: number }
+    | undefined
   >(undefined);
+  const [clusterAssignmentsModalOpen, setClusterAssignmentsModalOpen] =
+    useState(false);
   const [outliersModalOpen, setOutliersModalOpen] = useState(false);
   const [processSteps, setProcessSteps] = useState<
     { name: string; time: number }[]
   >([]);
 
-  useEffect(() => {
-    window.python
-      .getOutputDir()
-      .then((dir) => {
-        if (dir) setOutputDir(dir);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }, []);
+  // useEffect(() => {
+  //   window.python
+  //     .getOutputDir()
+  //     .then((dir) => {
+  //       if (dir) setOutputDir(dir);
+  //     })
+  //     .catch((err) => {
+  //       console.error(err);
+  //     });
+  // }, []);
 
   useEffect(() => {
     window.python
@@ -281,8 +287,14 @@ export default function ResultsPage({
         path={`${outputDir}/outliers.json`}
         nearest_neighbors={args.nearestNeighbors}
         zScoreThreshold={args.zScoreThreshold}
-        modalIsOpen={outliersModalOpen}
-        setModalIsOpen={setOutliersModalOpen}
+        isOpen={outliersModalOpen}
+        setIsOpen={setOutliersModalOpen}
+      />
+      <ClusterAssignmentModal
+        path={`${outputDir}/cluster_assignments.csv`}
+        delimiter={args.delimiter}
+        isOpen={clusterAssignmentsModalOpen}
+        setIsOpen={setClusterAssignmentsModalOpen}
       />
       <Header index={5} />
       <div className="my-8" />
@@ -318,7 +330,7 @@ export default function ResultsPage({
             <Button
               primary={false}
               onClick={() => {
-                console.log("Open Cluster Assignments");
+                setClusterAssignmentsModalOpen(true);
               }}
               text="View Table"
               rightIcon={<Maximize2 />}

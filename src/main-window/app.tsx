@@ -86,7 +86,7 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<LandingPage />} />
+        {/* <Route path="/" element={<LandingPage />} /> */}
         <Route
           path="/file"
           element={<FileSelectionPage selectedFile={file} setFile={setFile} />}
@@ -130,20 +130,14 @@ export default function App() {
           element={<ProgressPage startTime={startTime} />}
         />
         <Route
-          path="/results"
-          // path="/"
+          // path="/results"
+          path="/"
           element={
             <ResultsPage
-              startTime={startTime}
-              // nearest neighbor doesn't work right now
-              // TODO: Fix this after finishing the algorithm settings page
+              // startTime={startTime}
+              startTime={501590112}
             />
           }
-          // element={
-          //   <ResultsPage
-          //     startTime={501590112}
-          //   />
-          // }
         />
       </Routes>
     </Router>

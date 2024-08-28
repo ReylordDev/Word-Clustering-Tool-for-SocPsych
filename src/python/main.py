@@ -195,7 +195,7 @@ def merge(
     return cluster_idxs, cluster_centers
 
 
-def save_clustering_output(
+def save_cluster_assignments(
     input_file_name: str,
     output_dir: str,
     K: int,
@@ -205,10 +205,10 @@ def save_clustering_output(
     words: list[str],
     col_delimiter: str = ",",
 ):
-    clustering_output_file = f"{output_dir}/clustering_output.csv"
-    with open(clustering_output_file, "w", encoding="utf-8") as f:
+    output_file = f"{output_dir}/clustering_output.csv"
+    with open(output_file, "w", encoding="utf-8") as f:
         writer = csv.writer(f, delimiter=col_delimiter, lineterminator="\n")
-        writer.writerow(["word", "cluster_index", "similarity_to_center"])
+        writer.writerow(["response", "cluster_index", "similarity_to_center"])
         # similarity to center refers to the distance from embedding to the
         # cluster mean which is a measure of how representative
         # the word is for the cluster
@@ -455,7 +455,7 @@ def main(
         os.mkdir(output_dir)
     logger.info(f"OUTPUT_DIR: {os.path.abspath(output_dir)}")
 
-    save_clustering_output(
+    save_cluster_assignments(
         input_file_name,
         output_dir,
         K,
