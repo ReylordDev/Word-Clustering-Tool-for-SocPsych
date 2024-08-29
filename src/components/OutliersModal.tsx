@@ -119,7 +119,7 @@ function OutliersModal({
                   <X size={36} />
                 </button>
               </div>
-              <div className="rounded-b-lg">
+              <div>
                 <p>
                   Displaying{" "}
                   <span className="font-semibold">{outliers.length}</span>{" "}

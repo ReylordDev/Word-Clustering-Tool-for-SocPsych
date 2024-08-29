@@ -124,9 +124,9 @@ function MergedClustersModal({
                   </div>
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     {merger.mergedClusters.map((cluster, index) => (
-                      <div key={index} className="rounded-md border p-4">
+                      <div key={index} className="rounded-md border">
                         <button
-                          className="flex w-full items-center justify-between"
+                          className="flex w-full items-center justify-between p-4"
                           onClick={() => toggleCluster(cluster.index)}
                         >
                           <h3 className="text-lg font-medium">

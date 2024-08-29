@@ -1,5 +1,13 @@
 import React, { useState, useCallback, useEffect, useMemo } from "react";
-import { X, ChevronDown, ChevronUp, Info, Search } from "lucide-react";
+import {
+  X,
+  ChevronDown,
+  ChevronUp,
+  Info,
+  Search,
+  TextCursor,
+  AlertCircle,
+} from "lucide-react";
 
 interface Cluster {
   index: number;
@@ -210,10 +218,10 @@ function ClusterSimilarityModal({
         {similarClusters.map((sc) => (
           <div
             key={sc.cluster2}
-            className="rounded bg-white p-2 shadow-sm hover:bg-gray-50"
+            className="rounded bg-white shadow-sm hover:bg-gray-50"
           >
             <div
-              className="flex cursor-pointer items-center justify-between p-2"
+              className="flex cursor-pointer items-center justify-between p-4"
               onClick={() =>
                 setExpandedSimilarClusters((prev) =>
                   prev.includes(sc.cluster2)
@@ -222,22 +230,22 @@ function ClusterSimilarityModal({
                 )
               }
             >
-              <span>Cluster {sc.cluster2 + 1}</span>
-              <div className="ml-4 flex flex-grow items-center">
+              <span className="w-28">Cluster {sc.cluster2 + 1}</span>
+              <div className="flex flex-grow items-center">
                 <SimilarityVisualizer
                   primary={true}
                   similarity={sc.similarity}
                 />
-                <span className="ml-2 text-sm text-gray-500">
-                  {(sc.similarity * 100).toFixed(2)}%
-                </span>
-                <button className="ml-2 focus:outline-none">
-                  {expandedSimilarClusters.includes(sc.cluster2) ? (
-                    <ChevronUp size={16} />
-                  ) : (
-                    <ChevronDown size={16} />
-                  )}
-                </button>
+                <div className="flex w-28 items-center justify-end gap-2">
+                  <span>{(sc.similarity * 100).toFixed(2)}%</span>
+                  <button className="focus:outline-none">
+                    {expandedSimilarClusters.includes(sc.cluster2) ? (
+                      <ChevronUp size={20} className="text-secondary" />
+                    ) : (
+                      <ChevronDown size={20} className="text-secondary" />
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
             {expandedSimilarClusters.includes(sc.cluster2) && (
@@ -271,8 +279,8 @@ function ClusterSimilarityModal({
 
     return (
       <div className="flex w-full items-center justify-center gap-4">
-        <div className="flex h-12 w-1/3 items-center gap-2 rounded-md border border-secondary bg-white p-2">
-          <Search size={20} className="text-gray-400" />
+        <div className="flex h-12 w-1/3 items-center gap-2 rounded-md border-2 border-primary bg-white p-2">
+          <TextCursor size={20} className="text-gray-400" />
           <input
             type="number"
             value={
@@ -284,8 +292,7 @@ function ClusterSimilarityModal({
               if (
                 e.target.value === "" ||
                 parseInt(e.target.value) < 1 ||
-                parseInt(e.target.value) > clusters.length ||
-                parseInt(e.target.value) === selectedClusterIndex + 1
+                parseInt(e.target.value) > clusters.length
               ) {
                 setComparisonClusterIndex(undefined);
               } else {
@@ -298,7 +305,7 @@ function ClusterSimilarityModal({
         </div>
         <p>or</p>
         <div className="relative flex w-full flex-col gap-1">
-          <div className="flex h-12 items-center gap-2 rounded-md border border-secondary bg-white p-2">
+          <div className="flex h-12 items-center gap-2 rounded-md border-2 border-primary bg-white p-2">
             <Search size={20} className="text-gray-400" />
             <input
               type="text"
@@ -312,7 +319,7 @@ function ClusterSimilarityModal({
           {showDropdown &&
             filteredClusters.length > 0 &&
             searchTerm.length > 1 && (
-              <ul className="fixed mt-12 max-h-96 w-96 overflow-auto rounded-md border border-secondary bg-white shadow-lg">
+              <ul className="fixed mt-12 max-h-96 w-96 overflow-auto rounded-md border border-primary bg-white shadow-lg">
                 {filteredClusters.map((cluster) => (
                   <li
                     key={cluster.index}
@@ -362,8 +369,8 @@ function ClusterSimilarityModal({
 
     return (
       <div className="flex w-full items-center justify-center gap-4">
-        <div className="flex h-12 w-1/3 items-center gap-2 rounded-md border border-secondary bg-white p-2">
-          <Search size={20} className="text-gray-400" />
+        <div className="flex h-12 w-1/3 items-center gap-2 rounded-md border-2 border-primary bg-white p-2">
+          <TextCursor size={20} className="text-gray-400" />
           <input
             type="number"
             value={
@@ -386,7 +393,7 @@ function ClusterSimilarityModal({
         </div>
         <p>or</p>
         <div className="relative flex w-full flex-col gap-1">
-          <div className="flex h-12 items-center gap-2 rounded-md border border-secondary bg-white p-2">
+          <div className="flex h-12 items-center gap-2 rounded-md border-2 border-primary bg-white p-2">
             <Search size={20} className="text-gray-400" />
             <input
               type="text"
@@ -400,7 +407,7 @@ function ClusterSimilarityModal({
           {showDropdown &&
             filteredClusters.length > 0 &&
             searchTerm.length > 1 && (
-              <ul className="fixed mt-12 max-h-96 w-96 overflow-auto rounded-md border border-secondary bg-white shadow-lg">
+              <ul className="fixed mt-12 max-h-96 w-96 overflow-auto rounded-md border border-primary bg-white shadow-lg">
                 {filteredClusters.map((cluster) => (
                   <li
                     key={cluster.index}
@@ -435,35 +442,41 @@ function ClusterSimilarityModal({
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4">
-      <div className="h-[90vh] w-full max-w-3xl rounded-lg bg-background shadow-xl">
-        <div className="flex items-center justify-between border-b p-6">
-          <h2 className="text-3xl font-semibold">Cluster Similarities</h2>
-          <button
-            onClick={() => setIsOpen(false)}
-            className="text-gray-400 hover:text-text focus:outline-none"
-          >
-            <X size={36} />
-          </button>
+      <div className="h-[90vh] w-full max-w-4xl rounded-lg bg-background shadow-xl">
+        <div className="h-[10vh] p-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-3xl font-semibold">Cluster Similarities</h2>
+            <button
+              onClick={() => setIsOpen(false)}
+              className="text-gray-400 hover:text-text focus:outline-none"
+            >
+              <X size={36} />
+            </button>
+          </div>
+          <div className="mt-1 flex items-center px-1">
+            <Info size={16} className="mr-2" />
+            <p>Select a cluster to view details and compare similarities.</p>
+          </div>
         </div>
-        <div className="max-h-[70vh] flex-grow overflow-y-auto p-6">
+        <div className="max-h-[80vh] flex-grow overflow-y-auto p-6">
           <div className="flex flex-col justify-start gap-1 px-4 py-2">
             <h5 className="font-medium">Select a cluster:</h5>
             <MainClusterSelector />
           </div>
           {selectedClusterIndex !== undefined && (
             <div className="flex flex-col gap-4 px-4">
-              <div className="space-y-2 rounded bg-white p-4 shadow-sm hover:bg-gray-50">
+              <div className="rounded-lg border bg-white shadow-md hover:bg-gray-50">
                 <button
                   onClick={() => setSelectedClusterExpanded((prev) => !prev)}
-                  className="flex w-full items-center justify-between focus:outline-none"
+                  className="flex w-full items-center justify-between p-4 focus:outline-none"
                 >
                   <h2 className="text-2xl font-semibold">
                     Cluster {selectedClusterIndex + 1}
                   </h2>
                   {selectedClusterExpanded ? (
-                    <ChevronUp size={24} />
+                    <ChevronUp size={28} className="text-secondary" />
                   ) : (
-                    <ChevronDown size={24} />
+                    <ChevronDown size={28} className="text-secondary" />
                   )}
                 </button>
                 {selectedClusterExpanded && (
@@ -479,61 +492,67 @@ function ClusterSimilarityModal({
                     <ComparisonClusterSelector />
                   </div>
                 </div>
-                {comparisonClusterIndex !== undefined && (
-                  <div className="px-8">
-                    <div className="rounded bg-white p-4 shadow-sm hover:bg-gray-50">
-                      <button
-                        onClick={() =>
-                          setComparisonClusterExpanded((prev) => !prev)
-                        }
-                        className="flex w-full items-center justify-between focus:outline-none"
-                      >
-                        <h2 className="text-2xl font-semibold">
-                          Cluster {comparisonClusterIndex + 1}
-                        </h2>
-                        {comparisonClusterExpanded ? (
-                          <ChevronUp size={24} />
-                        ) : (
-                          <ChevronDown size={24} />
-                        )}
-                      </button>
-                      {comparisonClusterExpanded && (
-                        <ClusterDetails cluster={comparisonCluster} />
-                      )}
+                {comparisonClusterIndex !== undefined &&
+                  comparisonClusterIndex === selectedClusterIndex && (
+                    <div className="flex w-full items-center gap-2 px-8">
+                      <AlertCircle size={20} className="text-red-500" />
+                      <p className="text-red-500">
+                        Cannot compare a cluster with itself.
+                      </p>
                     </div>
-                    <div className="p-1">
-                      <div className="flex justify-between py-2">
-                        <p>Similarity:</p>
-                        <p>
-                          {(
-                            getClusterSimilarity(
+                  )}
+                {comparisonClusterIndex !== undefined &&
+                  comparisonClusterIndex !== selectedClusterIndex && (
+                    <div className="px-8">
+                      <div className="rounded bg-white shadow-sm hover:bg-gray-50">
+                        <button
+                          onClick={() =>
+                            setComparisonClusterExpanded((prev) => !prev)
+                          }
+                          className="flex w-full items-center justify-between p-4 focus:outline-none"
+                        >
+                          <h2 className="text-2xl font-semibold">
+                            Cluster {comparisonClusterIndex + 1}
+                          </h2>
+                          {comparisonClusterExpanded ? (
+                            <ChevronUp size={28} className="text-secondary" />
+                          ) : (
+                            <ChevronDown size={28} className="text-secondary" />
+                          )}
+                        </button>
+                        {comparisonClusterExpanded && (
+                          <ClusterDetails cluster={comparisonCluster} />
+                        )}
+                      </div>
+                      <div className="mt-2 rounded bg-white p-4 shadow-md">
+                        <div className="flex justify-between">
+                          <p>Similarity:</p>
+                          <p>
+                            {(
+                              getClusterSimilarity(
+                                selectedClusterIndex,
+                                comparisonClusterIndex,
+                              ) * 100
+                            ).toFixed(2)}
+                            %
+                          </p>
+                        </div>
+                        <div className="flex items-center">
+                          <SimilarityVisualizer
+                            similarity={getClusterSimilarity(
                               selectedClusterIndex,
                               comparisonClusterIndex,
-                            ) * 100
-                          ).toFixed(2)}
-                          %
-                        </p>
-                      </div>
-                      <div className="flex items-center">
-                        <SimilarityVisualizer
-                          similarity={getClusterSimilarity(
-                            selectedClusterIndex,
-                            comparisonClusterIndex,
-                          )}
-                          primary={true}
-                        />
+                            )}
+                            primary={true}
+                          />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )}
+                  )}
               </div>
               <SimilarClustersList clusterId={selectedClusterIndex} />
             </div>
           )}
-        </div>
-        <div className="flex items-center rounded-b-lg bg-background px-4 py-3 text-sm text-gray-500">
-          <Info size={16} className="mr-2" />
-          <p>Select a cluster to view details and compare similarities.</p>
         </div>
       </div>
     </div>
