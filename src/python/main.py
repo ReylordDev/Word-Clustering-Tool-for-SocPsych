@@ -11,7 +11,7 @@ from loguru import logger
 import argparse
 import time
 
-from models import Args, Cluster, Response, Merger, Mergers
+from models import Args, Cluster, Response, Merger, Mergers, TimeStamp, TimeStamps
 
 progression_messages = {
     "process_input_file": "Reading input file",
@@ -25,7 +25,7 @@ progression_messages = {
     "results": "Saving clustering results",
 }
 
-timestamps: dict[str, int] = {}
+time_stamps: list[TimeStamp] = []
 
 
 def process_input_file(
@@ -65,7 +65,11 @@ def process_input_file(
     unique_word_count = len(word_counts)
     words = list(word_counts.keys())
     logger.info(f"COMPLETED: {progression_messages['process_input_file']}")
-    timestamps["process_input_file"] = int(time.time())
+    time_stamps.append(
+        TimeStamp(
+            name=progression_messages["process_input_file"], time=int(time.time())
+        )
+    )
     logger.debug(f"Number of rows: {len(rows)}")
     logger.debug(f"Number of unique words: {unique_word_count}")
 
@@ -76,7 +80,9 @@ def load_model(language_model: str) -> SentenceTransformer:
     logger.info(f"STARTED: {progression_messages['load_model']}")
     model = SentenceTransformer(language_model)
     logger.info(f"COMPLETED: {progression_messages['load_model']}")
-    timestamps["load_model"] = int(time.time())
+    time_stamps.append(
+        TimeStamp(name=progression_messages["load_model"], time=int(time.time()))
+    )
     return model
 
 
@@ -87,7 +93,9 @@ def embed_words(words: list[str], model: SentenceTransformer) -> np.ndarray:
     )  # shape (no_of_unique_words, embedding_dim)
     norm_embeddings = np.array(norm_embeddings)  # Type casting (only for IDE)
     logger.info(f"COMPLETED: {progression_messages['embed_words']}")
-    timestamps["embed_words"] = int(time.time())
+    time_stamps.append(
+        TimeStamp(name=progression_messages["embed_words"], time=int(time.time()))
+    )
     return norm_embeddings
 
 
@@ -133,7 +141,9 @@ def detect_outliers(
         responses_remaining.append(responses[i])
 
     logger.info(f"COMPLETED: {progression_messages['detect_outliers']}")
-    timestamps["detect_outliers"] = int(time.time())
+    time_stamps.append(
+        TimeStamp(name=progression_messages["detect_outliers"], time=int(time.time()))
+    )
     logger.debug(f"Number of outliers: {len(outliers)}")
     logger.debug(outlier_stats)
     return outlier_stats, responses_remaining, norm_embeddings[remaining_indexes, :]
@@ -222,7 +232,9 @@ def merge(
         centers_new, axis=1, keepdims=True, ord=2
     )
     logger.info(f"COMPLETED: {progression_messages['merge']}")
-    timestamps["merge"] = int(time.time())
+    time_stamps.append(
+        TimeStamp(name=progression_messages["merge"], time=int(time.time()))
+    )
     return cluster_idxs, cluster_centers, mergers
 
 
@@ -377,7 +389,11 @@ def find_number_of_clusters(
     K = K_values[np.argmax(sils * bics)]
 
     logger.info(f"COMPLETED: {progression_messages['find_number_of_clusters']}")
-    timestamps["find_number_of_clusters"] = int(time.time())
+    time_stamps.append(
+        TimeStamp(
+            name=progression_messages["find_number_of_clusters"], time=int(time.time())
+        )
+    )
     return K
 
 
@@ -424,8 +440,9 @@ def save_merged_clusters(
 
 def save_timestamps(output_dir: str):
     timestamps_file = output_dir + "/timestamps.json"
+    timestamps_model = TimeStamps(time_stamps=time_stamps)
     with open(timestamps_file, "w") as f:
-        json.dump(timestamps, f)
+        f.write(timestamps_model.model_dump_json(by_alias=True))
 
 
 def save_args(args_dict: dict[str, Any], output_dir: str):
@@ -455,7 +472,7 @@ def main(
     args_dict: dict[str, Any],
 ):
     logger.info("Starting clustering")
-    timestamps["start"] = int(time.time())
+    time_stamps.append(TimeStamp(name="start", time=int(time.time())))
 
     stderr_flush_delay = 0.1
     logger.info(f"TODO: {progression_messages['process_input_file']}")
@@ -522,7 +539,7 @@ def main(
         os.mkdir(output_dir)
 
     input_file_name = os.path.basename(path).removesuffix(".csv")
-    input_file_name += f"_{timestamps['start']}"
+    input_file_name += f"_{time_stamps[0].time}"
     output_dir = os.path.join(output_dir, input_file_name)
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
@@ -566,7 +583,9 @@ def main(
 
     # Make sure this syncs with the equivalent on the ProgressPage.tsx
     logger.info(f"COMPLETED: {progression_messages['results']}")
-    timestamps["results"] = int(time.time())
+    time_stamps.append(
+        TimeStamp(name=progression_messages["results"], time=int(time.time()))
+    )
     save_timestamps(output_dir)
 
 

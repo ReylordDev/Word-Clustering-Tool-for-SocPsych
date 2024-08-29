@@ -5,8 +5,12 @@ import {
   ChevronUp,
   ChevronDown,
   Folder,
-  File,
-  Maximize2,
+  FileText,
+  List,
+  GitCompare,
+  AlertTriangle,
+  GitMerge,
+  CheckCheck,
 } from "lucide-react";
 import Button from "./Button";
 import ClusterAssignmentModal from "./ClusterAssignmentModal";
@@ -20,55 +24,68 @@ import OutliersModal from "./OutliersModal";
 import MergedClustersModal from "./MergedClustersModal";
 import ClusterSimilarityModal from "./ClusterSimilaritiesModal";
 
-function TotalTimeDropdown({
-  processSteps,
-  startTime,
-}: {
-  processSteps: { name: string; time: number }[];
-  startTime: number;
-}) {
-  const [open, setOpen] = useState(false);
+interface TimeStamp {
+  name: string;
+  time: number;
+}
 
-  if (processSteps.length === 0) {
+function TotalTimeDropdown({ path }: { path: string }) {
+  const [open, setOpen] = useState(false);
+  const [timeStamps, setTimeStamps] = useState<TimeStamp[]>([]);
+
+  useEffect(() => {
+    window.python
+      .readJsonFile(path)
+      .then((data) => {
+        const obj = data as { timeStamps: TimeStamp[] };
+        setTimeStamps(obj.timeStamps);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }, [path]);
+
+  console.log(timeStamps);
+
+  if (!timeStamps || timeStamps.length === 0) {
     return null;
   }
 
   return (
-    <div className="flex w-full flex-col justify-start">
-      <div className="flex w-full items-center justify-between">
-        <p>Total Time</p>
-        <Button
-          primary={false}
-          onClick={() => {
-            console.log("Open Total Time");
-            setOpen(!open);
-          }}
-          leftIcon={<Clock />}
-          text={formatTime(
-            Math.floor(
-              (processSteps[processSteps.length - 1].time - startTime) / 1000,
-            ),
-          )}
-          rightIcon={open ? <ChevronDown /> : <ChevronUp />}
-        />
-      </div>
+    <div className="flex w-2/3 flex-col justify-start">
+      <Button
+        onClick={() => {
+          console.log("Open Total Time");
+          setOpen(!open);
+        }}
+        leftIcon={<Clock />}
+        text={`Total Time: ${formatTime(
+          Math.floor(
+            timeStamps[timeStamps.length - 1].time - timeStamps[0].time,
+          ),
+        )}`}
+        rightIcon={open ? <ChevronUp /> : <ChevronDown />}
+      />
       {open && (
-        <div className="flex flex-col gap-1 p-4 pl-8">
-          {processSteps.map((step, index) => {
-            const previousTime =
-              index > 0 ? processSteps[index - 1].time : startTime;
+        <div className="flex flex-col gap-2 p-2">
+          {timeStamps.map((step, index) => {
+            if (index === 0) {
+              return null;
+            }
             return (
               <div key={index} className="flex justify-between">
                 <div className="flex items-center gap-2">
                   <Check
-                    className="rounded bg-slate-800 text-background"
+                    className="rounded bg-accent text-background"
                     size={20}
                   />
                   {step.name}
                 </div>
-                <div className="flex min-w-28 items-center gap-2">
+                <div className="flex min-w-28 items-center justify-start gap-2">
                   <Clock size={20} />
-                  {formatTime(Math.floor((step.time - previousTime) / 1000))}
+                  {formatTime(
+                    Math.floor(step.time - timeStamps[index - 1].time),
+                  )}
                 </div>
               </div>
             );
@@ -85,7 +102,7 @@ export default function ResultsPage({
   startTime: number | null;
 }) {
   const [outputDir, setOutputDir] = useState<string | undefined>(
-    "C:\\Users\\Luis\\Projects\\Word-Clustering-Tool-for-SocPsych\\output\\example_1724918395",
+    "C:\\Users\\Luis\\Projects\\Word-Clustering-Tool-for-SocPsych\\output\\example_short_1724951610",
     // undefined,
   );
   const [args, setArgs] = useState<Args | undefined>(undefined);
@@ -95,9 +112,6 @@ export default function ResultsPage({
     useState(false);
   const [outliersModalOpen, setOutliersModalOpen] = useState(false);
   const [mergedClustersModalOpen, setMergedClustersModalOpen] = useState(false);
-  const [processSteps, setProcessSteps] = useState<
-    { name: string; time: number }[]
-  >([]);
 
   useEffect(() => {
     window.python
@@ -127,14 +141,6 @@ export default function ResultsPage({
     }
   }, [outputDir]);
 
-  useEffect(() => {
-    window.python.pollClusterProgress().then((progress) => {
-      progress.completedTasks.map((task) => {
-        setProcessSteps((prev) => [...prev, { name: task[0], time: task[1] }]);
-      });
-    });
-  }, []);
-
   if (!startTime || !args || !outputDir) {
     return (
       <>
@@ -155,7 +161,7 @@ export default function ResultsPage({
   console.log(args);
 
   return (
-    <>
+    <div className="h-[90vh] w-full">
       <ClusterAssignmentModal
         path={`${outputDir}/cluster_assignments.csv`}
         delimiter={args.delimiter}
@@ -183,83 +189,64 @@ export default function ResultsPage({
         setIsOpen={setMergedClustersModalOpen}
       />
       <Header index={5} />
-      <div className="my-8" />
-      <div className="flex flex-col items-start justify-start gap-4 px-32">
-        <h1 className="text-5xl">Results</h1>
-        <div className="flex w-full flex-col gap-6">
-          <div className="flex w-full items-center justify-between">
-            <p className="py-2 text-xl font-semibold text-primary">
+      <div className="flex max-h-[90vh] flex-col items-start justify-start gap-8 overflow-y-auto px-32 pt-8">
+        <div className="flex flex-col justify-start gap-2">
+          <h1 className="text-5xl">Results</h1>
+          <div className="flex items-center gap-2 pb-2 text-accent">
+            <CheckCheck className="rounded bg-background" size={24} />
+            <p className="text-xl font-semibold">
               Your results have been saved.
             </p>
-            <Button
-              primary={false}
-              onClick={() =>
-                window.python.openOutputDir(outputDir).then((errorMessage) => {
-                  if (errorMessage) {
-                    console.error(
-                      "Error opening output directory",
-                      errorMessage,
-                    );
-                  }
-                })
-              }
-              rightIcon={<Folder />}
-              text="Open Folder"
-            />
           </div>
-          <div className="flex w-full items-center justify-between">
-            <p>Updated Input File</p>
-            <Button
-              primary={false}
-              onClick={() =>
-                window.python.showItemInFolder(outputDir + "/output.csv")
-              }
-              text="View File"
-              rightIcon={<File />}
-            />
-          </div>
-          <div className="flex w-full items-center justify-between">
-            <p>Cluster Assignments</p>
-            <Button
-              primary={false}
-              onClick={() => setClusterAssignmentsModalOpen(true)}
-              text="View Table"
-              rightIcon={<Maximize2 />}
-            />
-          </div>
-          <div className="flex w-full items-center justify-between">
-            <p>Pairwise Cluster Similarities</p>
-            <Button
-              primary={false}
-              onClick={() => setClusterSimilarityModalOpen(true)}
-              text="View Table"
-              rightIcon={<Maximize2 />}
-            />
-          </div>
-          <div className="flex w-full items-center justify-between">
-            <p>Outlier Responses</p>
-            <Button
-              primary={false}
-              onClick={() => setOutliersModalOpen(true)}
-              text="View List"
-              rightIcon={<Maximize2 />}
-            />
-          </div>
-          <div className="flex w-full items-center justify-between">
-            <p>Merged Clusters</p>
-            <Button
-              primary={false}
-              onClick={() => setMergedClustersModalOpen(true)}
-              text="View List"
-              rightIcon={<Maximize2 />}
-            />
-          </div>
-          <TotalTimeDropdown
-            processSteps={processSteps}
-            startTime={startTime}
+        </div>
+        <div className="flex w-full flex-col items-center justify-center gap-8">
+          <Button
+            onClick={() =>
+              window.python.openOutputDir(outputDir).then((errorMessage) => {
+                if (errorMessage) {
+                  console.error("Error opening output directory", errorMessage);
+                }
+              })
+            }
+            leftIcon={<Folder />}
+            text="Results Folder"
+            className="w-2/3"
           />
+          <Button
+            onClick={() =>
+              window.python.showItemInFolder(outputDir + "/output.csv")
+            }
+            text="Updated Input File"
+            leftIcon={<FileText />}
+            className="w-2/3"
+          />
+          <Button
+            onClick={() => setClusterAssignmentsModalOpen(true)}
+            text="Cluster Assignments"
+            leftIcon={<List />}
+            className="w-2/3"
+          />
+          <Button
+            onClick={() => setClusterSimilarityModalOpen(true)}
+            text="Cluster Similarities"
+            leftIcon={<GitCompare />}
+            className="w-2/3"
+          />
+          <Button
+            onClick={() => setOutliersModalOpen(true)}
+            text="Outliers"
+            leftIcon={<AlertTriangle />}
+            className="w-2/3"
+          />
+          <Button
+            onClick={() => setMergedClustersModalOpen(true)}
+            text="Merged Clusters"
+            leftIcon={<GitMerge />}
+            className="w-2/3"
+          />
+          <TotalTimeDropdown path={`${outputDir}/timestamps.json`} />
         </div>
       </div>
-    </>
+    </div>
   );
 }

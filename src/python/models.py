@@ -84,3 +84,12 @@ class Merger(CamelModel):
 
 class Mergers(CamelModel):
     mergers: list[Merger]
+
+
+class TimeStamp(CamelModel):
+    name: str
+    time: int
+
+
+class TimeStamps(CamelModel):
+    time_stamps: list[TimeStamp]

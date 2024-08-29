@@ -12,7 +12,7 @@ const routes = [
 
 export function Header({ index }: { index: number }) {
   return (
-    <div className="draggable flex h-16 items-center justify-between border-b-4 border-accent p-4 text-text">
+    <div className="draggable top-0 flex h-[10vh] items-center justify-between border-b-4 border-accent bg-background p-4 pr-8 text-text">
       <Link to={"/"} className="no-drag">
         <Sigma size={32} />
       </Link>
@@ -78,15 +78,15 @@ export function Header({ index }: { index: number }) {
         </div>
       </div>
       <div id="tutorial-mode"></div>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-4">
         <button onClick={window.control.minimize}>
-          <Minus size={24} />
+          <Minus size={28} />
         </button>
         <button onClick={window.control.maximize}>
-          <Square size={24} />
+          <Square size={28} />
         </button>
         <button onClick={window.control.close}>
-          <X size={24} />
+          <X size={28} />
         </button>
       </div>
     </div>
