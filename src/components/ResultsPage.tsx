@@ -96,15 +96,8 @@ function TotalTimeDropdown({ path }: { path: string }) {
   );
 }
 
-export default function ResultsPage({
-  startTime,
-}: {
-  startTime: number | null;
-}) {
-  const [outputDir, setOutputDir] = useState<string | undefined>(
-    "C:\\Users\\Luis\\Projects\\Word-Clustering-Tool-for-SocPsych\\output\\example_short_1724951610",
-    // undefined,
-  );
+export default function ResultsPage() {
+  const [outputDir, setOutputDir] = useState<string | undefined>(undefined);
   const [args, setArgs] = useState<Args | undefined>(undefined);
   const [clusterAssignmentsModalOpen, setClusterAssignmentsModalOpen] =
     useState(false);
@@ -141,7 +134,7 @@ export default function ResultsPage({
     }
   }, [outputDir]);
 
-  if (!startTime || !args || !outputDir) {
+  if (!args || !outputDir) {
     return (
       <>
         <Header index={5} />

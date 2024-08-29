@@ -86,7 +86,7 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        {/* <Route path="/" element={<LandingPage />} /> */}
+        <Route path="/" element={<LandingPage />} />
         <Route
           path="/file"
           element={<FileSelectionPage selectedFile={file} setFile={setFile} />}
@@ -129,16 +129,7 @@ export default function App() {
           path="/clustering"
           element={<ProgressPage startTime={startTime} />}
         />
-        <Route
-          // path="/results"
-          path="/"
-          element={
-            <ResultsPage
-              // startTime={startTime}
-              startTime={501590112}
-            />
-          }
-        />
+        <Route path="/results" element={<ResultsPage />} />
       </Routes>
     </Router>
   );
