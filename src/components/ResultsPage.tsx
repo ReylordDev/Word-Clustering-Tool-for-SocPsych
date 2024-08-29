@@ -94,7 +94,7 @@ export default function ResultsPage({
   const [clusterSimilarityModalOpen, setClusterSimilarityModalOpen] =
     useState(false);
   const [outliersModalOpen, setOutliersModalOpen] = useState(false);
-  const [mergedClustersModalOpen, setMergedClustersModalOpen] = useState(true);
+  const [mergedClustersModalOpen, setMergedClustersModalOpen] = useState(false);
   const [processSteps, setProcessSteps] = useState<
     { name: string; time: number }[]
   >([]);

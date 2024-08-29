@@ -82,9 +82,7 @@ function MergedClustersModal({
                 <h2 className="text-3xl font-semibold">Merged Clusters</h2>
                 <p>
                   Merging Similarity Threshold:{" "}
-                  <span className="font-semibold">
-                    {(mergeThreshold * 100).toFixed(1)}%
-                  </span>
+                  <span className="font-semibold">{mergeThreshold * 100}%</span>
                 </p>
               </div>
               <button

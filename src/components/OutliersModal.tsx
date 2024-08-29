@@ -49,7 +49,7 @@ function OutliersModal({
     const shouldTruncate = outlier.response.length > 100;
 
     return (
-      <div className="rounded-lg border border-dashed border-accent p-4">
+      <div className="rounded-lg border bg-white p-4 shadow-md">
         <div className="flex items-start space-x-3">
           <AlertCircle className="mt-0.5 flex-shrink-0 text-accent" size={20} />
           <div className="flex-grow">
@@ -108,17 +108,32 @@ function OutliersModal({
     <>
       {isOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4">
-          <div className="w-full max-w-2xl rounded-lg bg-background shadow-xl">
-            <div className="flex items-center justify-between border-b p-6">
-              <h2 className="text-3xl font-semibold">Response Outliers</h2>
-              <button
-                onClick={() => setIsOpen(false)}
-                className="text-gray-400 hover:text-text focus:outline-none"
-              >
-                <X size={36} />
-              </button>
+          <div className="h-[90vh] w-full max-w-4xl rounded-lg bg-background shadow-xl">
+            <div className="flex h-[15vh] flex-col gap-2 border-b p-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-3xl font-semibold">Response Outliers</h2>
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="text-gray-400 hover:text-text focus:outline-none"
+                >
+                  <X size={36} />
+                </button>
+              </div>
+              <div className="rounded-b-lg">
+                <p>
+                  Displaying{" "}
+                  <span className="font-semibold">{outliers.length}</span>{" "}
+                  outlier responses.
+                </p>
+                <p className="text-sm">
+                  These responses have a lower similarity to their{" "}
+                  <span className="font-semibold">{nearestNeighbors}</span>{" "}
+                  nearest neighbors compared to the threshold (Z-score:{" "}
+                  <span className="font-semibold">{zScoreThreshold}</span>).
+                </p>
+              </div>
             </div>
-            <div className="max-h-[60vh] space-y-4 overflow-y-auto p-6">
+            <div className="flex max-h-[75vh] flex-grow flex-col gap-4 overflow-y-auto p-6">
               {outliers.map((outlier, index) => (
                 <OutlierCard
                   key={index}
@@ -126,16 +141,6 @@ function OutliersModal({
                   threshold={threshold}
                 />
               ))}
-            </div>
-            <div className="rounded-b-lg border-t px-6 py-4">
-              <p>
-                Displaying{" "}
-                <span className="font-semibold">{outliers.length}</span> outlier
-                responses.<br></br> These responses have a lower similarity to
-                their <span className="font-semibold">{nearestNeighbors}</span>{" "}
-                nearest neighbors compared to the threshold (Z-score:{" "}
-                <span className="font-semibold">{zScoreThreshold}</span>).
-              </p>
             </div>
           </div>
         </div>

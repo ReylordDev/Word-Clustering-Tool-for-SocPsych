@@ -787,6 +787,14 @@ video {
   height: 100vh;
 }
 
+.h-\[20vh\] {
+  height: 20vh;
+}
+
+.h-\[15vh\] {
+  height: 15vh;
+}
+
 .max-h-60 {
   max-height: 15rem;
 }
@@ -809,6 +817,10 @@ video {
 
 .max-h-\[80vh\] {
   max-height: 80vh;
+}
+
+.min-h-\[15vh\] {
+  min-height: 15vh;
 }
 
 .w-1\/2 {
@@ -1054,6 +1066,10 @@ video {
 
 .text-nowrap {
   text-wrap: nowrap;
+}
+
+.text-pretty {
+  text-wrap: pretty;
 }
 
 .rounded {
@@ -1485,6 +1501,10 @@ video {
 
 .opacity-75 {
   opacity: 0.75;
+}
+
+.opacity-95 {
+  opacity: 0.95;
 }
 
 .shadow-lg {
