@@ -11,9 +11,13 @@ import {
 import Button from "./Button";
 import ClusterAssignmentModal from "./ClusterAssignmentModal";
 import { useState, useEffect } from "react";
+
 import { formatTime } from "../utils";
-import OutliersModal from "./OutliersModal";
+
 import { Args } from "../models";
+
+import OutliersModal from "./OutliersModal";
+import MergedClustersModal from "./MergedClustersModal";
 import ClusterSimilarityModal from "./ClusterSimilaritiesModal";
 
 function TotalTimeDropdown({
@@ -90,6 +94,7 @@ export default function ResultsPage({
   const [clusterSimilarityModalOpen, setClusterSimilarityModalOpen] =
     useState(false);
   const [outliersModalOpen, setOutliersModalOpen] = useState(false);
+  const [mergedClustersModalOpen, setMergedClustersModalOpen] = useState(true);
   const [processSteps, setProcessSteps] = useState<
     { name: string; time: number }[]
   >([]);
@@ -171,6 +176,12 @@ export default function ResultsPage({
         isOpen={outliersModalOpen}
         setIsOpen={setOutliersModalOpen}
       />
+      <MergedClustersModal
+        path={`${outputDir}/merged_clusters.json`}
+        mergeThreshold={args.mergeThreshold}
+        isOpen={mergedClustersModalOpen}
+        setIsOpen={setMergedClustersModalOpen}
+      />
       <Header index={5} />
       <div className="my-8" />
       <div className="flex flex-col items-start justify-start gap-4 px-32">
@@ -182,7 +193,7 @@ export default function ResultsPage({
             </p>
             <Button
               primary={false}
-              onClick={() => {
+              onClick={() =>
                 window.python.openOutputDir(outputDir).then((errorMessage) => {
                   if (errorMessage) {
                     console.error(
@@ -190,8 +201,8 @@ export default function ResultsPage({
                       errorMessage,
                     );
                   }
-                });
-              }}
+                })
+              }
               rightIcon={<Folder />}
               text="Open Folder"
             />
@@ -200,9 +211,9 @@ export default function ResultsPage({
             <p>Updated Input File</p>
             <Button
               primary={false}
-              onClick={() => {
-                window.python.showItemInFolder(outputDir + "/output.csv");
-              }}
+              onClick={() =>
+                window.python.showItemInFolder(outputDir + "/output.csv")
+              }
               text="View File"
               rightIcon={<File />}
             />
@@ -211,9 +222,7 @@ export default function ResultsPage({
             <p>Cluster Assignments</p>
             <Button
               primary={false}
-              onClick={() => {
-                setClusterAssignmentsModalOpen(true);
-              }}
+              onClick={() => setClusterAssignmentsModalOpen(true)}
               text="View Table"
               rightIcon={<Maximize2 />}
             />
@@ -222,9 +231,7 @@ export default function ResultsPage({
             <p>Pairwise Cluster Similarities</p>
             <Button
               primary={false}
-              onClick={() => {
-                setClusterSimilarityModalOpen(true);
-              }}
+              onClick={() => setClusterSimilarityModalOpen(true)}
               text="View Table"
               rightIcon={<Maximize2 />}
             />
@@ -233,9 +240,7 @@ export default function ResultsPage({
             <p>Outlier Responses</p>
             <Button
               primary={false}
-              onClick={() => {
-                setOutliersModalOpen(true);
-              }}
+              onClick={() => setOutliersModalOpen(true)}
               text="View List"
               rightIcon={<Maximize2 />}
             />
@@ -244,9 +249,7 @@ export default function ResultsPage({
             <p>Merged Clusters</p>
             <Button
               primary={false}
-              onClick={() => {
-                console.log("Open Merged Clusters");
-              }}
+              onClick={() => setMergedClustersModalOpen(true)}
               text="View List"
               rightIcon={<Maximize2 />}
             />
