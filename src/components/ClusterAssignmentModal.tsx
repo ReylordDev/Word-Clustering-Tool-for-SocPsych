@@ -85,8 +85,8 @@ const ClusterAssignmentModal = ({
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4">
-      <div className="w-full max-w-3xl rounded-lg bg-background shadow-xl">
-        <div className="flex items-center justify-between border-b p-6">
+      <div className="h-[90vh] w-full max-w-4xl rounded-lg bg-background shadow-xl">
+        <div className="flex h-[10vh] items-center justify-between border-b p-6">
           <h2 className="text-3xl font-semibold">Cluster Assignments</h2>
           <button
             onClick={() => setIsOpen(false)}
@@ -95,49 +95,51 @@ const ClusterAssignmentModal = ({
             <X size={36} />
           </button>
         </div>
-        <div className="max-h-[60vh] flex-grow space-y-4 overflow-y-auto p-6">
+        <div className="max-h-[80vh] flex-grow space-y-4 overflow-y-auto p-6">
           {groupedResponses.map((group) => (
             <div
               key={group.clusterIndex}
-              className="overflow-hidden rounded-lg border border-dashed border-accent hover:bg-pink-100"
+              className="rounded-lg border bg-white shadow-md hover:bg-gray-50"
             >
               <button
                 onClick={() => toggleCluster(group.clusterIndex)}
-                className="flex w-full items-center justify-between bg-opacity-10 p-4 hover:bg-opacity-20"
+                className="flex w-full items-center justify-between p-4 px-8 focus:outline-none"
               >
-                <p className="text-xl font-semibold">
+                <h2 className="text-2xl font-semibold">
                   Cluster {group.clusterIndex + 1}
-                </p>
+                </h2>
                 {expandedClusters.includes(group.clusterIndex) ? (
-                  <ChevronUp className="text-text" size={20} />
+                  <ChevronUp className="text-primary" size={32} />
                 ) : (
-                  <ChevronDown className="text-text" size={20} />
+                  <ChevronDown className="text-primary" size={32} />
                 )}
               </button>
               {expandedClusters.includes(group.clusterIndex) && (
-                <div className="p-4">
-                  {group.responses.map((response, index) => (
-                    <div key={index} className="rounded bg-background p-3">
-                      {/* TODO: Better Line Clamping */}
-                      <p className="line-clamp-2">"{response.response}"</p>
-                      <div className="mt-2 flex items-center justify-between px-2 text-sm">
-                        <p>
-                          Similarity to cluster center:{" "}
-                          <span className="font-semibold">
-                            {(response.similarity * 100).toFixed(1)}%
+                <div className="overflow-hidden rounded-lg border border-dashed border-primary">
+                  <div className="p-4">
+                    {group.responses.map((response, index) => (
+                      <div key={index} className="rounded p-3 py-5">
+                        {/* TODO: Better Line Clamping */}
+                        <p className="line-clamp-2">"{response.response}"</p>
+                        <div className="mt-3 flex items-end justify-between">
+                          <div className="flex w-full flex-col">
+                            <p>Similarity to cluster center: </p>
+                            <div className="h-2.5 rounded-full bg-gray-200">
+                              <div
+                                className="h-2.5 rounded-full bg-primary"
+                                style={{
+                                  width: `${response.similarity * 100}%`,
+                                }}
+                              ></div>
+                            </div>
+                          </div>
+                          <span className="flex w-28 items-center justify-end gap-2 text-xl">
+                            {(response.similarity * 100).toFixed(2)}%
                           </span>
-                        </p>
-                        <div className="h-2.5 w-1/2 rounded-full bg-gray-200">
-                          <div
-                            className="h-2.5 rounded-full bg-accent"
-                            style={{
-                              width: `${response.similarity * 100}%`,
-                            }}
-                          ></div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
