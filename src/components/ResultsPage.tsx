@@ -81,7 +81,7 @@ export default function ResultsPage({
   startTime: number | null;
 }) {
   const [outputDir, setOutputDir] = useState<string | undefined>(
-    "C:\\Users\\Luis\\Projects\\Word-Clustering-Tool-for-SocPsych\\output\\example_short_1724854526",
+    "C:\\Users\\Luis\\Projects\\Word-Clustering-Tool-for-SocPsych\\output\\example_1724918395",
     // undefined,
   );
   const [args, setArgs] = useState<Args | undefined>(undefined);

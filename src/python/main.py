@@ -11,7 +11,7 @@ from loguru import logger
 import argparse
 import time
 
-from models import Args
+from models import Args, Cluster, Response, Merger, Mergers
 
 progression_messages = {
     "process_input_file": "Reading input file",
@@ -174,6 +174,35 @@ def merge(
     )
     meta_clustering.fit(np.asarray(cluster_centers))
 
+    # # Just to make the merging process more transparent, get the word
+    # # that is closest to each cluster center
+    # S = np.dot(cluster_centers, embeddings.T)
+    # exemplars = []
+    # for k in range(cluster_centers.shape[0]):
+    #     exemplars.append(words[np.argmax(S[k, :])])
+
+    mergers: list[Merger] = []
+    for label in np.unique(meta_clustering.labels_):
+        merged = np.where(meta_clustering.labels_ == label)[0]
+        if len(merged) > 1:
+            S = np.dot(cluster_centers[merged, :], cluster_centers[merged, :].T)
+            triu_indices = np.triu_indices(len(S), k=1)
+            similarity_pairs = []
+            for i, j in zip(triu_indices[0].tolist(), triu_indices[1].tolist()):
+                similarity_pairs.append(
+                    {"cluster_pair": [merged[i], merged[j]], "similarity": S[i, j]}
+                )
+            mergers.append(
+                Merger(
+                    merged_clusters=[
+                        Cluster(index=cluster_idx, responses=[])
+                        for cluster_idx in merged
+                    ],
+                    similarity_pairs=similarity_pairs,
+                )
+            )
+    logger.debug(mergers)
+
     # override the original k-means result with the merged clusters
     K_new = len(np.unique(meta_clustering.labels_))
     for i in range(len(cluster_idxs)):
@@ -194,11 +223,10 @@ def merge(
     )
     logger.info(f"COMPLETED: {progression_messages['merge']}")
     timestamps["merge"] = int(time.time())
-    return cluster_idxs, cluster_centers
+    return cluster_idxs, cluster_centers, mergers
 
 
 def save_cluster_assignments(
-    input_file_name: str,
     output_dir: str,
     K: int,
     cluster_idxs: np.ndarray,
@@ -360,6 +388,40 @@ def save_outliers(output_dir: str, outlier_stats: list[dict]):
         json.dump(outlier_stats, f)
 
 
+def save_merged_clusters(
+    output_dir: str,
+    mergers: list[Merger],
+    cluster_idxs: np.ndarray,
+    centers: np.ndarray,
+    embeddings: np.ndarray,
+    responses: list[str],
+):
+    merged_clusters_file = output_dir + "/merged_clusters.json"
+    for merger in mergers:
+        merger.merged_clusters
+        merger.similarity_pairs
+
+        for cluster in merger.merged_clusters:
+            in_cluster = np.where(cluster_idxs == cluster.index)[0]
+
+            if len(in_cluster) == 0:
+                continue
+
+            sim = np.dot(embeddings[in_cluster, :], centers[cluster.index, :])
+            exemplars = []
+            for i in np.argsort(-sim):
+                cluster_col_idx = in_cluster[i]
+                r = responses[cluster_col_idx]
+                s = sim[i].item()
+                exemplars.append(Response(response=r, similarity=s))
+
+            cluster.responses = exemplars
+
+    mergers_model: Mergers = Mergers(mergers=mergers)
+    with open(merged_clusters_file, "w") as f:
+        f.write(mergers_model.model_dump_json(by_alias=True))
+
+
 def save_timestamps(output_dir: str):
     timestamps_file = output_dir + "/timestamps.json"
     with open(timestamps_file, "w") as f:
@@ -446,8 +508,11 @@ def main(
 
     cluster_idxs, cluster_centers = cluster(embeddings, K, sample_weights, seed)
 
+    pre_merge_cluster_idxs = np.copy(cluster_idxs)
+    pre_merge_centers = np.copy(cluster_centers)
+
     if merge_threshold is not None and merge_threshold < 1.0:
-        cluster_idxs, cluster_centers = merge(
+        cluster_idxs, cluster_centers, merged_clusters = merge(
             merge_threshold, cluster_idxs, cluster_centers, embeddings, sample_weights
         )
 
@@ -464,7 +529,6 @@ def main(
     logger.info(f"OUTPUT_DIR: {os.path.abspath(output_dir)}")
 
     save_cluster_assignments(
-        input_file_name,
         output_dir,
         K,
         cluster_idxs,
@@ -477,6 +541,15 @@ def main(
     save_pairwise_similarities(output_dir, cluster_centers, delimiter)
 
     save_outliers(output_dir, outlier_stats)
+
+    save_merged_clusters(
+        output_dir,
+        merged_clusters,
+        pre_merge_cluster_idxs,
+        pre_merge_centers,
+        embeddings,
+        words_remaining,
+    )
 
     save_amended_file(
         input_file_name,

@@ -60,3 +60,27 @@ class Args(CamelModel):
     log_dir: str
     log_level: str
     output_dir: str
+
+
+class SimilarityPair(CamelModel):
+    cluster_pair: list[int]
+    similarity: float
+
+
+class Response(CamelModel):
+    response: str
+    similarity: float
+
+
+class Cluster(CamelModel):
+    index: int
+    responses: list[Response]
+
+
+class Merger(CamelModel):
+    merged_clusters: list[Cluster]
+    similarity_pairs: list[SimilarityPair]
+
+
+class Mergers(CamelModel):
+    mergers: list[Merger]
