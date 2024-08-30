@@ -31,11 +31,14 @@ contextBridge.exposeInMainWorld("python", {
       AlgorithmSettings,
     );
   },
-  getOutputDir: async () => {
-    return await ipcRenderer.invoke("python:getOutputDir");
+  getResultsDir: async () => {
+    return await ipcRenderer.invoke("python:getResultsDir");
   },
-  openOutputDir: async (outputDir: string) => {
-    return await ipcRenderer.invoke("python:openOutputDir", outputDir);
+  openResultsDir: async (resultsDir: string) => {
+    return await ipcRenderer.invoke("python:openResultsDir", resultsDir);
+  },
+  fetchPreviousResults: async () => {
+    return await ipcRenderer.invoke("python:fetchPreviousResults");
   },
   pollClusterProgress: async () => {
     return await ipcRenderer.invoke("python:pollClusterProgress");

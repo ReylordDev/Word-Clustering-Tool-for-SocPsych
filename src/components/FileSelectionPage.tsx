@@ -3,6 +3,9 @@ import { TitleBar } from "./TitleBar";
 // import { FileSelector } from "./FileSelector";
 import { Database, FileText, FileSearch, Upload } from "lucide-react";
 import Button from "./Button";
+import PreviousResultModal from "./PreviousResultModal";
+import { useState } from "react";
+import { on } from "events";
 
 function FileSelector({
   setFilePath,
@@ -74,6 +77,8 @@ export default function FileSelectionPage({
   filePath: string | null;
   setFilePath: (path: string) => void;
 }) {
+  const [previousResultModalOpen, setPreviousResultModalOpen] = useState(false);
+
   const submitExampleFile = () => {
     console.log("not implemented");
   };
@@ -88,6 +93,13 @@ export default function FileSelectionPage({
     <>
       <TitleBar index={0} />
       <div id="mainContent" className="mt-8 flex flex-col gap-12 px-24">
+        <PreviousResultModal
+          isOpen={previousResultModalOpen}
+          setIsOpen={setPreviousResultModalOpen}
+          onSelect={(result) =>
+            navigate("/results", { state: { resultsDir: result } })
+          }
+        />
         <div className="flex w-full flex-col gap-2">
           <h1 className="text-5xl">
             <span className="text-accent">Word</span>{" "}
@@ -121,7 +133,7 @@ export default function FileSelectionPage({
                 primary={false}
                 leftIcon={<Database size={24} />}
                 text="Review Previous Result"
-                onClick={() => console.log("not implemented")}
+                onClick={() => setPreviousResultModalOpen(true)}
               />
             </div>
           </div>

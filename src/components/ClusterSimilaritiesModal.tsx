@@ -443,7 +443,7 @@ function ClusterSimilarityModal({
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4">
       <div className="h-[90vh] w-full max-w-4xl rounded-lg bg-background shadow-xl">
-        <div className="h-[10vh] p-6">
+        <div className="h-[13vh] border-b p-6 pb-4">
           <div className="flex items-center justify-between">
             <h2 className="text-3xl font-semibold">Cluster Similarities</h2>
             <button
@@ -458,7 +458,7 @@ function ClusterSimilarityModal({
             <p>Select a cluster to view details and compare similarities.</p>
           </div>
         </div>
-        <div className="max-h-[80vh] flex-grow overflow-y-auto p-6">
+        <div className="max-h-[77vh] flex-grow overflow-y-auto p-6">
           <div className="flex flex-col justify-start gap-1 px-4 py-2">
             <h5 className="font-medium">Select a cluster:</h5>
             <MainClusterSelector />

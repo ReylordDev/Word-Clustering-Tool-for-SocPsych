@@ -23,6 +23,7 @@ import { Args } from "../models";
 import OutliersModal from "./OutliersModal";
 import MergedClustersModal from "./MergedClustersModal";
 import ClusterSimilarityModal from "./ClusterSimilaritiesModal";
+import { useLocation } from "react-router-dom";
 
 interface TimeStamp {
   name: string;
@@ -97,10 +98,7 @@ function TotalTimeDropdown({ path }: { path: string }) {
 }
 
 export default function ResultsPage() {
-  const [outputDir, setOutputDir] = useState<string | undefined>(
-    "C:\\Users\\Luis\\Projects\\Word-Clustering-Tool-for-SocPsych\\output\\example_short_1724951610",
-    // undefined
-  );
+  const [resultsDir, setResultsDir] = useState<string | undefined>(undefined);
   const [args, setArgs] = useState<Args | undefined>(undefined);
   const [clusterAssignmentsModalOpen, setClusterAssignmentsModalOpen] =
     useState(false);
@@ -109,11 +107,18 @@ export default function ResultsPage() {
   const [outliersModalOpen, setOutliersModalOpen] = useState(false);
   const [mergedClustersModalOpen, setMergedClustersModalOpen] = useState(false);
 
+  if (!resultsDir) {
+    const state = useLocation().state;
+    if (state && state.resultsDir) {
+      setResultsDir(state.resultsDir);
+    }
+  }
+
   useEffect(() => {
     window.python
-      .getOutputDir()
+      .getResultsDir()
       .then((dir) => {
-        if (dir) setOutputDir(dir);
+        if (dir) setResultsDir(dir);
       })
       .catch((err) => {
         console.error(err);
@@ -121,10 +126,10 @@ export default function ResultsPage() {
   }, []);
 
   useEffect(() => {
-    if (!outputDir) return;
+    if (!resultsDir) return;
     try {
       window.python
-        .readJsonFile(`${outputDir}/args.json`)
+        .readJsonFile(`${resultsDir}/args.json`)
         .then((args) => {
           console.log(args);
           setArgs(args as Args);
@@ -135,9 +140,9 @@ export default function ResultsPage() {
     } catch (err) {
       console.error(err);
     }
-  }, [outputDir]);
+  }, [resultsDir]);
 
-  if (!args || !outputDir) {
+  if (!args || !resultsDir) {
     return (
       <>
         <TitleBar index={4} />
@@ -160,27 +165,27 @@ export default function ResultsPage() {
       <TitleBar index={4} />
       <div id="mainContent" className="h-[90vh] w-full">
         <ClusterAssignmentModal
-          path={`${outputDir}/cluster_assignments.csv`}
+          path={`${resultsDir}/cluster_assignments.csv`}
           delimiter={args.delimiter}
           isOpen={clusterAssignmentsModalOpen}
           setIsOpen={setClusterAssignmentsModalOpen}
         />
         <ClusterSimilarityModal
-          similaritiesPath={`${outputDir}/pairwise_similarities.json`}
-          clusterAssignmentsPath={`${outputDir}/cluster_assignments.csv`}
+          similaritiesPath={`${resultsDir}/pairwise_similarities.json`}
+          clusterAssignmentsPath={`${resultsDir}/cluster_assignments.csv`}
           delimiter={args.delimiter}
           isOpen={clusterSimilarityModalOpen}
           setIsOpen={setClusterSimilarityModalOpen}
         />
         <OutliersModal
-          path={`${outputDir}/outliers.json`}
+          path={`${resultsDir}/outliers.json`}
           nearestNeighbors={args.nearestNeighbors}
           zScoreThreshold={args.zScoreThreshold}
           isOpen={outliersModalOpen}
           setIsOpen={setOutliersModalOpen}
         />
         <MergedClustersModal
-          path={`${outputDir}/merged_clusters.json`}
+          path={`${resultsDir}/merged_clusters.json`}
           mergeThreshold={args.mergeThreshold}
           isOpen={mergedClustersModalOpen}
           setIsOpen={setMergedClustersModalOpen}
@@ -198,14 +203,16 @@ export default function ResultsPage() {
           <div className="flex w-full flex-col items-center justify-center gap-8">
             <Button
               onClick={() =>
-                window.python.openOutputDir(outputDir).then((errorMessage) => {
-                  if (errorMessage) {
-                    console.error(
-                      "Error opening output directory",
-                      errorMessage,
-                    );
-                  }
-                })
+                window.python
+                  .openResultsDir(resultsDir)
+                  .then((errorMessage) => {
+                    if (errorMessage) {
+                      console.error(
+                        "Error opening output directory",
+                        errorMessage,
+                      );
+                    }
+                  })
               }
               leftIcon={<Folder />}
               text="Results Folder"
@@ -213,7 +220,7 @@ export default function ResultsPage() {
             />
             <Button
               onClick={() =>
-                window.python.showItemInFolder(outputDir + "/output.csv")
+                window.python.showItemInFolder(resultsDir + "/output.csv")
               }
               text="Updated Input File"
               leftIcon={<FileText />}
@@ -243,7 +250,7 @@ export default function ResultsPage() {
               leftIcon={<GitMerge />}
               className="w-2/3"
             />
-            <TotalTimeDropdown path={`${outputDir}/timestamps.json`} />
+            <TotalTimeDropdown path={`${resultsDir}/timestamps.json`} />
           </div>
         </div>
       </div>

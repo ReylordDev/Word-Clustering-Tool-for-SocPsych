@@ -44,7 +44,8 @@ let currentTask: [string, number] | null = null;
 const completedTasks: [string, number][] = [];
 let mainWindow: BrowserWindow;
 let startupScriptHasRun = false;
-let outputDir: string | undefined;
+const outputDir = path.join(dataDir, "output");
+let resultsDir: string | undefined;
 
 // Force single instance application
 if (!app.requestSingleInstanceLock()) {
@@ -85,7 +86,7 @@ const parseCompletedMessage = (data: string) => {
   return parseLogMessage(data, "COMPLETED");
 };
 
-const parseOutputDirMessage = (data: string) => {
+const parseResultsDirMessage = (data: string) => {
   return parseLogMessage(data, "OUTPUT_DIR");
 };
 
@@ -117,18 +118,16 @@ const startScript = async (
     algorithmSettings.seed.toString(),
     "--merge_threshold",
     algorithmSettings.advancedOptions.similarityThreshold.toString(),
+    "--output_dir",
+    outputDir,
   ];
   if (isDev()) {
     pythonArguments[1] = path.join(rootDir, "src", "python", "main.py");
     pythonArguments.push("--log_level");
     pythonArguments.push("DEBUG");
-    pythonArguments.push("--output_dir");
-    pythonArguments.push("output");
   } else {
     pythonArguments.push("--log_dir");
     pythonArguments.push(path.join(dataDir, "logs", "python"));
-    pythonArguments.push("--output_dir");
-    pythonArguments.push(path.join(dataDir, "output"));
   }
   if (fileSettings.hasHeader) {
     pythonArguments.push("--has_headers");
@@ -202,13 +201,13 @@ const startScript = async (
       if (data.includes("OUTPUT_DIR: ")) {
         console.log("Output dir message received");
         console.log(data.toString());
-        outputDir = parseOutputDirMessage(data.toString());
-        console.log(outputDir);
-        if (!outputDir) {
+        resultsDir = parseResultsDirMessage(data.toString());
+        console.log(resultsDir);
+        if (!resultsDir) {
           console.log("Output dir parsing failed.");
           return;
         }
-        console.log(`Output directory: ${outputDir}`);
+        console.log(`Output directory: ${resultsDir}`);
       }
       const dataString = data.toString() as string;
       console.log(`stderr: ${dataString.replace("\n", "")}`);
@@ -432,13 +431,47 @@ app.on("ready", async () => {
     });
   });
 
-  ipcMain.handle("python:getOutputDir", async () => {
-    return outputDir;
+  ipcMain.handle("python:getResultsDir", async () => {
+    return resultsDir;
   });
 
-  ipcMain.handle("python:openOutputDir", (event, outputDir: string) => {
-    console.log(`Opening output directory: ${outputDir}`);
-    return shell.openPath(outputDir);
+  // TODO: This doesn't need an argument
+  ipcMain.handle("python:openResultsDir", (event, resultsDir: string) => {
+    console.log(`Opening results directory: ${resultsDir}`);
+    return shell.openPath(resultsDir);
+  });
+
+  ipcMain.handle("python:fetchPreviousResults", async () => {
+    return new Promise<
+      {
+        name: string;
+        date: string;
+        original: string;
+      }[]
+    >((resolve, reject) => {
+      fs.readdir(outputDir, (err, files) => {
+        if (err) {
+          console.error(err);
+          reject(err);
+        }
+        const results: {
+          name: string;
+          date: string;
+          original: string;
+        }[] = [];
+        files.forEach((fileName) => {
+          const parts = fileName.split("_");
+          const timestamp = parts.pop();
+          const name = parts.join("_");
+          results.push({
+            name,
+            date: timestamp ? formatDate(parseInt(timestamp)) : "Invalid Date",
+            original: path.join(outputDir, fileName),
+          });
+        });
+        resolve(results);
+      });
+    });
   });
 
   ipcMain.on("control:minimize", () => mainWindow.minimize());
@@ -493,8 +526,15 @@ declare global {
       isPythonInstalled: () => Promise<boolean>;
       hasMinimalPythonVersion: () => Promise<boolean>;
       runSetupScript: () => Promise<void>;
-      getOutputDir: () => Promise<string | undefined>;
-      openOutputDir: (outputDir: string) => Promise<string>;
+      getResultsDir: () => Promise<string | undefined>;
+      openResultsDir: (outputDir: string) => Promise<string>;
+      fetchPreviousResults: () => Promise<
+        {
+          name: string;
+          date: string;
+          original: string;
+        }[]
+      >;
       onSetupScriptMessage: (
         listener: (event: unknown, message: string) => void,
       ) => void;
@@ -506,3 +546,15 @@ declare global {
     };
   }
 }
+
+const formatDate = (timestamp: number) => {
+  const date = new Date(timestamp * 1000);
+  return date.toLocaleDateString(app.getSystemLocale(), {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+  });
+};
