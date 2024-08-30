@@ -227,7 +227,7 @@ const createMainWindow = () => {
     width: 1024,
     titleBarStyle: "hidden",
     titleBarOverlay: {
-      color: "#f9f4fd",
+      color: "rgba(255,255,255,0)",
       symbolColor: "#140621",
       height: 60,
     },
