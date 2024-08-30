@@ -650,11 +650,6 @@ video {
   margin-bottom: 1.5rem;
 }
 
-.my-8 {
-  margin-top: 2rem;
-  margin-bottom: 2rem;
-}
-
 .mb-2 {
   margin-bottom: 0.5rem;
 }
@@ -697,6 +692,10 @@ video {
 
 .mt-4 {
   margin-top: 1rem;
+}
+
+.mt-8 {
+  margin-top: 2rem;
 }
 
 .line-clamp-1 {
@@ -743,11 +742,6 @@ video {
   height: 1.5rem;
 }
 
-.size-8 {
-  width: 2rem;
-  height: 2rem;
-}
-
 .h-1 {
   height: 0.25rem;
 }
@@ -784,10 +778,6 @@ video {
   height: 16vh;
 }
 
-.h-\[64px\] {
-  height: 64px;
-}
-
 .h-\[90vh\] {
   height: 90vh;
 }
@@ -798,10 +788,6 @@ video {
 
 .h-screen {
   height: 100vh;
-}
-
-.h-24 {
-  height: 6rem;
 }
 
 .max-h-60 {
@@ -862,10 +848,6 @@ video {
 
 .w-32 {
   width: 8rem;
-}
-
-.w-36 {
-  width: 9rem;
 }
 
 .w-48 {
@@ -1043,12 +1025,6 @@ video {
   margin-bottom: calc(1rem * var(--tw-space-y-reverse));
 }
 
-.space-x-2 > :not([hidden]) ~ :not([hidden]) {
-  --tw-space-x-reverse: 0;
-  margin-right: calc(0.5rem * var(--tw-space-x-reverse));
-  margin-left: calc(0.5rem * calc(1 - var(--tw-space-x-reverse)));
-}
-
 .overflow-auto {
   overflow: auto;
 }
@@ -1124,10 +1100,6 @@ video {
 
 .border-b {
   border-bottom-width: 1px;
-}
-
-.border-b-4 {
-  border-bottom-width: 4px;
 }
 
 .border-r {
@@ -1361,12 +1333,12 @@ video {
   padding-left: 1.25rem;
 }
 
-.pr-4 {
-  padding-right: 1rem;
+.pl-8 {
+  padding-left: 2rem;
 }
 
-.pr-8 {
-  padding-right: 2rem;
+.pr-4 {
+  padding-right: 1rem;
 }
 
 .pt-8 {
@@ -1728,6 +1700,29 @@ small {
 
 button {
   -webkit-app-region: no-drag;
+}
+
+:root {
+  --fallback-title-bar-height: 60px;
+}
+
+#titleBarContainer {
+  top: env(titlebar-area-y, 0);
+  height: env(titlebar-area-height, var(--fallback-title-bar-height));
+}
+
+#titleBar {
+  left: env(titlebar-area-x, 0);
+  width: env(titlebar-area-width, 100%);
+}
+
+#mainContent {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: env(titlebar-area-height, var(--fallback-title-bar-height));
+  overflow-y: scroll;
 }
 
 .hover\:bg-blue-600:hover {

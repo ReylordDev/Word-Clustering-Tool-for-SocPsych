@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Header } from "./Header";
+import { TitleBar } from "./TitleBar";
 import { useState, useEffect } from "react";
 import { Clock, Check, Square } from "lucide-react";
 import { formatTime } from "../utils";
@@ -64,8 +64,11 @@ export default function ProgressPage({
   if (!startTime) {
     return (
       <>
-        <Header index={4} />
-        <div className="flex flex-col items-center justify-start gap-4 px-24">
+        <TitleBar index={4} />
+        <div
+          id="mainContent"
+          className="flex flex-col items-center justify-start gap-4 px-24"
+        >
           <div className="mt-24 flex w-full justify-center p-8">
             <h1 className="text-4xl">No Clustering in Progress</h1>
           </div>
@@ -80,8 +83,11 @@ export default function ProgressPage({
 
   return (
     <>
-      <Header index={4} />
-      <div className="flex flex-col items-center justify-start gap-12 px-24">
+      <TitleBar index={4} />
+      <div
+        id="mainContent"
+        className="flex flex-col items-center justify-start gap-12 px-24"
+      >
         <div className="flex w-full items-center justify-between p-8">
           <h1 className="text-4xl">Clustering in Progress</h1>
           <div className="flex items-center justify-start gap-2">

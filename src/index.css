@@ -127,3 +127,26 @@ small {
 button {
   -webkit-app-region: no-drag;
 }
+
+:root {
+  --fallback-title-bar-height: 60px;
+}
+
+#titleBarContainer {
+  top: env(titlebar-area-y, 0);
+  height: env(titlebar-area-height, var(--fallback-title-bar-height));
+}
+
+#titleBar {
+  left: env(titlebar-area-x, 0);
+  width: env(titlebar-area-width, 100%);
+}
+
+#mainContent {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: env(titlebar-area-height, var(--fallback-title-bar-height));
+  overflow-y: scroll;
+}

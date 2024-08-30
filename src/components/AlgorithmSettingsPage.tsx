@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Header } from "./Header";
+import { TitleBar } from "./TitleBar";
 import { useState } from "react";
 import ExcludedWordsEditor from "./ExcludedWordsEditor";
 import AdvancedOptionsEditor from "./AdvancedOptionsEditor";
@@ -96,93 +96,95 @@ export default function AlgorithmSettingsPage({
 
   return (
     <>
-      <Header index={3} />
-      <ExcludedWordsEditor
-        isOpen={isExcludedWordsEditorOpen}
-        onClose={() => setIsExcludedWordsEditorOpen(false)}
-        initialWords={excludedWords}
-        onSave={handleExcludedWordsSave}
-      />
-      <AdvancedOptionsEditor
-        isOpen={isAdvancedOptionsEditorOpen}
-        onClose={() => setIsAdvancedOptionsEditorOpen(false)}
-        options={advancedOptionsConfig}
-        initialValues={advancedOptions}
-        onSave={handleAdvancedOptionsSave}
-      />
-      <div className="flex flex-col justify-start bg-blue-300 px-24">
-        <div className="flex flex-col gap-8 bg-red-300">
-          <div></div>
-          <div className="h-1 w-full bg-accent"></div>
-          <div className="flex items-center justify-between pr-4">
-            <h5>Automatically choose number of clusters</h5>
-            <input
-              type="checkbox"
-              checked={autoChooseClusters}
-              onChange={() => {
-                setAutoChooseClusters(!autoChooseClusters);
-                if (autoChooseClusters) {
-                  setClusterCount(undefined);
-                } else {
-                  setMaxClusters(undefined);
-                }
-              }}
-            />
-          </div>
-          {autoChooseClusters && (
+      <TitleBar index={3} />
+      <div id="mainContent">
+        <ExcludedWordsEditor
+          isOpen={isExcludedWordsEditorOpen}
+          onClose={() => setIsExcludedWordsEditorOpen(false)}
+          initialWords={excludedWords}
+          onSave={handleExcludedWordsSave}
+        />
+        <AdvancedOptionsEditor
+          isOpen={isAdvancedOptionsEditorOpen}
+          onClose={() => setIsAdvancedOptionsEditorOpen(false)}
+          options={advancedOptionsConfig}
+          initialValues={advancedOptions}
+          onSave={handleAdvancedOptionsSave}
+        />
+        <div className="flex flex-col justify-start bg-blue-300 px-24">
+          <div className="flex flex-col gap-8 bg-red-300">
+            <div></div>
+            <div className="h-1 w-full bg-accent"></div>
             <div className="flex items-center justify-between pr-4">
-              <h5>Max clusters</h5>
+              <h5>Automatically choose number of clusters</h5>
               <input
-                type="number"
-                value={maxClusters || ""}
-                onChange={(e) => setMaxClusters(parseInt(e.target.value))}
+                type="checkbox"
+                checked={autoChooseClusters}
+                onChange={() => {
+                  setAutoChooseClusters(!autoChooseClusters);
+                  if (autoChooseClusters) {
+                    setClusterCount(undefined);
+                  } else {
+                    setMaxClusters(undefined);
+                  }
+                }}
               />
             </div>
-          )}
-          {!autoChooseClusters && (
+            {autoChooseClusters && (
+              <div className="flex items-center justify-between pr-4">
+                <h5>Max clusters</h5>
+                <input
+                  type="number"
+                  value={maxClusters || ""}
+                  onChange={(e) => setMaxClusters(parseInt(e.target.value))}
+                />
+              </div>
+            )}
+            {!autoChooseClusters && (
+              <div className="flex items-center justify-between pr-4">
+                <h5>Clusters</h5>
+                <input
+                  type="number"
+                  value={clusterCount || ""}
+                  onChange={(e) => setClusterCount(parseInt(e.target.value))}
+                />
+              </div>
+            )}
             <div className="flex items-center justify-between pr-4">
-              <h5>Clusters</h5>
+              <h5>Excluded Words ({excludedWords.length})</h5>
+              <button
+                onClick={() => setIsExcludedWordsEditorOpen(true)}
+                className="w-32 rounded-2xl bg-secondary p-2 px-4 text-background"
+              >
+                Edit
+              </button>
+            </div>
+            <div className="flex items-center justify-between pr-4">
+              <h5>Seed</h5>
               <input
                 type="number"
-                value={clusterCount || ""}
-                onChange={(e) => setClusterCount(parseInt(e.target.value))}
+                value={seed}
+                onChange={(e) => setSeed(parseInt(e.target.value))}
               />
             </div>
-          )}
-          <div className="flex items-center justify-between pr-4">
-            <h5>Excluded Words ({excludedWords.length})</h5>
-            <button
-              onClick={() => setIsExcludedWordsEditorOpen(true)}
-              className="w-32 rounded-2xl bg-secondary p-2 px-4 text-background"
-            >
-              Edit
-            </button>
+            <div className="h-1 w-full bg-accent"></div>
           </div>
-          <div className="flex items-center justify-between pr-4">
-            <h5>Seed</h5>
-            <input
-              type="number"
-              value={seed}
-              onChange={(e) => setSeed(parseInt(e.target.value))}
-            />
-          </div>
-          <div className="h-1 w-full bg-accent"></div>
-        </div>
-        <div className="flex items-center justify-between bg-green-300">
-          <button
-            className="rounded-2xl bg-secondary p-2 px-4 text-background"
-            onClick={() => setIsAdvancedOptionsEditorOpen(true)}
-          >
-            Show Advanced Options
-          </button>
-          <Link to="/clustering">
+          <div className="flex items-center justify-between bg-green-300">
             <button
-              className="w-48 rounded-full bg-primary p-4 px-8 text-background"
-              onClick={submitAlgorithmSettings}
+              className="rounded-2xl bg-secondary p-2 px-4 text-background"
+              onClick={() => setIsAdvancedOptionsEditorOpen(true)}
             >
-              <h5>Start</h5>
+              Show Advanced Options
             </button>
-          </Link>
+            <Link to="/clustering">
+              <button
+                className="w-48 rounded-full bg-primary p-4 px-8 text-background"
+                onClick={submitAlgorithmSettings}
+              >
+                <h5>Start</h5>
+              </button>
+            </Link>
+          </div>
         </div>
       </div>
     </>

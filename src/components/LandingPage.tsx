@@ -1,11 +1,14 @@
 import { Link } from "react-router-dom";
-import { Header } from "./Header";
+import { TitleBar } from "./TitleBar";
 
 export default function LandingPage() {
   return (
     <>
-      <Header index={0} />
-      <div className="flex flex-col items-center gap-4 px-24 py-12">
+      <TitleBar index={0} />
+      <div
+        id="mainContent"
+        className="flex flex-col items-center gap-4 px-24 py-12"
+      >
         <h1 className="text-4xl">
           <span className="text-accent">Word</span>{" "}
           <span className="font-bold text-primary">Clustering</span>

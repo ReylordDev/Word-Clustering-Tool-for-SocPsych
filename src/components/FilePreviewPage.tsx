@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Header } from "./Header";
+import { TitleBar } from "./TitleBar";
 import { useEffect, useState } from "react";
 import Toggle from "./Toggle";
 import ColumnHeader from "./ColumnHeader";
@@ -67,8 +67,8 @@ export default function FilePreviewPage({
   if (!file) {
     return (
       <>
-        <Header index={2} />
-        <div className="flex flex-col justify-start px-24">
+        <TitleBar index={2} />
+        <div id="mainContent" className="flex flex-col justify-start px-24">
           <h1 className="text-center text-2xl font-bold">
             No file selected. Please select a file first.
           </h1>
@@ -79,8 +79,8 @@ export default function FilePreviewPage({
 
   return (
     <>
-      <Header index={2} />
-      <div className="flex flex-col justify-start gap-4 px-24">
+      <TitleBar index={2} />
+      <div id="mainContent" className="flex flex-col justify-start gap-4 px-24">
         <h1 className="flex items-center justify-center p-8 text-4xl">
           File Preview
         </h1>
