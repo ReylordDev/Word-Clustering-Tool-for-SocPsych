@@ -64,7 +64,7 @@ export default function ProgressPage({
   if (!startTime) {
     return (
       <>
-        <TitleBar index={4} />
+        <TitleBar index={3} />
         <div
           id="mainContent"
           className="flex flex-col items-center justify-start gap-4 px-24"
@@ -83,7 +83,7 @@ export default function ProgressPage({
 
   return (
     <>
-      <TitleBar index={4} />
+      <TitleBar index={3} />
       <div
         id="mainContent"
         className="flex flex-col items-center justify-start gap-12 px-24"

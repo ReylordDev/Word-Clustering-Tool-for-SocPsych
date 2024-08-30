@@ -7,7 +7,7 @@ import Button from "./Button";
 import { ArrowRightCircle } from "lucide-react";
 
 export default function FilePreviewPage({
-  file,
+  filePath,
   hasHeader,
   setHasHeader,
   delimiter,
@@ -15,7 +15,7 @@ export default function FilePreviewPage({
   selectedColumns,
   setSelectedColumns,
 }: {
-  file: File | null;
+  filePath: string | null;
   hasHeader: boolean;
   setHasHeader: (hasHeader: boolean) => void;
   delimiter: string;
@@ -24,7 +24,6 @@ export default function FilePreviewPage({
   setSelectedColumns: (selectedColumns: number[]) => void;
 }) {
   const [previewData, setPreviewData] = useState<string[][]>([]);
-  const filePath = file?.path;
 
   console.log(filePath);
   console.log(hasHeader);
@@ -64,10 +63,10 @@ export default function FilePreviewPage({
       : setSelectedColumns([...selectedColumns, index]);
   };
 
-  if (!file) {
+  if (!filePath) {
     return (
       <>
-        <TitleBar index={2} />
+        <TitleBar index={1} />
         <div id="mainContent" className="flex flex-col justify-start px-24">
           <h1 className="text-center text-2xl font-bold">
             No file selected. Please select a file first.
@@ -79,7 +78,7 @@ export default function FilePreviewPage({
 
   return (
     <>
-      <TitleBar index={2} />
+      <TitleBar index={1} />
       <div id="mainContent" className="flex flex-col justify-start gap-4 px-24">
         <h1 className="flex items-center justify-center p-8 text-4xl">
           File Preview

@@ -1,7 +1,6 @@
 import { MemoryRouter as Router, Routes, Route } from "react-router-dom";
 import { useState } from "react";
 
-import LandingPage from "../components/LandingPage";
 import FileSelectionPage from "../components/FileSelectionPage";
 import FilePreviewPage from "../components/FilePreviewPage";
 import AlgorithmSettingsPage from "../components/AlgorithmSettingsPage";
@@ -15,7 +14,7 @@ import {
 } from "../models";
 
 export default function App() {
-  const [file, setFile] = useState<File | null>(null);
+  const [filePath, setFilePath] = useState<string | null>(null);
   const [hasHeader, setHasHeader] = useState(true);
   const [delimiter, setDelimiter] = useState(",");
   const [selectedColumns, setSelectedColumns] = useState<number[]>([]);
@@ -35,18 +34,18 @@ export default function App() {
     languageModel: "BAAI/bge-large-en-v1.5",
   });
   const [startTime, setStartTime] = useState<number | null>(null);
-  console.log("Mother State, File: ", file?.path);
+  console.log("Mother State, File: ", filePath);
   console.log("Mother State, hasHeader: ", hasHeader);
   console.log("Mother State, delimiter: ", delimiter);
   console.log("Mother State, selectedColumns: ", selectedColumns);
 
   const startClustering = async () => {
-    if (!file) {
+    if (!filePath) {
       console.error("File not selected");
       return;
     }
     const fileSettings: FileSettings = {
-      path: file.path,
+      path: filePath,
       hasHeader,
       delimiter,
       selectedColumns,
@@ -86,16 +85,17 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<LandingPage />} />
         <Route
-          path="/file"
-          element={<FileSelectionPage selectedFile={file} setFile={setFile} />}
+          path="/"
+          element={
+            <FileSelectionPage filePath={filePath} setFilePath={setFilePath} />
+          }
         />
         <Route
           path="/file_preview"
           element={
             <FilePreviewPage
-              file={file}
+              filePath={filePath}
               hasHeader={hasHeader}
               setHasHeader={setHasHeader}
               delimiter={delimiter}

@@ -96,7 +96,7 @@ export default function AlgorithmSettingsPage({
 
   return (
     <>
-      <TitleBar index={3} />
+      <TitleBar index={2} />
       <div id="mainContent">
         <ExcludedWordsEditor
           isOpen={isExcludedWordsEditorOpen}

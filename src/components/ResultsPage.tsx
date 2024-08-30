@@ -140,7 +140,7 @@ export default function ResultsPage() {
   if (!args || !outputDir) {
     return (
       <>
-        <TitleBar index={5} />
+        <TitleBar index={4} />
         <div id="mainContent" className="flex flex-col justify-start px-32">
           <h1 className="text-5xl">Results</h1>
           <div className="flex items-center justify-center gap-4">
@@ -157,7 +157,7 @@ export default function ResultsPage() {
 
   return (
     <>
-      <TitleBar index={5} />
+      <TitleBar index={4} />
       <div id="mainContent" className="h-[90vh] w-full">
         <ClusterAssignmentModal
           path={`${outputDir}/cluster_assignments.csv`}
