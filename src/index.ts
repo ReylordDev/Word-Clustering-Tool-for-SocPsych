@@ -11,8 +11,8 @@ import { FileSettings, AlgorithmSettings } from "./models";
 // whether you're running in development or production).
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
-declare const STARTUP_WINDOW_WEBPACK_ENTRY: string;
-declare const STARTUP_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
+// declare const STARTUP_WINDOW_WEBPACK_ENTRY: string;
+// declare const STARTUP_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 
 const isDev = () => {
   return process.env["WEBPACK_SERVE"] === "true";
@@ -28,7 +28,7 @@ if (!isDev()) {
   console.error = log.error;
 }
 
-const venvPath = path.join(dataDir, ".venv");
+// const venvPath = path.join(dataDir, ".venv");
 app.setAppLogsPath(path.join(dataDir, "logs"));
 
 console.log(`Root directory: ${rootDir}`);
@@ -39,7 +39,7 @@ const pendingTasks: string[] = [];
 let currentTask: [string, number] | null = null;
 const completedTasks: [string, number][] = [];
 let mainWindow: BrowserWindow;
-let startupScriptHasRun = false;
+// let startupScriptHasRun = false;
 const outputDir = path.join(dataDir, "output");
 let resultsDir: string | undefined;
 
@@ -90,16 +90,26 @@ const startScript = async (
   fileSettings: FileSettings,
   algorithmSettings: AlgorithmSettings,
 ) => {
-  let pythonPath: string;
   const advancedOptions = algorithmSettings.advancedOptions;
+  // let pythonPath: string;
+  let executablePath: string;
+  const pyInstallerDestinationDir = path.join(
+    rootDir,
+    isDev() ? "src" : "",
+    "python",
+    "dist",
+    "main",
+  );
   if (process.platform === "win32") {
-    pythonPath = path.join(venvPath, "Scripts", "python.exe");
+    // pythonPath = path.join(venvPath, "Scripts", "python.exe");
+    executablePath = path.join(pyInstallerDestinationDir, "main.exe");
   } else {
-    pythonPath = path.join(venvPath, "bin", "python");
+    // pythonPath = path.join(venvPath, "bin", "python");
+    executablePath = path.join(pyInstallerDestinationDir, "main");
   }
   const pythonArguments: string[] = [
-    "-u",
-    path.join(rootDir, isDev() ? "src" : "", "python", "main.py"),
+    // "-u",
+    // path.join(rootDir, isDev() ? "src" : "", "python", "main.py"),
     fileSettings.path,
     "--delimiter",
     fileSettings.delimiter,
@@ -152,10 +162,10 @@ const startScript = async (
     pythonArguments.push(advancedOptions.similarityThreshold.toString());
   }
 
-  console.log(`Running script: "${pythonPath} ${pythonArguments.join(" ")}"`);
+  console.log(`Running script with arguments: ${pythonArguments.join(" ")}"`);
 
   return new Promise<void>((resolve, reject) => {
-    script = spawn(pythonPath, pythonArguments, {
+    script = spawn(executablePath, pythonArguments, {
       cwd: rootDir,
     });
     script.on("error", (error) => {
@@ -246,21 +256,21 @@ const createMainWindow = () => {
   return mainWindow;
 };
 
-const createStartupWindow = () => {
-  console.log("Creating startup window");
-  const startupWindow = new BrowserWindow({
-    height: 600,
-    width: 800,
-    webPreferences: {
-      preload: STARTUP_WINDOW_PRELOAD_WEBPACK_ENTRY,
-    },
-  });
+// const createStartupWindow = () => {
+//   console.log("Creating startup window");
+//   const startupWindow = new BrowserWindow({
+//     height: 600,
+//     width: 800,
+//     webPreferences: {
+//       preload: STARTUP_WINDOW_PRELOAD_WEBPACK_ENTRY,
+//     },
+//   });
 
-  startupWindow.loadURL(STARTUP_WINDOW_WEBPACK_ENTRY);
-  console.log(`Startup window url: ${STARTUP_WINDOW_WEBPACK_ENTRY}`);
+//   startupWindow.loadURL(STARTUP_WINDOW_WEBPACK_ENTRY);
+//   console.log(`Startup window url: ${STARTUP_WINDOW_WEBPACK_ENTRY}`);
 
-  return startupWindow;
-};
+//   return startupWindow;
+// };
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -268,7 +278,7 @@ const createStartupWindow = () => {
 app.on("ready", async () => {
   console.log("App is ready");
   const mainWindow = createMainWindow();
-  let startupWindow: any;
+  // let startupWindow: any;
   // const startupWindow = createStartupWindow();
 
   // // IPC communication between main and renderer processes
@@ -336,103 +346,103 @@ app.on("ready", async () => {
     };
   });
 
-  ipcMain.handle("python:isPythonInstalled", async () => {
-    return new Promise<boolean>((resolve, reject) => {
-      if (process.platform === "win32") {
-        exec("python -V", (error, stdout, stderr) => {
-          if (error) {
-            console.error(`Error: ${error.message}`);
-            reject(error);
-          }
-          if (stderr) {
-            console.error(`stderr: ${stderr}`);
-            reject(stderr);
-          }
-          if (stdout) {
-            console.log(`stdout: ${stdout}`);
-          }
-          resolve(true);
-        });
-      } else {
-        exec("command -v python3", (error, stdout, stderr) => {
-          if (error) {
-            console.error(`Error: ${error.message}`);
-            reject(error);
-          }
-          if (stderr) {
-            console.error(`stderr: ${stderr}`);
-            reject(stderr);
-          }
-          if (stdout) {
-            resolve(true);
-          }
-        });
-      }
-    });
-  });
+  // ipcMain.handle("python:isPythonInstalled", async () => {
+  //   return new Promise<boolean>((resolve, reject) => {
+  //     if (process.platform === "win32") {
+  //       exec("python -V", (error, stdout, stderr) => {
+  //         if (error) {
+  //           console.error(`Error: ${error.message}`);
+  //           reject(error);
+  //         }
+  //         if (stderr) {
+  //           console.error(`stderr: ${stderr}`);
+  //           reject(stderr);
+  //         }
+  //         if (stdout) {
+  //           console.log(`stdout: ${stdout}`);
+  //         }
+  //         resolve(true);
+  //       });
+  //     } else {
+  //       exec("command -v python3", (error, stdout, stderr) => {
+  //         if (error) {
+  //           console.error(`Error: ${error.message}`);
+  //           reject(error);
+  //         }
+  //         if (stderr) {
+  //           console.error(`stderr: ${stderr}`);
+  //           reject(stderr);
+  //         }
+  //         if (stdout) {
+  //           resolve(true);
+  //         }
+  //       });
+  //     }
+  //   });
+  // });
 
-  ipcMain.handle("python:hasMinimalPythonVersion", async () => {
-    return new Promise<boolean>((resolve, reject) => {
-      exec(
-        'python3 -c "import sys; print(sys.version_info>=(3, 7))"',
-        (error, stdout, stderr) => {
-          if (error) {
-            console.error(`Error: ${error.message}`);
-            reject(error);
-          }
-          if (stderr) {
-            console.error(`stderr: ${stderr}`);
-            reject(stderr);
-          }
-          if (stdout) {
-            if (stdout.includes("True")) {
-              resolve(true);
-            } else {
-              resolve(false);
-            }
-          }
-        },
-      );
-    });
-  });
+  // ipcMain.handle("python:hasMinimalPythonVersion", async () => {
+  //   return new Promise<boolean>((resolve, reject) => {
+  //     exec(
+  //       'python3 -c "import sys; print(sys.version_info>=(3, 7))"',
+  //       (error, stdout, stderr) => {
+  //         if (error) {
+  //           console.error(`Error: ${error.message}`);
+  //           reject(error);
+  //         }
+  //         if (stderr) {
+  //           console.error(`stderr: ${stderr}`);
+  //           reject(stderr);
+  //         }
+  //         if (stdout) {
+  //           if (stdout.includes("True")) {
+  //             resolve(true);
+  //           } else {
+  //             resolve(false);
+  //           }
+  //         }
+  //       },
+  //     );
+  //   });
+  // });
 
-  ipcMain.handle("python:runSetupScript", async () => {
-    if (startupScriptHasRun) {
-      return;
-    }
-    startupScriptHasRun = true;
-    const setupScript = spawn(
-      "python3",
-      ["-u", "setup_python_backend.py", "--data_dir", dataDir],
-      {
-        cwd: rootDir,
-      },
-    );
+  // ipcMain.handle("python:runSetupScript", async () => {
+  //   if (startupScriptHasRun) {
+  //     return;
+  //   }
+  //   startupScriptHasRun = true;
+  //   const setupScript = spawn(
+  //     "python3",
+  //     ["-u", "setup_python_backend.py", "--data_dir", dataDir],
+  //     {
+  //       cwd: rootDir,
+  //     },
+  //   );
 
-    setupScript.on("error", (error) => {
-      console.error(`Error: ${error.message}`);
-    });
+  //   setupScript.on("error", (error) => {
+  //     console.error(`Error: ${error.message}`);
+  //   });
 
-    setupScript.stderr?.on("data", (data) => {
-      console.log(`stderr: ${data}`);
-      startupWindow.webContents.send(
-        "python:setupScriptMessage",
-        data.toString(),
-      );
-    });
+  //   setupScript.stderr?.on("data", (data) => {
+  //     console.log(`stderr: ${data}`);
+  //     startupWindow.webContents.send(
+  //       "python:setupScriptMessage",
+  //       data.toString(),
+  //     );
+  //   });
 
-    setupScript.stdout?.on("data", (data) => {
-      if (data.includes("Requirement already satisfied")) {
-        return;
-      }
-      startupWindow.webContents.send(
-        "python:setupScriptMessage",
-        data.toString(),
-      );
-      const dataString = data.toString() as string;
-      console.log(`stdout: ${dataString.replace("\n", "")}`);
-    });
-  });
+  //   setupScript.stdout?.on("data", (data) => {
+  //     if (data.includes("Requirement already satisfied")) {
+  //       return;
+  //     }
+  //     startupWindow.webContents.send(
+  //       "python:setupScriptMessage",
+  //       data.toString(),
+  //     );
+  //     const dataString = data.toString() as string;
+  //     console.log(`stdout: ${dataString.replace("\n", "")}`);
+  //   });
+  // });
 
   ipcMain.handle("python:getResultsDir", async () => {
     return resultsDir;
@@ -526,9 +536,9 @@ declare global {
         currentTask: [string, number] | null;
         completedTasks: [string, number][];
       }>;
-      isPythonInstalled: () => Promise<boolean>;
-      hasMinimalPythonVersion: () => Promise<boolean>;
-      runSetupScript: () => Promise<void>;
+      // isPythonInstalled: () => Promise<boolean>;
+      // hasMinimalPythonVersion: () => Promise<boolean>;
+      // runSetupScript: () => Promise<void>;
       getResultsDir: () => Promise<string | undefined>;
       openResultsDir: (outputDir: string) => Promise<string>;
       fetchPreviousResults: () => Promise<
@@ -538,9 +548,9 @@ declare global {
           original: string;
         }[]
       >;
-      onSetupScriptMessage: (
-        listener: (event: unknown, message: string) => void,
-      ) => void;
+      // onSetupScriptMessage: (
+      //   listener: (event: unknown, message: string) => void,
+      // ) => void;
     };
     control: {
       minimize: () => void;
