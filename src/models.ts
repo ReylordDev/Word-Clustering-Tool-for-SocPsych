@@ -24,20 +24,7 @@ export interface AdvancedOptions {
 }
 
 export interface Args {
-  path: string;
-  delimiter: string;
-  hasHeaders: boolean;
-  selectedColumns: number[];
-  excludedWords: string[];
-  languageModel: string;
-  nearestNeighbors: number;
-  zScoreThreshold: number;
-  automaticK: boolean;
-  maxNumClusters: number;
-  seed: number;
-  clusterCount: number;
-  mergeThreshold: number;
-  logDir: string;
-  logLevel: "DEBUG" | "INFO" | "WARNING" | "ERROR" | "CRITICAL";
+  fileSettings: FileSettings;
+  algorithmSettings: AlgorithmSettings;
   outputDir: string;
 }

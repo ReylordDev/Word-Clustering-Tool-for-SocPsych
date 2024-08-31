@@ -166,27 +166,33 @@ export default function ResultsPage() {
       <div id="mainContent" className="h-[90vh] w-full">
         <ClusterAssignmentModal
           path={`${resultsDir}/cluster_assignments.csv`}
-          delimiter={args.delimiter}
+          delimiter={args.fileSettings.delimiter}
           isOpen={clusterAssignmentsModalOpen}
           setIsOpen={setClusterAssignmentsModalOpen}
         />
         <ClusterSimilarityModal
           similaritiesPath={`${resultsDir}/pairwise_similarities.json`}
           clusterAssignmentsPath={`${resultsDir}/cluster_assignments.csv`}
-          delimiter={args.delimiter}
+          delimiter={args.fileSettings.delimiter}
           isOpen={clusterSimilarityModalOpen}
           setIsOpen={setClusterSimilarityModalOpen}
         />
         <OutliersModal
           path={`${resultsDir}/outliers.json`}
-          nearestNeighbors={args.nearestNeighbors}
-          zScoreThreshold={args.zScoreThreshold}
+          nearestNeighbors={
+            args.algorithmSettings.advancedOptions.nearestNeighbors
+          }
+          zScoreThreshold={
+            args.algorithmSettings.advancedOptions.zScoreThreshold
+          }
           isOpen={outliersModalOpen}
           setIsOpen={setOutliersModalOpen}
         />
         <MergedClustersModal
           path={`${resultsDir}/merged_clusters.json`}
-          mergeThreshold={args.mergeThreshold}
+          mergeThreshold={
+            args.algorithmSettings.advancedOptions.similarityThreshold
+          }
           isOpen={mergedClustersModalOpen}
           setIsOpen={setMergedClustersModalOpen}
         />
@@ -243,12 +249,19 @@ export default function ResultsPage() {
               text="Outliers"
               leftIcon={<AlertTriangle />}
               className="w-2/3"
+              disabled={
+                !args.algorithmSettings.advancedOptions.nearestNeighbors ||
+                !args.algorithmSettings.advancedOptions.zScoreThreshold
+              }
             />
             <Button
               onClick={() => setMergedClustersModalOpen(true)}
               text="Merged Clusters"
               leftIcon={<GitMerge />}
               className="w-2/3"
+              disabled={
+                !args.algorithmSettings.advancedOptions.similarityThreshold
+              }
             />
             <TotalTimeDropdown path={`${resultsDir}/timestamps.json`} />
           </div>

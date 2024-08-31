@@ -2,6 +2,7 @@ from collections import Counter
 import json
 import os
 import csv
+import sys
 from typing import Any, Optional
 import numpy as np
 from sentence_transformers import SentenceTransformer
@@ -11,13 +12,24 @@ from loguru import logger
 import argparse
 import time
 
-from models import Args, Cluster, Response, Merger, Mergers, TimeStamp, TimeStamps
+from models import (
+    Args,
+    Cluster,
+    Response,
+    Merger,
+    Mergers,
+    TimeStamp,
+    TimeStamps,
+    FileSettings,
+    AlgorithmSettings,
+    AdvancedOptions,
+)
 
 progression_messages = {
     "process_input_file": "Reading input file",
     "download_model": "Downloading language model",
     "load_model": "Loading language model",
-    "embed_words": "Embedding words",
+    "embed_responses": "Embedding responses",
     "detect_outliers": "Detecting outliers",
     "find_number_of_clusters": "Finding number of clusters",
     "cluster": "Clustering",
@@ -29,23 +41,20 @@ time_stamps: list[TimeStamp] = []
 
 
 def process_input_file(
-    path: str,
-    delimiter: str,
-    has_headers: bool,
-    selected_columns: list[int],
+    file_settings: FileSettings,
     excluded_words: list[str],
 ):
     logger.info(f"STARTED: {progression_messages['process_input_file']}")
     rows: list[list[str]] = []
-    word_counts: Counter[str] = Counter()
-    with open(path, encoding="utf-8") as f:
-        reader = csv.reader(f, delimiter=delimiter)
-        if has_headers:
+    response_counts: Counter[str] = Counter()
+    with open(file_settings.path, encoding="utf-8") as f:
+        reader = csv.reader(f, delimiter=file_settings.delimiter)
+        if file_settings.has_header:
             headers = reader.__next__()
             logger.debug(f"Headers: {headers}")
         col_idxs: list[int] = []
 
-        for i in selected_columns:
+        for i in file_settings.selected_columns:
             col_idxs.append(i)
         logger.debug(f"Column indexes: {col_idxs}")
 
@@ -57,13 +66,19 @@ def process_input_file(
                 response = row[column_index]
                 if response == "" or response is None:
                     continue
-                # if the word is in the list of forbidden words, ignore it
-                if response.strip() in excluded_words:
-                    continue
-                # otherwise, count the word
-                word_counts[response] += 1
-    unique_word_count = len(word_counts)
-    words = list(word_counts.keys())
+                for excluded_word in excluded_words:
+                    if (
+                        excluded_word != ""
+                        and excluded_word.lower() in response.lower()
+                    ):
+                        logger.info(
+                            f"Excluded word found: {excluded_word} in response: {response}"
+                        )
+                        break
+                # otherwise, count the response
+                response_counts[response] += 1
+    unique_response_count = len(response_counts)
+    responses = list(response_counts.keys())
     logger.info(f"COMPLETED: {progression_messages['process_input_file']}")
     time_stamps.append(
         TimeStamp(
@@ -71,9 +86,9 @@ def process_input_file(
         )
     )
     logger.debug(f"Number of rows: {len(rows)}")
-    logger.debug(f"Number of unique words: {unique_word_count}")
+    logger.debug(f"Number of unique responses: {unique_response_count}")
 
-    return words, word_counts, [headers] + rows
+    return responses, response_counts, [headers] + rows
 
 
 def load_model(language_model: str) -> SentenceTransformer:
@@ -86,15 +101,15 @@ def load_model(language_model: str) -> SentenceTransformer:
     return model
 
 
-def embed_words(words: list[str], model: SentenceTransformer) -> np.ndarray:
-    logger.info(f"STARTED: {progression_messages['embed_words']}")
+def embed_responses(responses: list[str], model: SentenceTransformer) -> np.ndarray:
+    logger.info(f"STARTED: {progression_messages['embed_responses']}")
     norm_embeddings = model.encode(
-        words, normalize_embeddings=True, convert_to_numpy=True
+        responses, normalize_embeddings=True, convert_to_numpy=True
     )  # shape (no_of_unique_words, embedding_dim)
     norm_embeddings = np.array(norm_embeddings)  # Type casting (only for IDE)
-    logger.info(f"COMPLETED: {progression_messages['embed_words']}")
+    logger.info(f"COMPLETED: {progression_messages['embed_responses']}")
     time_stamps.append(
-        TimeStamp(name=progression_messages["embed_words"], time=int(time.time()))
+        TimeStamp(name=progression_messages["embed_responses"], time=int(time.time()))
     )
     return norm_embeddings
 
@@ -445,8 +460,16 @@ def save_timestamps(output_dir: str):
         f.write(timestamps_model.model_dump_json(by_alias=True))
 
 
-def save_args(args_dict: dict[str, Any], output_dir: str):
-    args: Args = Args(**args_dict)
+def save_args(
+    file_settings: FileSettings,
+    algorithm_settings: AlgorithmSettings,
+    output_dir: str,
+):
+    args: Args = Args(
+        file_settings=file_settings,
+        algorithm_settings=algorithm_settings,
+        output_dir=output_dir,
+    )
     args_file = output_dir + "/args.json"
     with open(args_file, "w") as f:
         json_args = args.model_dump_json(by_alias=True)
@@ -455,22 +478,11 @@ def save_args(args_dict: dict[str, Any], output_dir: str):
 
 @logger.catch
 def main(
-    path: str,
-    delimiter: str,
-    has_headers: bool,
-    selected_columns: list[int],
-    excluded_words: list[str],
-    language_model: str,
-    nearest_neighbors: Optional[int],
-    z_score_threshold: Optional[float],
-    automatic_k: bool,
-    max_num_clusters: Optional[int],
-    seed: Optional[int],
-    cluster_count: Optional[int],
-    merge_threshold: float,
+    file_settings: FileSettings,
+    algorithm_settings: AlgorithmSettings,
     output_dir: str,
-    args_dict: dict[str, Any],
 ):
+    advancedOptions = algorithm_settings.advanced_options
     logger.info("Starting clustering")
     time_stamps.append(TimeStamp(name="start", time=int(time.time())))
 
@@ -479,71 +491,103 @@ def main(
     time.sleep(stderr_flush_delay)
     logger.info(f"TODO: {progression_messages['load_model']}")
     time.sleep(stderr_flush_delay)
-    logger.info(f"TODO: {progression_messages['embed_words']}")
+    logger.info(f"TODO: {progression_messages['embed_responses']}")
     time.sleep(stderr_flush_delay)
-    if nearest_neighbors is not None and z_score_threshold is not None:
+
+    if (
+        advancedOptions.nearest_neighbors is not None
+        and advancedOptions.z_score_threshold is not None
+    ):
         logger.info(f"TODO: {progression_messages['detect_outliers']}")
     time.sleep(stderr_flush_delay)
-    if automatic_k:
+
+    if algorithm_settings.auto_cluster_count:
         logger.info(f"TODO: {progression_messages['find_number_of_clusters']}")
         time.sleep(stderr_flush_delay)
+
     logger.info(f"TODO: {progression_messages['cluster']}")
     time.sleep(stderr_flush_delay)
-    if merge_threshold is not None and merge_threshold < 1.0:
+
+    if (
+        advancedOptions.similarity_threshold is not None
+        and advancedOptions.similarity_threshold < 1.0
+    ):
         logger.info(f"TODO: {progression_messages['merge']}")
         time.sleep(stderr_flush_delay)
+
     logger.info(f"TODO: {progression_messages['results']}")
     time.sleep(stderr_flush_delay)
 
-    words, word_counts, rows = process_input_file(
-        path, delimiter, has_headers, selected_columns, excluded_words
+    responses, response_counts, rows = process_input_file(
+        file_settings=file_settings,
+        excluded_words=algorithm_settings.excluded_words,
     )
 
-    model = load_model(language_model)
+    model = load_model(advancedOptions.language_model)
 
-    embeddings = embed_words(words, model)
+    embeddings = embed_responses(responses, model)
 
-    if nearest_neighbors is not None and z_score_threshold is not None:
-        outlier_stats, words_remaining, embeddings = detect_outliers(
-            words, embeddings, nearest_neighbors, z_score_threshold
+    if (
+        advancedOptions.nearest_neighbors is not None
+        and advancedOptions.z_score_threshold is not None
+    ):
+        outlier_stats, responses_remaining, embeddings = detect_outliers(
+            responses,
+            embeddings,
+            advancedOptions.nearest_neighbors,
+            advancedOptions.z_score_threshold,
         )
     else:
         outlier_stats = []
-        words_remaining = words
+        responses_remaining = responses
 
-    # a list of how often each word was named
+    # a list of how often each response was given
     sample_weights = []
-    for word in words_remaining:
-        sample_weights.append(word_counts[word])
+    for response in responses_remaining:
+        sample_weights.append(response_counts[response])
     sample_weights = np.array(sample_weights)
 
     # find the number of clusters
-    if automatic_k:
-        if not max_num_clusters:
-            max_num_clusters = len(words_remaining) // 2
-        K = find_number_of_clusters(embeddings, max_num_clusters, sample_weights, seed)
+    if algorithm_settings.auto_cluster_count:
+        if not algorithm_settings.max_clusters:
+            # This path is technically not possible at the moment but no reason to remove it.
+            max_num_clusters = len(responses_remaining) // 2
+        else:
+            max_num_clusters = algorithm_settings.max_clusters
+        K = find_number_of_clusters(
+            embeddings, max_num_clusters, sample_weights, algorithm_settings.seed
+        )
     else:
-        assert (
-            cluster_count is not None
-        ), "Cluster count must be provided if not automatic"
-        K = cluster_count
+        assert algorithm_settings.cluster_count is not None
+        K = algorithm_settings.cluster_count
 
-    cluster_idxs, cluster_centers = cluster(embeddings, K, sample_weights, seed)
+    cluster_idxs, cluster_centers = cluster(
+        embeddings, K, sample_weights, algorithm_settings.seed
+    )
 
     pre_merge_cluster_idxs = np.copy(cluster_idxs)
     pre_merge_centers = np.copy(cluster_centers)
 
-    if merge_threshold is not None and merge_threshold < 1.0:
+    if (
+        advancedOptions.similarity_threshold is not None
+        and advancedOptions.similarity_threshold < 1.0
+    ):
         cluster_idxs, cluster_centers, merged_clusters = merge(
-            merge_threshold, cluster_idxs, cluster_centers, embeddings, sample_weights
+            advancedOptions.similarity_threshold,
+            cluster_idxs,
+            cluster_centers,
+            embeddings,
+            sample_weights,
         )
+    else:
+        merged_clusters = []
 
     logger.info(f"STARTED: {progression_messages['results']}")
 
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
 
-    input_file_name = os.path.basename(path).removesuffix(".csv")
+    input_file_name = os.path.basename(file_settings.path).removesuffix(".csv")
     input_file_name += f"_{time_stamps[0].time}"
     output_dir = os.path.join(output_dir, input_file_name)
     if not os.path.exists(output_dir):
@@ -556,11 +600,11 @@ def main(
         cluster_idxs,
         embeddings,
         cluster_centers,
-        words_remaining,
-        delimiter,
+        responses_remaining,
+        file_settings.delimiter,
     )
 
-    save_pairwise_similarities(output_dir, cluster_centers, delimiter)
+    save_pairwise_similarities(output_dir, cluster_centers, file_settings.delimiter)
 
     save_outliers(output_dir, outlier_stats)
 
@@ -570,21 +614,21 @@ def main(
         pre_merge_cluster_idxs,
         pre_merge_centers,
         embeddings,
-        words_remaining,
+        responses_remaining,
     )
 
     save_amended_file(
         input_file_name,
         output_dir,
-        words_remaining,
+        responses_remaining,
         rows,
-        selected_columns,
-        delimiter,
-        has_headers,
+        file_settings.selected_columns,
+        file_settings.delimiter,
+        file_settings.has_header,
         cluster_idxs,
     )
 
-    save_args(args_dict, output_dir)
+    save_args(file_settings, algorithm_settings, output_dir)
 
     # Make sure this syncs with the equivalent on the ProgressPage.tsx
     logger.info(f"COMPLETED: {progression_messages['results']}")
@@ -594,13 +638,49 @@ def main(
     save_timestamps(output_dir)
 
 
+def validate_args(args):
+    if args.nearest_neighbors is not None and args.z_score_threshold is None:
+        print("Error: --z_score_threshold must be set if --nearest_neighbors is set.")
+        sys.exit(1)
+    if args.nearest_neighbors is None and args.z_score_threshold is not None:
+        print("Error: --nearest_neighbors must be set if --z_score_threshold is set.")
+        sys.exit(1)
+    if args.automatic_k and args.max_num_clusters is None:
+        print("Error: --max_num_clusters must be set if --automatic_k is set.")
+        sys.exit(1)
+    if not args.automatic_k and args.cluster_count is None:
+        print("Error: --cluster_count must be set if --automatic_k is not set.")
+        sys.exit(1)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Word Clustering Tool for SocPsych")
+
     parser.add_argument(
         "path",
         type=str,
         help="Path to the input file",
     )
+    parser.add_argument(
+        "--output_dir",
+        type=str,
+        default="output",
+        help="Directory to store result directory (default: output)",
+    )
+    parser.add_argument(
+        "--log_dir",
+        type=str,
+        default="logs/python",
+        help="Directory to store log files (default: logs/python)",
+    )
+    parser.add_argument(
+        "--log_level",
+        type=str,
+        default="INFO",
+        help="Log level (default: INFO)",
+    )
+
+    # File Settings
     parser.add_argument(
         "--delimiter",
         type=str,
@@ -619,12 +699,39 @@ if __name__ == "__main__":
         default=[],
         help="List of columns to consider for clustering (default: [])",
     )
+
+    # Algorithm Settings
+    parser.add_argument(
+        "--automatic_k",
+        action="store_true",
+        help="Automatically determine the number of clusters",
+    )
+    parser.add_argument(
+        "--max_num_clusters",
+        type=int,
+        required=False,
+        help="Maximum number of clusters to consider. Requires --automatic_k to be set",
+    )
+    parser.add_argument(
+        "--cluster_count",
+        type=int,
+        required=False,
+        help="Number of clusters to create. Does not work if --automatic_k is set",
+    )
+    parser.add_argument(
+        "--seed",
+        type=int,
+        required=False,
+        help="Random seed for reproducibility",
+    )
     parser.add_argument(
         "--excluded_words",
         nargs="+",
         default=[],
         help="List of words to exclude from clustering (default: [])",
     )
+
+    # Advanced Options
     parser.add_argument(
         "--language_model",
         type=str,
@@ -644,54 +751,15 @@ if __name__ == "__main__":
         help="Threshold for outlier detection",
     )
     parser.add_argument(
-        "--automatic_k",
-        action="store_true",
-        help="Automatically determine the number of clusters",
-    )
-    parser.add_argument(
-        "--max_num_clusters",
-        type=int,
-        default=100,
-        help="Maximum number of clusters to consider (default: 100)",
-    )
-    parser.add_argument(
-        "--seed",
-        type=int,
-        required=False,
-        help="Random seed for reproducibility",
-    )
-    parser.add_argument(
-        "--cluster_count",
-        type=int,
-        default=5,
-        help="Number of clusters to create (default: 5)",
-    )
-    parser.add_argument(
         "--merge_threshold",
         type=float,
-        default=1.0,
-        help="Threshold for merging clusters (default: 1.0)",
-    )
-    parser.add_argument(
-        "--log_dir",
-        type=str,
-        default="logs/python",
-        help="Directory to store log files (default: logs/python)",
-    )
-    parser.add_argument(
-        "--log_level",
-        type=str,
-        default="DEBUG",
-        help="Log level (default: INFO)",
-    )
-    parser.add_argument(
-        "--output_dir",
-        type=str,
-        default="output",
-        help="Directory to store output files (default: outputs)",
+        required=False,
+        help="Threshold for merging clusters (between 0 and 1)",
     )
 
     args = parser.parse_args()
+
+    validate_args(args)
 
     log_level = args.log_level
 
@@ -700,22 +768,39 @@ if __name__ == "__main__":
     else:
         logger.add("logs/python/main.log", rotation="10 MB", level=log_level)
 
-    args_dict = vars(args)
-
-    main(
+    fileSettings = FileSettings(
         path=args.path,
         delimiter=args.delimiter,
-        has_headers=args.has_headers,
+        has_header=args.has_headers,
         selected_columns=args.selected_columns,
-        excluded_words=args.excluded_words,
-        language_model=args.language_model,
+    )
+    logger.debug(fileSettings.model_dump_json(by_alias=True))
+
+    outlier_detection: bool = bool(args.nearest_neighbors and args.z_score_threshold)
+    agglomerative_clustering: bool = bool(
+        args.merge_threshold and args.merge_threshold < 1.0
+    )
+    advancedOptions = AdvancedOptions(
+        outlier_detection=outlier_detection,
         nearest_neighbors=args.nearest_neighbors,
         z_score_threshold=args.z_score_threshold,
-        automatic_k=args.automatic_k,
-        max_num_clusters=args.max_num_clusters,
-        seed=args.seed,
+        agglomerative_clustering=agglomerative_clustering,
+        similarity_threshold=args.merge_threshold,
+        language_model=args.language_model,
+    )
+
+    algorithmSettings = AlgorithmSettings(
+        auto_cluster_count=args.automatic_k,
+        max_clusters=args.max_num_clusters,
         cluster_count=args.cluster_count,
-        merge_threshold=args.merge_threshold,
+        seed=args.seed,
+        excluded_words=args.excluded_words,
+        advanced_options=advancedOptions,
+    )
+    logger.debug(algorithmSettings.model_dump_json(by_alias=True))
+
+    main(
+        file_settings=fileSettings,
+        algorithm_settings=algorithmSettings,
         output_dir=args.output_dir,
-        args_dict=args_dict,
     )

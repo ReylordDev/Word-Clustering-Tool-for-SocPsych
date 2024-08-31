@@ -103,8 +103,6 @@ const startScript = async (
     fileSettings.path,
     "--delimiter",
     fileSettings.delimiter,
-    "--excluded_words",
-    algorithmSettings.excludedWords.join(","),
     "--language_model",
     algorithmSettings.advancedOptions.languageModel,
     "--output_dir",
@@ -139,6 +137,10 @@ const startScript = async (
     pythonArguments.push("--seed");
     pythonArguments.push(algorithmSettings.seed.toString());
   }
+  if (algorithmSettings.excludedWords.length > 0) {
+    pythonArguments.push("--excluded_words");
+    pythonArguments.push(algorithmSettings.excludedWords.join(","));
+  }
   if (advancedOptions.nearestNeighbors && advancedOptions.zScoreThreshold) {
     pythonArguments.push("--nearest_neighbors");
     pythonArguments.push(advancedOptions.nearestNeighbors.toString());
@@ -150,7 +152,7 @@ const startScript = async (
     pythonArguments.push(advancedOptions.similarityThreshold.toString());
   }
 
-  console.log(`Running script: ${pythonPath} ${pythonArguments.join(" ")}`);
+  console.log(`Running script: "${pythonPath} ${pythonArguments.join(" ")}"`);
 
   return new Promise<void>((resolve, reject) => {
     script = spawn(pythonPath, pythonArguments, {

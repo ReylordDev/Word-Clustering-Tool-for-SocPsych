@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel, ConfigDict
 from pydantic.alias_generators import to_camel
 
@@ -6,59 +7,36 @@ class CamelModel(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
 
-class FilePathParam(CamelModel):
-    path: str
-
-
-class FileSettingsParam(CamelModel):
-    delimiter: str
-    has_header: bool
-    selected_columns: list[bool]
-
-
 class FileSettings(CamelModel):
     path: str
     delimiter: str
     has_header: bool
-    selected_columns: list[bool]
+    selected_columns: list[int]
+
+
+class AdvancedOptions(CamelModel):
+    outlier_detection: bool
+    nearest_neighbors: Optional[int]
+    z_score_threshold: Optional[float]
+    agglomerative_clustering: bool
+    similarity_threshold: Optional[float]
+    language_model: str
 
 
 class AlgorithmSettings(CamelModel):
-    seed: int
-    excluded_words: list[str]
     auto_cluster_count: bool
-    nearest_neighbors: int
-    z_score_threshold: float
-    similarity_threshold: float
-    language_model: str
-
-
-class AutoAlgorithmSettings(AlgorithmSettings):
-    auto_cluster_count: bool = True
-    max_clusters: int
-
-
-class ManualAlgorithmSettings(AlgorithmSettings):
-    auto_cluster_count: bool = False
-    cluster_count: int
+    max_clusters: Optional[int]
+    cluster_count: Optional[int]
+    seed: Optional[int]
+    excluded_words: list[str]
+    advanced_options: AdvancedOptions
 
 
 class Args(CamelModel):
-    path: str
-    delimiter: str
-    has_headers: bool
-    selected_columns: list[int]
-    excluded_words: list[str]
-    language_model: str
-    nearest_neighbors: int
-    z_score_threshold: float
-    automatic_k: bool
-    max_num_clusters: int
-    seed: int
-    cluster_count: int
-    merge_threshold: float
-    log_dir: str
-    log_level: str
+    file_settings: FileSettings
+    algorithm_settings: AlgorithmSettings
+    # log_dir: str
+    # log_level: str
     output_dir: str
 
 

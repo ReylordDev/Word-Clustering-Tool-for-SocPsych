@@ -13,7 +13,7 @@ export default function App() {
   const [hasHeader, setHasHeader] = useState(true);
   const [delimiter, setDelimiter] = useState(",");
   const [selectedColumns, setSelectedColumns] = useState<number[]>([]);
-  const [autoChooseClusters, setAutoChooseClusters] = useState(true);
+  const [autoClusterCount, setAutoChooseClusters] = useState(true);
   const [maxClusters, setMaxClusters] = useState<number | undefined>(undefined);
   const [clusterCount, setClusterCount] = useState<number | undefined>(
     undefined,
@@ -29,10 +29,6 @@ export default function App() {
     languageModel: "BAAI/bge-large-en-v1.5",
   });
   const [startTime, setStartTime] = useState<number | null>(null);
-  console.log("Mother State, File: ", filePath);
-  console.log("Mother State, hasHeader: ", hasHeader);
-  console.log("Mother State, delimiter: ", delimiter);
-  console.log("Mother State, selectedColumns: ", selectedColumns);
 
   const startClustering = async () => {
     if (!filePath) {
@@ -46,7 +42,7 @@ export default function App() {
       selectedColumns,
     };
     const algorithmSettings: AlgorithmSettings = {
-      autoClusterCount: autoChooseClusters,
+      autoClusterCount,
       maxClusters,
       clusterCount,
       seed,
@@ -88,7 +84,7 @@ export default function App() {
           path="/algorithm_settings"
           element={
             <AlgorithmSettingsPage
-              autoChooseClusters={autoChooseClusters}
+              autoChooseClusters={autoClusterCount}
               setAutoChooseClusters={setAutoChooseClusters}
               maxClusters={maxClusters}
               setMaxClusters={setMaxClusters}
@@ -105,7 +101,7 @@ export default function App() {
           }
         />
         <Route
-          path="/clustering"
+          path="/progress"
           element={<ProgressPage startTime={startTime} />}
         />
         <Route path="/results" element={<ResultsPage />} />

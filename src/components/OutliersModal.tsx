@@ -9,18 +9,20 @@ function OutliersModal({
   setIsOpen,
 }: {
   path: string;
-  nearestNeighbors: number;
-  zScoreThreshold: number;
+  nearestNeighbors: number | undefined;
+  zScoreThreshold: number | undefined;
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
 }) {
   const [outliers, setOutliers] = useState<
     { response: string; similarity: number }[]
   >([]);
-  const [threshold, setThreshold] = useState<number>(0.95);
   const precision = 3;
 
   useEffect(() => {
+    if (!nearestNeighbors || !zScoreThreshold) {
+      return;
+    }
     window.python.readJsonFile(path).then((value: unknown) => {
       const data = value as {
         response: string;
@@ -33,12 +35,12 @@ function OutliersModal({
           similarity: outlier.similarity,
         })),
       );
-      setThreshold(data[0].threshold);
     });
-  }, []);
+  }, [path, nearestNeighbors, zScoreThreshold]);
 
   const OutlierCard = ({
     outlier,
+    threshold,
   }: {
     outlier: { response: string; similarity: number };
     threshold: number;
@@ -104,6 +106,10 @@ function OutliersModal({
     );
   };
 
+  if (!nearestNeighbors || !zScoreThreshold) {
+    return null;
+  }
+
   return (
     <>
       {isOpen && (
@@ -138,7 +144,7 @@ function OutliersModal({
                 <OutlierCard
                   key={index}
                   outlier={outlier}
-                  threshold={threshold}
+                  threshold={zScoreThreshold}
                 />
               ))}
             </div>

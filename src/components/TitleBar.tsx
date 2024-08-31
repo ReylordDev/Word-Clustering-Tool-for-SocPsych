@@ -5,7 +5,7 @@ const routes = [
   "",
   "file_preview",
   "algorithm_settings",
-  "clustering",
+  "progress",
   "results",
 ];
 

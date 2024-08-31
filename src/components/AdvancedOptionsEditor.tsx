@@ -38,19 +38,22 @@ const AdvancedOptionsEditor = ({
 
   const handleSave = () => {
     console.log("Saving advanced options...");
+    let localNearestNeighbors = nearestNeighbors;
+    let localZScoreThreshold = zScoreThreshold;
+    let localSimilarityThreshold = similarityThreshold;
     if (!isOutlierDetectionEnabled) {
-      setNearestNeighbors(undefined);
-      setZScoreThreshold(undefined);
+      localNearestNeighbors = undefined;
+      localZScoreThreshold = undefined;
     }
     if (!isAgglomerativeClusteringEnabled) {
-      setSimilarityThreshold(undefined);
+      localSimilarityThreshold = undefined;
     }
     setAdvancedOptions({
       outlierDetection: isOutlierDetectionEnabled,
       agglomerativeClustering: isAgglomerativeClusteringEnabled,
-      nearestNeighbors,
-      zScoreThreshold,
-      similarityThreshold,
+      nearestNeighbors: localNearestNeighbors,
+      zScoreThreshold: localZScoreThreshold,
+      similarityThreshold: localSimilarityThreshold,
       languageModel,
     });
     setIsOpen(false);

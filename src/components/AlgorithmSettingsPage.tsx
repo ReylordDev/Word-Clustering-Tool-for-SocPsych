@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { TitleBar } from "./TitleBar";
 import { useState } from "react";
 import ExcludedWordsEditor from "./ExcludedWordsEditor";
@@ -41,6 +41,7 @@ export default function AlgorithmSettingsPage({
     useState(false);
   const [isAdvancedOptionsEditorOpen, setIsAdvancedOptionsEditorOpen] =
     useState(false);
+  const navigate = useNavigate();
 
   console.log("Auto Choose Clusters: ", autoChooseClusters);
   console.log("Max Clusters: ", maxClusters);
@@ -66,6 +67,7 @@ export default function AlgorithmSettingsPage({
     }
 
     startClustering();
+    navigate("/progress");
   };
 
   return (
@@ -107,7 +109,7 @@ export default function AlgorithmSettingsPage({
                 min={1}
                 onChange={(e) => setMaxClusters(e.target.valueAsNumber)}
                 id="maxClusterCount"
-                className="w-24 rounded-md border border-gray-300 p-2 pl-5 focus:outline-none focus:ring focus:ring-primary focus:ring-opacity-50"
+                className="w-24 rounded-md border border-primary p-2 pl-5 focus:outline-none focus:ring focus:ring-primary focus:ring-opacity-50 disabled:border-gray-300"
                 disabled={!autoChooseClusters}
               />
             </div>
@@ -122,7 +124,7 @@ export default function AlgorithmSettingsPage({
                 id="clusterCount"
                 min={1}
                 onChange={(e) => setClusterCount(e.target.valueAsNumber)}
-                className="w-24 rounded-md border border-gray-300 p-2 pl-5 focus:outline-none focus:ring focus:ring-primary focus:ring-opacity-50"
+                className="w-24 rounded-md border border-primary p-2 pl-5 focus:outline-none focus:ring focus:ring-primary focus:ring-opacity-50 disabled:border-gray-300"
                 disabled={autoChooseClusters}
               />
             </div>
@@ -176,13 +178,15 @@ export default function AlgorithmSettingsPage({
             </div>
           </div>
           <div className="flex w-full justify-end">
-            <Link to="/clustering">
-              <Button
-                leftIcon={<ChartScatter size={24} />}
-                onClick={submitAlgorithmSettings}
-                text="Start Clustering"
-              ></Button>
-            </Link>
+            <Button
+              leftIcon={<ChartScatter size={24} />}
+              onClick={submitAlgorithmSettings}
+              text="Start Clustering"
+              disabled={
+                (autoChooseClusters && !maxClusters) ||
+                (!autoChooseClusters && !clusterCount)
+              }
+            ></Button>
           </div>
         </div>
       </div>

@@ -116,18 +116,16 @@ export default function FilePreviewPage({
                 <tr>
                   {headers &&
                     headers.map((header, index) => (
-                      <>
-                        <th
+                      <th
+                        key={index}
+                        className="border-b border-r border-dashed border-b-text border-r-text p-1"
+                      >
+                        <ColumnHeader
                           key={index}
-                          className="border-b border-r border-dashed border-b-text border-r-text p-1"
-                        >
-                          <ColumnHeader
-                            key={index}
-                            onChange={() => toggleColumn(index)}
-                            title={header}
-                          />
-                        </th>
-                      </>
+                          onChange={() => toggleColumn(index)}
+                          title={header}
+                        />
+                      </th>
                     ))}
                 </tr>
               </thead>
