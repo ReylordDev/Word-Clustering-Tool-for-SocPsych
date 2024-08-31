@@ -24,13 +24,11 @@ export default function App() {
     undefined,
   );
   const [excludedWords, setExcludedWords] = useState<string[]>([]);
-  const [seed, setSeed] = useState(0);
-  const [advancedOptions, setAdvancedOptions] = useState<
-    Record<string, string>
-  >({
-    nearestNeighbors: "5",
-    zScoreThreshold: "1",
-    similarityThreshold: "0.95",
+  const [seed, setSeed] = useState<number | undefined>(undefined);
+  const [advancedOptions, setAdvancedOptions] = useState<AdvancedOptions>({
+    nearestNeighbors: 5,
+    zScoreThreshold: 3,
+    similarityThreshold: 0.95,
     languageModel: "BAAI/bge-large-en-v1.5",
   });
   const [startTime, setStartTime] = useState<number | null>(null);
@@ -85,12 +83,12 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        <Route
+        {/* <Route
           path="/"
           element={
             <FileSelectionPage filePath={filePath} setFilePath={setFilePath} />
           }
-        />
+        /> */}
         <Route
           path="/file_preview"
           element={
@@ -106,7 +104,8 @@ export default function App() {
           }
         />
         <Route
-          path="/algorithm_settings"
+          // path="/algorithm_settings"
+          path="/"
           element={
             <AlgorithmSettingsPage
               autoChooseClusters={autoChooseClusters}

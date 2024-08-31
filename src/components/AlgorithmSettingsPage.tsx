@@ -3,6 +3,16 @@ import { TitleBar } from "./TitleBar";
 import { useState } from "react";
 import ExcludedWordsEditor from "./ExcludedWordsEditor";
 import AdvancedOptionsEditor from "./AdvancedOptionsEditor";
+import Toggle from "./Toggle";
+import Button from "./Button";
+import { SquarePen, ChartScatter } from "lucide-react";
+
+interface AdvancedOptions {
+  nearestNeighbors: number | undefined;
+  zScoreThreshold: number | undefined;
+  similarityThreshold: number | undefined;
+  languageModel: string;
+}
 
 export default function AlgorithmSettingsPage({
   autoChooseClusters,
@@ -37,6 +47,13 @@ export default function AlgorithmSettingsPage({
     useState(false);
   const [isAdvancedOptionsEditorOpen, setIsAdvancedOptionsEditorOpen] =
     useState(false);
+
+  console.log("Auto Choose Clusters: ", autoChooseClusters);
+  console.log("Max Clusters: ", maxClusters);
+  console.log("Cluster Count: ", clusterCount);
+  console.log("Excluded Words: ", excludedWords);
+  console.log("Seed: ", seed);
+  console.log("Advanced Options: ", advancedOptions);
 
   const submitAlgorithmSettings = () => {
     console.log("Submitting settings...");
@@ -86,10 +103,6 @@ export default function AlgorithmSettingsPage({
     },
   ];
 
-  const handleExcludedWordsSave = (newWords: string[]) => {
-    setExcludedWords(newWords);
-  };
-
   const handleAdvancedOptionsSave = (values: Record<string, string>) => {
     setAdvancedOptions(values);
   };
@@ -100,9 +113,9 @@ export default function AlgorithmSettingsPage({
       <div id="mainContent">
         <ExcludedWordsEditor
           isOpen={isExcludedWordsEditorOpen}
-          onClose={() => setIsExcludedWordsEditorOpen(false)}
-          initialWords={excludedWords}
-          onSave={handleExcludedWordsSave}
+          setIsOpen={setIsExcludedWordsEditorOpen}
+          excludedWords={excludedWords}
+          setExcludedWords={setExcludedWords}
         />
         <AdvancedOptionsEditor
           isOpen={isAdvancedOptionsEditorOpen}
@@ -111,78 +124,104 @@ export default function AlgorithmSettingsPage({
           initialValues={advancedOptions}
           onSave={handleAdvancedOptionsSave}
         />
-        <div className="flex flex-col justify-start bg-blue-300 px-24">
-          <div className="flex flex-col gap-8 bg-red-300">
-            <div></div>
-            <div className="h-1 w-full bg-accent"></div>
-            <div className="flex items-center justify-between pr-4">
-              <h5>Automatically choose number of clusters</h5>
-              <input
-                type="checkbox"
-                checked={autoChooseClusters}
-                onChange={() => {
-                  setAutoChooseClusters(!autoChooseClusters);
-                  if (autoChooseClusters) {
-                    setClusterCount(undefined);
-                  } else {
-                    setMaxClusters(undefined);
-                  }
-                }}
+        <div className="mt-8 flex flex-col gap-12 px-24">
+          <h1 className="flex w-full flex-col gap-2 text-5xl">
+            Algorithm Settings
+          </h1>
+          <div className="flex flex-col gap-8 text-lg">
+            <div className="flex items-center justify-between">
+              <p>Automatically choose number of clusters</p>
+              <Toggle
+                initialState={autoChooseClusters}
+                onToggle={setAutoChooseClusters}
               />
             </div>
-            {autoChooseClusters && (
-              <div className="flex items-center justify-between pr-4">
-                <h5>Max clusters</h5>
-                <input
-                  type="number"
-                  value={maxClusters || ""}
-                  onChange={(e) => setMaxClusters(parseInt(e.target.value))}
-                />
-              </div>
-            )}
-            {!autoChooseClusters && (
-              <div className="flex items-center justify-between pr-4">
-                <h5>Clusters</h5>
-                <input
-                  type="number"
-                  value={clusterCount || ""}
-                  onChange={(e) => setClusterCount(parseInt(e.target.value))}
-                />
-              </div>
-            )}
-            <div className="flex items-center justify-between pr-4">
-              <h5>Excluded Words ({excludedWords.length})</h5>
-              <button
-                onClick={() => setIsExcludedWordsEditorOpen(true)}
-                className="w-32 rounded-2xl bg-secondary p-2 px-4 text-background"
-              >
-                Edit
-              </button>
-            </div>
-            <div className="flex items-center justify-between pr-4">
-              <h5>Seed</h5>
+            <div
+              className={`flex items-center justify-between ${!autoChooseClusters && "text-gray-400"}`}
+            >
+              <label htmlFor="maxClusterCount">
+                <p>Maximum number of clusters to consider</p>
+              </label>
               <input
+                type="number"
+                min={1}
+                onChange={(e) => setMaxClusters(e.target.valueAsNumber)}
+                id="maxClusterCount"
+                className="w-24 rounded-md border border-gray-300 p-2 pl-5 focus:outline-none focus:ring focus:ring-primary focus:ring-opacity-50"
+                disabled={!autoChooseClusters}
+              />
+            </div>
+            <div
+              className={`flex items-center justify-between ${autoChooseClusters && "text-gray-400"}`}
+            >
+              <label htmlFor="clusterCount">
+                <p>Specific cluster count</p>
+              </label>
+              <input
+                type="number"
+                id="clusterCount"
+                min={1}
+                onChange={(e) => setMaxClusters(e.target.valueAsNumber)}
+                className="w-24 rounded-md border border-gray-300 p-2 pl-5 focus:outline-none focus:ring focus:ring-primary focus:ring-opacity-50"
+                disabled={autoChooseClusters}
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              <label htmlFor="seed">
+                <div className="flex flex-col">
+                  <p>Deterministic Seed</p>
+                  <p className="text-base font-normal text-gray-500">
+                    Leave empty for non-deterministic results
+                  </p>
+                </div>
+              </label>
+              <input
+                id="seed"
                 type="number"
                 value={seed}
                 onChange={(e) => setSeed(parseInt(e.target.value))}
+                className="w-24 rounded-md border border-gray-300 p-2 pl-5 text-center focus:outline-none focus:ring focus:ring-primary focus:ring-opacity-50"
               />
             </div>
-            <div className="h-1 w-full bg-accent"></div>
+            <div className="flex items-center justify-between">
+              <div className="flex flex-col">
+                <p>
+                  Excluded Words{" "}
+                  {excludedWords.length > 0 ? `(${excludedWords.length})` : ""}
+                </p>
+                <p className="text-base font-normal text-gray-500">
+                  Disregard any responses containing these words
+                </p>
+              </div>
+              <Button
+                onClick={() => setIsExcludedWordsEditorOpen(true)}
+                primary={false}
+                leftIcon={<SquarePen size={24} />}
+                text="Edit"
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              <div className="flex flex-col">
+                <p>Advanced algorithm options</p>
+                <p className="text-base font-normal text-gray-500">
+                  More granular control over the algorithm
+                </p>
+              </div>
+              <Button
+                onClick={() => setIsAdvancedOptionsEditorOpen(true)}
+                primary={false}
+                leftIcon={<SquarePen size={24} />}
+                text="Edit"
+              />
+            </div>
           </div>
-          <div className="flex items-center justify-between bg-green-300">
-            <button
-              className="rounded-2xl bg-secondary p-2 px-4 text-background"
-              onClick={() => setIsAdvancedOptionsEditorOpen(true)}
-            >
-              Show Advanced Options
-            </button>
+          <div className="flex w-full justify-end">
             <Link to="/clustering">
-              <button
-                className="w-48 rounded-full bg-primary p-4 px-8 text-background"
+              <Button
+                leftIcon={<ChartScatter size={24} />}
                 onClick={submitAlgorithmSettings}
-              >
-                <h5>Start</h5>
-              </button>
+                text="Start Clustering"
+              ></Button>
             </Link>
           </div>
         </div>

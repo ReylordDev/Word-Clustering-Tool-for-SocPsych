@@ -1,90 +1,80 @@
-import React, { useState } from "react";
+import { Plus, X } from "lucide-react";
+import { useState } from "react";
+import Button from "./Button";
 
-interface ExcludedWordsEditorProps {
-  isOpen: boolean;
-  onClose: () => void;
-  initialWords: string[];
-  onSave: (words: string[]) => void;
-}
-
-const ExcludedWordsEditor: React.FC<ExcludedWordsEditorProps> = ({
+const ExcludedWordsEditor = ({
   isOpen,
-  onClose,
-  initialWords,
-  onSave,
+  setIsOpen,
+  excludedWords,
+  setExcludedWords,
+}: {
+  isOpen: boolean;
+  setIsOpen: (open: boolean) => void;
+  excludedWords: string[];
+  setExcludedWords: (excludedWords: string[]) => void;
 }) => {
-  const [words, setWords] = useState<string[]>(initialWords);
   const [newWord, setNewWord] = useState("");
 
   const addWord = () => {
-    if (newWord && !words.includes(newWord)) {
-      setWords([...words, newWord]);
+    if (newWord && !excludedWords.includes(newWord)) {
+      excludedWords.push(newWord);
+      setExcludedWords(excludedWords);
       setNewWord("");
     }
   };
 
   const removeWord = (wordToRemove: string) => {
-    setWords(words.filter((word) => word !== wordToRemove));
-  };
-
-  const handleSave = () => {
-    onSave(words);
-    onClose();
+    setExcludedWords(excludedWords.filter((word) => word !== wordToRemove));
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="w-96 max-w-full rounded-lg bg-white p-6">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-xl font-bold">Edit Excluded Words</h2>
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4">
+      <div className="max-h-[75vh] min-h-[45vh] max-w-4xl rounded-lg bg-background shadow-xl">
+        <div className="flex h-[10vh] items-center justify-between gap-4 border-b p-6">
+          <h2 className="text-3xl font-semibold">Cluster Assignments</h2>
           <button
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
+            onClick={() => setIsOpen(false)}
+            className="text-gray-400 hover:text-text focus:outline-none"
           >
-            X
+            <X size={36} />
           </button>
         </div>
-        <div className="mb-4">
+        <div className="flex h-[10vh] items-center justify-between p-6">
           <input
             type="text"
             value={newWord}
             onChange={(e) => setNewWord(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && addWord()}
             placeholder="Add a new word"
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-48 rounded-md border border-gray-300 p-2 text-center focus:outline-none focus:ring focus:ring-primary focus:ring-opacity-50"
           />
-          <button
+          <Button
             onClick={addWord}
-            className="mt-2 w-full rounded-md bg-blue-500 px-4 py-2 text-white transition duration-200 hover:bg-blue-600"
-          >
-            Add Word
-          </button>
+            text="Add Word"
+            leftIcon={<Plus size={20} />}
+          />
         </div>
-        <div className="mb-4 max-h-60 overflow-y-auto">
-          {words.map((word, index) => (
-            <div
-              key={index}
-              className="mb-2 flex items-center justify-between rounded-md bg-gray-100 px-3 py-2"
-            >
-              <span>{word}</span>
-              <button
-                onClick={() => removeWord(word)}
-                className="text-red-500 hover:text-red-700"
+        <div className="flex max-h-[55vh] flex-grow flex-col gap-4 overflow-y-auto p-6">
+          {excludedWords.length > 0 ? (
+            excludedWords.map((word, index) => (
+              <div
+                key={index}
+                className="flex w-full items-center justify-between gap-4 rounded-lg bg-white p-4 shadow-md"
               >
-                X
-              </button>
-            </div>
-          ))}
-        </div>
-        <div className="flex justify-end">
-          <button
-            onClick={handleSave}
-            className="rounded-md bg-green-500 px-4 py-2 text-white transition duration-200 hover:bg-green-600"
-          >
-            Save Changes
-          </button>
+                <p className="text-lg">{word}</p>
+                <button
+                  onClick={() => removeWord(word)}
+                  className="text-secondary hover:text-red-800 focus:outline-none"
+                >
+                  <X size={32} />
+                </button>
+              </div>
+            ))
+          ) : (
+            <p className="text-center text-lg text-gray-400">No words added</p>
+          )}
         </div>
       </div>
     </div>

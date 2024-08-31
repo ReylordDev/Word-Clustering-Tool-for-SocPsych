@@ -5,7 +5,6 @@ import { Database, FileText, FileSearch, Upload } from "lucide-react";
 import Button from "./Button";
 import PreviousResultModal from "./PreviousResultModal";
 import { useState } from "react";
-import { on } from "events";
 
 function FileSelector({
   setFilePath,
