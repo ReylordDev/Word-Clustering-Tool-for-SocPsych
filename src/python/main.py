@@ -461,8 +461,8 @@ def main(
     selected_columns: list[int],
     excluded_words: list[str],
     language_model: str,
-    nearest_neighbors: int,
-    z_score_threshold: float,
+    nearest_neighbors: Optional[int],
+    z_score_threshold: Optional[float],
     automatic_k: bool,
     max_num_clusters: Optional[int],
     seed: Optional[int],
@@ -481,7 +481,8 @@ def main(
     time.sleep(stderr_flush_delay)
     logger.info(f"TODO: {progression_messages['embed_words']}")
     time.sleep(stderr_flush_delay)
-    logger.info(f"TODO: {progression_messages['detect_outliers']}")
+    if nearest_neighbors is not None and z_score_threshold is not None:
+        logger.info(f"TODO: {progression_messages['detect_outliers']}")
     time.sleep(stderr_flush_delay)
     if automatic_k:
         logger.info(f"TODO: {progression_messages['find_number_of_clusters']}")
@@ -502,9 +503,13 @@ def main(
 
     embeddings = embed_words(words, model)
 
-    outlier_stats, words_remaining, embeddings = detect_outliers(
-        words, embeddings, nearest_neighbors, z_score_threshold
-    )
+    if nearest_neighbors is not None and z_score_threshold is not None:
+        outlier_stats, words_remaining, embeddings = detect_outliers(
+            words, embeddings, nearest_neighbors, z_score_threshold
+        )
+    else:
+        outlier_stats = []
+        words_remaining = words
 
     # a list of how often each word was named
     sample_weights = []
@@ -629,14 +634,14 @@ if __name__ == "__main__":
     parser.add_argument(
         "--nearest_neighbors",
         type=int,
-        default=5,
-        help="Number of nearest neighbors to consider for outlier detection (default: 5)",
+        required=False,
+        help="Number of nearest neighbors to consider for outlier detection",
     )
     parser.add_argument(
         "--z_score_threshold",
         type=float,
-        default=1.0,
-        help="Threshold for outlier detection (default: 1.0)",
+        required=False,
+        help="Threshold for outlier detection",
     )
     parser.add_argument(
         "--automatic_k",
@@ -652,8 +657,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "--seed",
         type=int,
-        default=None,
-        help="Random seed for reproducibility (default: None)",
+        required=False,
+        help="Random seed for reproducibility",
     )
     parser.add_argument(
         "--cluster_count",

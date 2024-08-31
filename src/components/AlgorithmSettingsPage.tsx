@@ -3,16 +3,10 @@ import { TitleBar } from "./TitleBar";
 import { useState } from "react";
 import ExcludedWordsEditor from "./ExcludedWordsEditor";
 import AdvancedOptionsEditor from "./AdvancedOptionsEditor";
+import { AdvancedOptions } from "../models";
 import Toggle from "./Toggle";
 import Button from "./Button";
 import { SquarePen, ChartScatter } from "lucide-react";
-
-interface AdvancedOptions {
-  nearestNeighbors: number | undefined;
-  zScoreThreshold: number | undefined;
-  similarityThreshold: number | undefined;
-  languageModel: string;
-}
 
 export default function AlgorithmSettingsPage({
   autoChooseClusters,
@@ -31,16 +25,16 @@ export default function AlgorithmSettingsPage({
 }: {
   autoChooseClusters: boolean;
   setAutoChooseClusters: (autoChooseClusters: boolean) => void;
-  maxClusters?: number;
+  maxClusters: number | undefined;
   setMaxClusters: (maxClusters: number | undefined) => void;
-  clusterCount?: number;
+  clusterCount: number | undefined;
   setClusterCount: (clusterCount: number | undefined) => void;
   excludedWords: string[];
   setExcludedWords: (excludedWords: string[]) => void;
-  seed: number;
-  setSeed: (seed: number) => void;
-  advancedOptions: Record<string, string>;
-  setAdvancedOptions: (advancedOptions: Record<string, string>) => void;
+  seed: number | undefined;
+  setSeed: (seed: number | undefined) => void;
+  advancedOptions: AdvancedOptions;
+  setAdvancedOptions: (advancedOptions: AdvancedOptions) => void;
   startClustering: () => void;
 }) {
   const [isExcludedWordsEditorOpen, setIsExcludedWordsEditorOpen] =
@@ -58,6 +52,7 @@ export default function AlgorithmSettingsPage({
   const submitAlgorithmSettings = () => {
     console.log("Submitting settings...");
 
+    // TODO: Validate settings
     if (autoChooseClusters && !maxClusters) {
       console.error("Max clusters must be set when autoChooseClusters is true");
       return;
@@ -73,40 +68,6 @@ export default function AlgorithmSettingsPage({
     startClustering();
   };
 
-  // can move this into the component
-  const advancedOptionsConfig = [
-    {
-      key: "nearestNeighbors",
-      descriptor:
-        "Number of nearest neighbors to consider for outlier detection",
-      placeholder: "i.e. 5",
-      type: "number" as const,
-    },
-    {
-      key: "zScoreThreshold",
-      descriptor: "Z-score threshold for outlier detection",
-      placeholder: "i.e. 1",
-      type: "number" as const,
-    },
-    {
-      key: "similarityThreshold",
-      descriptor: "Similarity threshold for merging clusters",
-      placeholder: "i.e. 0.95",
-      type: "number" as const,
-    },
-    {
-      key: "languageModel",
-      descriptor:
-        "Language model to use for clustering (Sentence-Transformers name)",
-      placeholder: "i.e. BAAI/bge-large-en-v1.5",
-      type: "text" as const,
-    },
-  ];
-
-  const handleAdvancedOptionsSave = (values: Record<string, string>) => {
-    setAdvancedOptions(values);
-  };
-
   return (
     <>
       <TitleBar index={2} />
@@ -119,10 +80,9 @@ export default function AlgorithmSettingsPage({
         />
         <AdvancedOptionsEditor
           isOpen={isAdvancedOptionsEditorOpen}
-          onClose={() => setIsAdvancedOptionsEditorOpen(false)}
-          options={advancedOptionsConfig}
-          initialValues={advancedOptions}
-          onSave={handleAdvancedOptionsSave}
+          setIsOpen={setIsAdvancedOptionsEditorOpen}
+          advancedOptions={advancedOptions}
+          setAdvancedOptions={setAdvancedOptions}
         />
         <div className="mt-8 flex flex-col gap-12 px-24">
           <h1 className="flex w-full flex-col gap-2 text-5xl">
@@ -161,7 +121,7 @@ export default function AlgorithmSettingsPage({
                 type="number"
                 id="clusterCount"
                 min={1}
-                onChange={(e) => setMaxClusters(e.target.valueAsNumber)}
+                onChange={(e) => setClusterCount(e.target.valueAsNumber)}
                 className="w-24 rounded-md border border-gray-300 p-2 pl-5 focus:outline-none focus:ring focus:ring-primary focus:ring-opacity-50"
                 disabled={autoChooseClusters}
               />

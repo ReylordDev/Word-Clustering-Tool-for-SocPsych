@@ -5,28 +5,22 @@ export interface FileSettings {
   selectedColumns: number[];
 }
 
-interface AlgorithmSettings {
+export interface AlgorithmSettings {
   autoClusterCount: boolean;
-  seed: number;
+  maxClusters: number | undefined;
+  clusterCount: number | undefined;
+  seed: number | undefined;
   excludedWords: string[];
   advancedOptions: AdvancedOptions;
 }
 
 export interface AdvancedOptions {
-  nearestNeighbors: number;
-  zScoreThreshold: number;
-  similarityThreshold: number;
+  outlierDetection: boolean;
+  nearestNeighbors: number | undefined;
+  zScoreThreshold: number | undefined;
+  agglomerativeClustering: boolean;
+  similarityThreshold: number | undefined;
   languageModel: string;
-}
-
-export interface AutoAlgorithmSettings extends AlgorithmSettings {
-  autoClusterCount: true;
-  maxClusters: number;
-}
-
-export interface ManualAlgorithmSettings extends AlgorithmSettings {
-  autoClusterCount: false;
-  clusterCount: number;
 }
 
 export interface Args {

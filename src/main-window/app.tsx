@@ -6,12 +6,7 @@ import FilePreviewPage from "../components/FilePreviewPage";
 import AlgorithmSettingsPage from "../components/AlgorithmSettingsPage";
 import ProgressPage from "../components/ProgressPage";
 import ResultsPage from "../components/ResultsPage";
-import {
-  FileSettings,
-  AutoAlgorithmSettings,
-  ManualAlgorithmSettings,
-  AdvancedOptions,
-} from "../models";
+import { FileSettings, AlgorithmSettings, AdvancedOptions } from "../models";
 
 export default function App() {
   const [filePath, setFilePath] = useState<string | null>(null);
@@ -26,6 +21,8 @@ export default function App() {
   const [excludedWords, setExcludedWords] = useState<string[]>([]);
   const [seed, setSeed] = useState<number | undefined>(undefined);
   const [advancedOptions, setAdvancedOptions] = useState<AdvancedOptions>({
+    outlierDetection: true,
+    agglomerativeClustering: true,
     nearestNeighbors: 5,
     zScoreThreshold: 3,
     similarityThreshold: 0.95,
@@ -48,47 +45,31 @@ export default function App() {
       delimiter,
       selectedColumns,
     };
-    const advancedOptionsTyped: AdvancedOptions = {
-      nearestNeighbors: parseInt(advancedOptions.nearestNeighbors),
-      zScoreThreshold: parseFloat(advancedOptions.zScoreThreshold),
-      similarityThreshold: parseFloat(advancedOptions.similarityThreshold),
-      languageModel: advancedOptions.languageModel,
+    const algorithmSettings: AlgorithmSettings = {
+      autoClusterCount: autoChooseClusters,
+      maxClusters,
+      clusterCount,
+      seed,
+      excludedWords,
+      advancedOptions,
     };
-    let algorithm_settings: AutoAlgorithmSettings | ManualAlgorithmSettings;
-    if (autoChooseClusters) {
-      algorithm_settings = {
-        autoClusterCount: true,
-        maxClusters: maxClusters as number,
-        seed,
-        excludedWords,
-        advancedOptions: advancedOptionsTyped,
-      };
-    } else {
-      algorithm_settings = {
-        autoClusterCount: false,
-        clusterCount: clusterCount as number,
-        seed,
-        excludedWords,
-        advancedOptions: advancedOptionsTyped,
-      };
-    }
     console.log("File settings: ", fileSettings);
-    console.log("Algorithm settings: ", algorithm_settings);
+    console.log("Algorithm settings: ", algorithmSettings);
 
     console.log("Starting clustering...");
-    window.python.startClustering(fileSettings, algorithm_settings);
+    window.python.startClustering(fileSettings, algorithmSettings);
     setStartTime(Date.now());
   };
 
   return (
     <Router>
       <Routes>
-        {/* <Route
+        <Route
           path="/"
           element={
             <FileSelectionPage filePath={filePath} setFilePath={setFilePath} />
           }
-        /> */}
+        />
         <Route
           path="/file_preview"
           element={
@@ -104,8 +85,7 @@ export default function App() {
           }
         />
         <Route
-          // path="/algorithm_settings"
-          path="/"
+          path="/algorithm_settings"
           element={
             <AlgorithmSettingsPage
               autoChooseClusters={autoChooseClusters}
