@@ -82,25 +82,16 @@ const config: ForgeConfig = {
     postPackage: async (forgeConfig, options) => {
       const { outputPaths } = options;
 
-      const pythonFolderPath = "./src/python";
-
       for (const outputPath of outputPaths) {
-        const destinationPath = path.join(outputPath, "python");
-        await cp(pythonFolderPath, destinationPath, { recursive: true });
-        console.log(`Copied ${pythonFolderPath} to ${destinationPath}`);
-
-        await cp("requirements.txt", path.join(outputPath, "requirements.txt"));
-        console.log(`Copied requirements.txt to ${outputPath}`);
+        await cp("dist", path.join(outputPath, "dist"), {
+          recursive: true,
+        });
+        console.log(`Copied python dist to ${outputPath}`);
 
         await cp("example_data", path.join(outputPath, "example_data"), {
           recursive: true,
         });
         console.log(`Copied example_data to ${outputPath}`);
-
-        await cp(
-          "setup_python_backend.py",
-          path.join(outputPath, "setup_python_backend.py"),
-        );
       }
     },
   },

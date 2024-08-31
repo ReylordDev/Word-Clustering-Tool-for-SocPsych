@@ -2,7 +2,7 @@
 
 
 a = Analysis(
-    ['main.py'],
+    ['src\\python\\main.py'],
     pathex=[],
     binaries=[],
     datas=[],
@@ -19,7 +19,7 @@ pyz = PYZ(a.pure)
 exe = EXE(
     pyz,
     a.scripts,
-    [],
+    [('u', None, 'OPTION')],
     exclude_binaries=True,
     name='main',
     debug=False,
