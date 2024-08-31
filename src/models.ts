@@ -28,3 +28,15 @@ export interface Args {
   algorithmSettings: AlgorithmSettings;
   outputDir: string;
 }
+
+export interface ProgressMessage {
+  step: string;
+  status: "TODO" | "STARTED" | "DONE";
+  timestamp: string;
+  type: string;
+}
+
+export interface ResultsDirMessage {
+  path: string;
+  type: string;
+}

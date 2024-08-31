@@ -5,6 +5,19 @@ import { Clock, Check, Square } from "lucide-react";
 import { formatTime } from "../utils";
 import IndeterminateLoadingBar from "./IndeterminateLoadingBar";
 
+// Potential improvement: Sync this with the python code
+const progression_messages: { [key: string]: string } = {
+  process_input_file: "Reading input file",
+  download_model: "Downloading language model",
+  load_model: "Loading language model",
+  embed_responses: "Embedding responses",
+  detect_outliers: "Detecting outliers",
+  find_number_of_clusters: "Finding number of clusters",
+  cluster: "Clustering",
+  merge: "Merging clusters",
+  results: "Saving clustering results",
+};
+
 export default function ProgressPage({
   startTime,
 }: {
@@ -50,7 +63,7 @@ export default function ProgressPage({
         setCompletedTasks(progress.completedTasks);
         if (
           progress.completedTasks.filter((value) =>
-            value[0].includes("Saving clustering results"),
+            value[0].includes("results"),
           ).length > 0
         ) {
           setComplete(true);
@@ -109,7 +122,7 @@ export default function ProgressPage({
                       className="rounded bg-slate-800 text-background"
                     />
                     <div key={index} className="text-lg line-through">
-                      {message[0]}
+                      {progression_messages[message[0]]}
                     </div>
                   </div>
                   <div className="flex justify-start gap-2">
@@ -132,7 +145,9 @@ export default function ProgressPage({
                     size={24}
                     className="rounded border-2 border-primary bg-background text-background"
                   />
-                  <div className="text-lg">{currentTask[0]}</div>
+                  <div className="text-lg">
+                    {progression_messages[currentTask[0]]}
+                  </div>
                 </div>
                 <div className="flex justify-start gap-2">
                   <Clock className="text-primary" />
@@ -150,7 +165,7 @@ export default function ProgressPage({
                     className="rounded border-2 border-slate-800 bg-background text-background"
                   />
                   <div key={index} className="text-lg">
-                    {message}
+                    {progression_messages[message]}
                   </div>
                 </div>
               </div>

@@ -3,7 +3,7 @@ import json
 import os
 import csv
 import sys
-from typing import Any, Optional
+from typing import Optional
 import numpy as np
 from sentence_transformers import SentenceTransformer
 from sklearn.cluster import AgglomerativeClustering, KMeans
@@ -23,6 +23,8 @@ from models import (
     FileSettings,
     AlgorithmSettings,
     AdvancedOptions,
+    ProgressMessage,
+    ResultsDirMessage,
 )
 
 progression_messages = {
@@ -45,6 +47,7 @@ def process_input_file(
     excluded_words: list[str],
 ):
     logger.info(f"STARTED: {progression_messages['process_input_file']}")
+    print_progress_message("process_input_file", "STARTED")
     rows: list[list[str]] = []
     response_counts: Counter[str] = Counter()
     with open(file_settings.path, encoding="utf-8") as f:
@@ -80,6 +83,7 @@ def process_input_file(
     unique_response_count = len(response_counts)
     responses = list(response_counts.keys())
     logger.info(f"COMPLETED: {progression_messages['process_input_file']}")
+    print_progress_message("process_input_file", "DONE")
     time_stamps.append(
         TimeStamp(
             name=progression_messages["process_input_file"], time=int(time.time())
@@ -93,8 +97,10 @@ def process_input_file(
 
 def load_model(language_model: str) -> SentenceTransformer:
     logger.info(f"STARTED: {progression_messages['load_model']}")
+    print_progress_message("load_model", "STARTED")
     model = SentenceTransformer(language_model)
     logger.info(f"COMPLETED: {progression_messages['load_model']}")
+    print_progress_message("load_model", "DONE")
     time_stamps.append(
         TimeStamp(name=progression_messages["load_model"], time=int(time.time()))
     )
@@ -103,11 +109,13 @@ def load_model(language_model: str) -> SentenceTransformer:
 
 def embed_responses(responses: list[str], model: SentenceTransformer) -> np.ndarray:
     logger.info(f"STARTED: {progression_messages['embed_responses']}")
+    print_progress_message("embed_responses", "STARTED")
     norm_embeddings = model.encode(
         responses, normalize_embeddings=True, convert_to_numpy=True
     )  # shape (no_of_unique_words, embedding_dim)
     norm_embeddings = np.array(norm_embeddings)  # Type casting (only for IDE)
     logger.info(f"COMPLETED: {progression_messages['embed_responses']}")
+    print_progress_message("embed_responses", "DONE")
     time_stamps.append(
         TimeStamp(name=progression_messages["embed_responses"], time=int(time.time()))
     )
@@ -121,6 +129,7 @@ def detect_outliers(
     outlier_detection_threshold: float,
 ) -> tuple[list[dict], list[str], np.ndarray]:
     logger.info(f"STARTED: {progression_messages['detect_outliers']}")
+    print_progress_message("detect_outliers", "STARTED")
     # compute the overall cosine similarity matrix between all embeddings
     S = np.dot(norm_embeddings, norm_embeddings.T)
     # get the average cosine similarities to the OUTLIER_K nearest neighbors for
@@ -156,6 +165,7 @@ def detect_outliers(
         responses_remaining.append(responses[i])
 
     logger.info(f"COMPLETED: {progression_messages['detect_outliers']}")
+    print_progress_message("detect_outliers", "DONE")
     time_stamps.append(
         TimeStamp(name=progression_messages["detect_outliers"], time=int(time.time()))
     )
@@ -171,6 +181,7 @@ def cluster(
     seed: Optional[int] = None,
 ):
     logger.info("STARTED: Clustering")
+    print_progress_message("cluster", "STARTED")
     clustering = KMeans(n_clusters=K, n_init=10, random_state=seed)
     clustering.fit(embeddings, sample_weight=sample_weights)
     cluster_idxs = np.copy(clustering.labels_)
@@ -178,6 +189,7 @@ def cluster(
         clustering.cluster_centers_, axis=1, keepdims=True, ord=2
     )
     logger.info("COMPLETED: Clustering")
+    print_progress_message("cluster", "DONE")
     return cluster_idxs, cluster_centers
 
 
@@ -189,6 +201,7 @@ def merge(
     sample_weights: np.ndarray,
 ):
     logger.info(f"STARTED: {progression_messages['merge']}")
+    print_progress_message("merge", "STARTED")
     # merge the closest clusters using Agglomorative Clustering
     # until everything is closer than the threshold
     meta_clustering = AgglomerativeClustering(
@@ -247,6 +260,7 @@ def merge(
         centers_new, axis=1, keepdims=True, ord=2
     )
     logger.info(f"COMPLETED: {progression_messages['merge']}")
+    print_progress_message("merge", "DONE")
     time_stamps.append(
         TimeStamp(name=progression_messages["merge"], time=int(time.time()))
     )
@@ -359,6 +373,7 @@ def find_number_of_clusters(
     seed: Optional[int] = None,
 ) -> int:
     logger.info(f"STARTED: {progression_messages['find_number_of_clusters']}")
+    print_progress_message("find_number_of_clusters", "STARTED")
     # set up the list of Ks we want to try
     if max_num_clusters < 50:
         # for max_num_clusters < 50, we try every possible value
@@ -404,6 +419,7 @@ def find_number_of_clusters(
     K = K_values[np.argmax(sils * bics)]
 
     logger.info(f"COMPLETED: {progression_messages['find_number_of_clusters']}")
+    print_progress_message("find_number_of_clusters", "DONE")
     time_stamps.append(
         TimeStamp(
             name=progression_messages["find_number_of_clusters"], time=int(time.time())
@@ -476,6 +492,14 @@ def save_args(
         f.write(json_args)
 
 
+def print_progress_message(step: str, status: str):
+    print(
+        f"{ProgressMessage(step=step, status=status).model_dump_json(by_alias=True)} ",
+        flush=True,
+    )
+    time.sleep(0.01)
+
+
 @logger.catch
 def main(
     file_settings: FileSettings,
@@ -486,37 +510,36 @@ def main(
     logger.info("Starting clustering")
     time_stamps.append(TimeStamp(name="start", time=int(time.time())))
 
-    stderr_flush_delay = 0.1
     logger.info(f"TODO: {progression_messages['process_input_file']}")
-    time.sleep(stderr_flush_delay)
+    print_progress_message("process_input_file", "TODO")
     logger.info(f"TODO: {progression_messages['load_model']}")
-    time.sleep(stderr_flush_delay)
+    print_progress_message("load_model", "TODO")
     logger.info(f"TODO: {progression_messages['embed_responses']}")
-    time.sleep(stderr_flush_delay)
+    print_progress_message("embed_responses", "TODO")
 
     if (
         advancedOptions.nearest_neighbors is not None
         and advancedOptions.z_score_threshold is not None
     ):
         logger.info(f"TODO: {progression_messages['detect_outliers']}")
-    time.sleep(stderr_flush_delay)
+        print_progress_message("detect_outliers", "TODO")
 
     if algorithm_settings.auto_cluster_count:
         logger.info(f"TODO: {progression_messages['find_number_of_clusters']}")
-        time.sleep(stderr_flush_delay)
+        print_progress_message("find_number_of_clusters", "TODO")
 
     logger.info(f"TODO: {progression_messages['cluster']}")
-    time.sleep(stderr_flush_delay)
+    print_progress_message("cluster", "TODO")
 
     if (
         advancedOptions.similarity_threshold is not None
         and advancedOptions.similarity_threshold < 1.0
     ):
         logger.info(f"TODO: {progression_messages['merge']}")
-        time.sleep(stderr_flush_delay)
+        print_progress_message("merge", "TODO")
 
     logger.info(f"TODO: {progression_messages['results']}")
-    time.sleep(stderr_flush_delay)
+    print_progress_message("results", "TODO")
 
     responses, response_counts, rows = process_input_file(
         file_settings=file_settings,
@@ -583,19 +606,25 @@ def main(
         merged_clusters = []
 
     logger.info(f"STARTED: {progression_messages['results']}")
+    print_progress_message("results", "STARTED")
 
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
 
     input_file_name = os.path.basename(file_settings.path).removesuffix(".csv")
     input_file_name += f"_{time_stamps[0].time}"
-    output_dir = os.path.join(output_dir, input_file_name)
-    if not os.path.exists(output_dir):
-        os.mkdir(output_dir)
-    logger.info(f"OUTPUT_DIR: {os.path.abspath(output_dir)}")
+    result_dir = os.path.join(output_dir, input_file_name)
+    if not os.path.exists(result_dir):
+        os.mkdir(result_dir)
+    logger.info(f"RESULT_DIR: {os.path.abspath(result_dir)}")
+    print(
+        f"{ResultsDirMessage(path=os.path.abspath(result_dir)).model_dump_json(by_alias=True)} ",
+        flush=True,
+    )
+    time.sleep(0.01)
 
     save_cluster_assignments(
-        output_dir,
+        result_dir,
         K,
         cluster_idxs,
         embeddings,
@@ -604,12 +633,12 @@ def main(
         file_settings.delimiter,
     )
 
-    save_pairwise_similarities(output_dir, cluster_centers, file_settings.delimiter)
+    save_pairwise_similarities(result_dir, cluster_centers, file_settings.delimiter)
 
-    save_outliers(output_dir, outlier_stats)
+    save_outliers(result_dir, outlier_stats)
 
     save_merged_clusters(
-        output_dir,
+        result_dir,
         merged_clusters,
         pre_merge_cluster_idxs,
         pre_merge_centers,
@@ -619,7 +648,7 @@ def main(
 
     save_amended_file(
         input_file_name,
-        output_dir,
+        result_dir,
         responses_remaining,
         rows,
         file_settings.selected_columns,
@@ -628,14 +657,15 @@ def main(
         cluster_idxs,
     )
 
-    save_args(file_settings, algorithm_settings, output_dir)
+    save_args(file_settings, algorithm_settings, result_dir)
 
     # Make sure this syncs with the equivalent on the ProgressPage.tsx
     logger.info(f"COMPLETED: {progression_messages['results']}")
+    print_progress_message("results", "DONE")
     time_stamps.append(
         TimeStamp(name=progression_messages["results"], time=int(time.time()))
     )
-    save_timestamps(output_dir)
+    save_timestamps(result_dir)
 
 
 def validate_args(args):
@@ -763,6 +793,7 @@ if __name__ == "__main__":
 
     log_level = args.log_level
 
+    logger.remove()
     if args.log_dir:
         logger.add(f"{args.log_dir}/main.log", rotation="10 MB", level=log_level)
     else:

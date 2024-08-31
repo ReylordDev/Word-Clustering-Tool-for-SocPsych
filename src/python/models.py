@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel, ConfigDict
 from pydantic.alias_generators import to_camel
@@ -71,3 +72,15 @@ class TimeStamp(CamelModel):
 
 class TimeStamps(CamelModel):
     time_stamps: list[TimeStamp]
+
+
+class ProgressMessage(CamelModel):
+    step: str
+    status: str
+    timestamp: str = datetime.now().isoformat()
+    type: str = "progress"
+
+
+class ResultsDirMessage(CamelModel):
+    path: str
+    type: str = "results_dir"
