@@ -38,6 +38,9 @@ let currentTask: [string, number] | null = null;
 const completedTasks: [string, number][] = [];
 let mainWindow: BrowserWindow;
 const outputDir = path.join(dataDir, "output");
+if (!fs.existsSync(outputDir)) {
+  fs.mkdirSync(outputDir);
+}
 let resultsDir: string | undefined;
 
 // Force single instance application
