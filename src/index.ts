@@ -223,6 +223,7 @@ const createMainWindow = () => {
       symbolColor: "#140621",
       height: 60,
     },
+    icon: path.join(rootDir, "assets", "icons", "icon.png"),
     useContentSize: true,
     webPreferences: {
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,

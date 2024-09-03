@@ -604,16 +604,8 @@ video {
   inset: 0px;
 }
 
-.right-8 {
-  right: 2rem;
-}
-
 .top-0 {
   top: 0px;
-}
-
-.top-8 {
-  top: 2rem;
 }
 
 .z-20 {
@@ -623,11 +615,6 @@ video {
 .mx-1 {
   margin-left: 0.25rem;
   margin-right: 0.25rem;
-}
-
-.mx-12 {
-  margin-left: 3rem;
-  margin-right: 3rem;
 }
 
 .mb-2 {
@@ -730,10 +717,6 @@ video {
   height: 0.625rem;
 }
 
-.h-6 {
-  height: 1.5rem;
-}
-
 .h-72 {
   height: 18rem;
 }
@@ -764,10 +747,6 @@ video {
 
 .h-full {
   height: 100%;
-}
-
-.h-screen {
-  height: 100vh;
 }
 
 .max-h-96 {
@@ -846,10 +825,6 @@ video {
   width: 12rem;
 }
 
-.w-6 {
-  width: 1.5rem;
-}
-
 .w-60 {
   width: 15rem;
 }
@@ -869,10 +844,6 @@ video {
 
 .w-full {
   width: 100%;
-}
-
-.w-screen {
-  width: 100vw;
 }
 
 .min-w-28 {
@@ -911,10 +882,6 @@ video {
   flex-grow: 1;
 }
 
-.flex-grow-0 {
-  flex-grow: 0;
-}
-
 .translate-x-6 {
   --tw-translate-x: 1.5rem;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
@@ -922,16 +889,6 @@ video {
 
 .transform {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.animate-spin {
-  animation: spin 1s linear infinite;
 }
 
 .cursor-pointer {
@@ -1036,10 +993,6 @@ video {
 
 .overflow-y-auto {
   overflow-y: auto;
-}
-
-.overflow-x-clip {
-  overflow-x: clip;
 }
 
 .text-ellipsis {
@@ -1197,10 +1150,6 @@ video {
 
 .p-1 {
   padding: 0.25rem;
-}
-
-.p-12 {
-  padding: 3rem;
 }
 
 .p-2 {
@@ -1389,11 +1338,6 @@ video {
   color: rgb(75 85 99 / var(--tw-text-opacity));
 }
 
-.text-green-800 {
-  --tw-text-opacity: 1;
-  color: rgb(22 101 52 / var(--tw-text-opacity));
-}
-
 .text-primary {
   color: var(--primary);
 }
@@ -1401,11 +1345,6 @@ video {
 .text-red-500 {
   --tw-text-opacity: 1;
   color: rgb(239 68 68 / var(--tw-text-opacity));
-}
-
-.text-red-800 {
-  --tw-text-opacity: 1;
-  color: rgb(153 27 27 / var(--tw-text-opacity));
 }
 
 .text-secondary {
@@ -1419,10 +1358,6 @@ video {
 .text-white {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity));
-}
-
-.underline {
-  text-decoration-line: underline;
 }
 
 .line-through {
@@ -1498,7 +1433,7 @@ video {
 @font-face {
   font-family: "Poppins";
 
-  src: url("../assets/Poppins-Regular.ttf") format("truetype");
+  src: url("../assets/fonts/Poppins-Regular.ttf") format("truetype");
 
   font-weight: 400;
 
@@ -1508,7 +1443,7 @@ video {
 @font-face {
   font-family: "Poppins";
 
-  src: url("../assets/Poppins-Italic.ttf") format("truetype");
+  src: url("../assets/fonts/Poppins-Italic.ttf") format("truetype");
 
   font-weight: 400;
 
@@ -1518,7 +1453,7 @@ video {
 @font-face {
   font-family: "Poppins";
 
-  src: url("../assets/Poppins-Medium.ttf") format("truetype");
+  src: url("../assets/fonts/Poppins-Medium.ttf") format("truetype");
 
   font-weight: 500;
 
@@ -1528,7 +1463,7 @@ video {
 @font-face {
   font-family: "Poppins";
 
-  src: url("../assets/Poppins-MediumItalic.ttf") format("truetype");
+  src: url("../assets/fonts/Poppins-MediumItalic.ttf") format("truetype");
 
   font-weight: 500;
 
@@ -1538,7 +1473,7 @@ video {
 @font-face {
   font-family: "Poppins";
 
-  src: url("../assets/Poppins-SemiBold.ttf") format("truetype");
+  src: url("../assets/fonts/Poppins-SemiBold.ttf") format("truetype");
 
   font-weight: 600;
 
@@ -1548,7 +1483,7 @@ video {
 @font-face {
   font-family: "Poppins";
 
-  src: url("../assets/Poppins-SemiBoldItalic.ttf") format("truetype");
+  src: url("../assets/fonts/Poppins-SemiBoldItalic.ttf") format("truetype");
 
   font-weight: 600;
 
@@ -1558,7 +1493,7 @@ video {
 @font-face {
   font-family: "Poppins";
 
-  src: url("../assets/Poppins-Bold.ttf") format("truetype");
+  src: url("../assets/fonts/Poppins-Bold.ttf") format("truetype");
 
   font-weight: 700;
 
@@ -1568,7 +1503,7 @@ video {
 @font-face {
   font-family: "Poppins";
 
-  src: url("../assets/Poppins-BoldItalic.ttf") format("truetype");
+  src: url("../assets/fonts/Poppins-BoldItalic.ttf") format("truetype");
 
   font-weight: 700;
 

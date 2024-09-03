@@ -20,13 +20,22 @@ const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
     extraResource: ["./dist", "./example_data"],
+    icon: "./assets/icons/icon",
   },
   rebuildConfig: {},
   makers: [
     new MakerSquirrel({}),
     new MakerZIP({}),
-    new MakerRpm({}),
-    new MakerDeb({}),
+    new MakerRpm({
+      options: {
+        icon: "./assets/icons/icon.png",
+      },
+    }),
+    new MakerDeb({
+      options: {
+        icon: "./assets/icons/icon.png",
+      },
+    }),
   ],
   publishers: [
     new PublisherGithub({
