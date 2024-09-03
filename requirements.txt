@@ -4,3 +4,4 @@ loguru
 numpy<2
 wheel
 pydantic
+torch>=1.8.0,<2.4.0
