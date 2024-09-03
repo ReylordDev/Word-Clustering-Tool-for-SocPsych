@@ -42,6 +42,12 @@ export default function ProgressPage({
   }, [startTime]);
 
   useEffect(() => {
+    if (complete) {
+      navigate("/results");
+    }
+  }, [complete]);
+
+  useEffect(() => {
     let currentTaskInterval: NodeJS.Timeout;
     const interval = setInterval(() => {
       window.python.pollClusterProgress().then((progress) => {
@@ -90,10 +96,6 @@ export default function ProgressPage({
     );
   }
 
-  if (complete) {
-    navigate("/results");
-  }
-
   return (
     <>
       <TitleBar index={3} />
@@ -115,13 +117,13 @@ export default function ProgressPage({
                 ? completedTasks[index - 1][1]
                 : startTime;
               return (
-                <div className="flex items-center justify-between">
+                <div key={index} className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <Check
                       size={24}
                       className="rounded bg-slate-800 text-background"
                     />
-                    <div key={index} className="text-lg line-through">
+                    <div className="text-lg line-through">
                       {progression_messages[message[0]]}
                     </div>
                   </div>
@@ -158,15 +160,13 @@ export default function ProgressPage({
           )}
           <div className="flex flex-col justify-start gap-2">
             {pendingTasks.map((message, index) => (
-              <div className="flex items-center justify-between">
+              <div key={index} className="flex items-center justify-between">
                 <div className="flex gap-4">
                   <Check
                     size={24}
                     className="rounded border-2 border-slate-800 bg-background text-background"
                   />
-                  <div key={index} className="text-lg">
-                    {progression_messages[message]}
-                  </div>
+                  <div className="text-lg">{progression_messages[message]}</div>
                 </div>
               </div>
             ))}

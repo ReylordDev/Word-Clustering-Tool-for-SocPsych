@@ -4,7 +4,7 @@ import { TitleBar } from "./TitleBar";
 import { Database, FileText, FileSearch, Upload } from "lucide-react";
 import Button from "./Button";
 import PreviousResultModal from "./PreviousResultModal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function FileSelector({
   setFilePath,
@@ -77,16 +77,17 @@ export default function FileSelectionPage({
   setFilePath: (path: string) => void;
 }) {
   const [previousResultModalOpen, setPreviousResultModalOpen] = useState(false);
+  const navigate = useNavigate();
 
   const submitExampleFile = () => {
     console.log("not implemented");
   };
 
-  const navigate = useNavigate();
-
-  if (filePath) {
-    navigate("/file_preview");
-  }
+  useEffect(() => {
+    if (filePath) {
+      navigate("/file_preview");
+    }
+  }, [filePath]);
 
   return (
     <>

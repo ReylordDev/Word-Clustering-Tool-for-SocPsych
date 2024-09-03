@@ -36,7 +36,19 @@ export interface ProgressMessage {
   type: string;
 }
 
-export interface ResultsDirMessage {
-  path: string;
+export interface RunNameMessage {
+  name: string;
   type: string;
+}
+
+export interface ClusterProgress {
+  pendingTasks: string[];
+  currentTask: [string, number] | null;
+  completedTasks: [string, number][];
+}
+
+export interface RunStatus {
+  status: "NOT_STARTED" | "IN_PROGRESS" | "COMPLETE" | "ERROR";
+  progress: ClusterProgress;
+  name: string;
 }

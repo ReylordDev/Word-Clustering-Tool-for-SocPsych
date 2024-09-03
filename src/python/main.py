@@ -24,7 +24,7 @@ from models import (
     AlgorithmSettings,
     AdvancedOptions,
     ProgressMessage,
-    ResultsDirMessage,
+    RunNameMessage,
 )
 
 progression_messages = {
@@ -611,7 +611,7 @@ def main(
         os.mkdir(result_dir)
     logger.info(f"RESULT_DIR: {os.path.abspath(result_dir)}")
     print(
-        f"{ResultsDirMessage(path=os.path.abspath(result_dir)).model_dump_json(by_alias=True)} ",
+        f"{RunNameMessage(name=input_file_name).model_dump_json(by_alias=True)} ",
         flush=True,
     )
     time.sleep(0.01)

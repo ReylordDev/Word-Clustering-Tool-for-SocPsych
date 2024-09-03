@@ -27,17 +27,26 @@ contextBridge.exposeInMainWorld("python", {
       AlgorithmSettings,
     );
   },
+  getRunName: async () => {
+    return await ipcRenderer.invoke("python:getRunName");
+  },
+  setRunName: async (name: string) => {
+    return await ipcRenderer.invoke("python:setRunName", name);
+  },
   getResultsDir: async () => {
     return await ipcRenderer.invoke("python:getResultsDir");
   },
-  openResultsDir: async (resultsDir: string) => {
-    return await ipcRenderer.invoke("python:openResultsDir", resultsDir);
+  openResultsDir: async () => {
+    return await ipcRenderer.invoke("python:openResultsDir");
   },
   fetchPreviousResults: async () => {
     return await ipcRenderer.invoke("python:fetchPreviousResults");
   },
   pollClusterProgress: async () => {
     return await ipcRenderer.invoke("python:pollClusterProgress");
+  },
+  resetRun: async () => {
+    return await ipcRenderer.invoke("python:resetRun");
   },
 });
 

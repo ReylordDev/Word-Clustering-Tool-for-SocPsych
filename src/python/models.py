@@ -81,6 +81,6 @@ class ProgressMessage(CamelModel):
     type: str = "progress"
 
 
-class ResultsDirMessage(CamelModel):
-    path: str
-    type: str = "results_dir"
+class RunNameMessage(CamelModel):
+    name: str
+    type: str = "run_name"

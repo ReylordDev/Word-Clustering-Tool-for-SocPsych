@@ -107,18 +107,11 @@ export default function ResultsPage() {
   const [outliersModalOpen, setOutliersModalOpen] = useState(false);
   const [mergedClustersModalOpen, setMergedClustersModalOpen] = useState(false);
 
-  if (!resultsDir) {
-    const state = useLocation().state;
-    if (state && state.resultsDir) {
-      setResultsDir(state.resultsDir);
-    }
-  }
-
   useEffect(() => {
     window.python
       .getResultsDir()
-      .then((dir) => {
-        if (dir) setResultsDir(dir);
+      .then((resultsDir) => {
+        setResultsDir(resultsDir);
       })
       .catch((err) => {
         console.error(err);
@@ -141,6 +134,13 @@ export default function ResultsPage() {
       console.error(err);
     }
   }, [resultsDir]);
+
+  if (!resultsDir) {
+    const state = useLocation().state;
+    if (state && state.resultsDir) {
+      setResultsDir(state.resultsDir);
+    }
+  }
 
   if (!args || !resultsDir) {
     return (
@@ -207,23 +207,22 @@ export default function ResultsPage() {
             </div>
           </div>
           <div className="flex w-full flex-col items-center justify-center gap-8">
-            <Button
+            {/* I think the extra dir button is a bit unnecessary. */}
+            {/* <Button
               onClick={() =>
-                window.python
-                  .openResultsDir(resultsDir)
-                  .then((errorMessage) => {
-                    if (errorMessage) {
-                      console.error(
-                        "Error opening output directory",
-                        errorMessage,
-                      );
-                    }
-                  })
+                window.python.openResultsDir().then((errorMessage) => {
+                  if (errorMessage) {
+                    console.error(
+                      "Error opening output directory",
+                      errorMessage,
+                    );
+                  }
+                })
               }
               leftIcon={<Folder />}
               text="Results Folder"
               className="w-2/3"
-            />
+            /> */}
             <Button
               onClick={() =>
                 window.python.showItemInFolder(resultsDir + "/output.csv")
