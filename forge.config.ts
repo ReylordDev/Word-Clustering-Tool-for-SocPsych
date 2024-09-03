@@ -3,7 +3,6 @@ import { MakerSquirrel } from "@electron-forge/maker-squirrel";
 import { MakerZIP } from "@electron-forge/maker-zip";
 import { MakerDeb } from "@electron-forge/maker-deb";
 import { MakerRpm } from "@electron-forge/maker-rpm";
-import { MakerWix } from "@electron-forge/maker-wix";
 import { PublisherGithub } from "@electron-forge/publisher-github";
 import { AutoUnpackNativesPlugin } from "@electron-forge/plugin-auto-unpack-natives";
 import { WebpackPlugin } from "@electron-forge/plugin-webpack";
@@ -12,8 +11,6 @@ import { FuseV1Options, FuseVersion } from "@electron/fuses";
 
 import { mainConfig } from "./webpack.main.config";
 import { rendererConfig } from "./webpack.renderer.config";
-import path from "path";
-import { cp } from "fs/promises";
 
 import dotenv from "dotenv";
 
@@ -22,11 +19,11 @@ dotenv.config();
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
+    extraResource: ["./dist", "./example_data"],
   },
   rebuildConfig: {},
   makers: [
     new MakerSquirrel({}),
-    new MakerWix({}),
     new MakerZIP({}),
     new MakerRpm({}),
     new MakerDeb({}),
@@ -78,23 +75,7 @@ const config: ForgeConfig = {
       [FuseV1Options.OnlyLoadAppFromAsar]: true,
     }),
   ],
-  hooks: {
-    postPackage: async (forgeConfig, options) => {
-      const { outputPaths } = options;
-
-      for (const outputPath of outputPaths) {
-        await cp("dist", path.join(outputPath, "dist"), {
-          recursive: true,
-        });
-        console.log(`Copied python dist to ${outputPath}`);
-
-        await cp("example_data", path.join(outputPath, "example_data"), {
-          recursive: true,
-        });
-        console.log(`Copied example_data to ${outputPath}`);
-      }
-    },
-  },
+  hooks: {},
 };
 
 export default config;

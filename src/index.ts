@@ -67,10 +67,15 @@ const startScript = async (
   const advancedOptions = algorithmSettings.advancedOptions;
   // let pythonPath: string;
   let executablePath: string;
-  const pyInstallerDestinationDir = path.join(rootDir, "dist", "main");
   const pythonArguments: string[] = [];
   if (!isDev()) {
-    // Launch the pyinstaller executable
+    // Launch the compiled executable
+    const pyInstallerDestinationDir = path.join(
+      rootDir,
+      "resources",
+      "dist",
+      "main",
+    );
     if (process.platform === "win32") {
       executablePath = path.join(pyInstallerDestinationDir, "main.exe");
     } else {

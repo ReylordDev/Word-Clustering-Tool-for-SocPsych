@@ -10,8 +10,7 @@
     "make": "electron-forge make",
     "publish": "electron-forge publish",
     "lint": "eslint --ext .ts,.tsx .",
-    "tailwind-watcher": "tailwindcss -i ./src/index.css -o ./src/output.css --watch",
-    "pyinstaller": "pyinstaller --python-option u ./src/python/main.py -y"
+    "tailwind-watcher": "tailwindcss -i ./src/index.css -o ./src/output.css --watch"
   },
   "devDependencies": {
     "@electron-forge/cli": "^7.4.0",
