@@ -112,7 +112,7 @@ def embed_responses(responses: list[str], model: SentenceTransformer) -> np.ndar
     print_progress_message("embed_responses", "STARTED")
     norm_embeddings = model.encode(
         responses, normalize_embeddings=True, convert_to_numpy=True
-    )  # shape (no_of_unique_words, embedding_dim)
+    )  # shape (no_of_unique_responses, embedding_dim)
     norm_embeddings = np.array(norm_embeddings)  # Type casting (only for IDE)
     logger.info(f"COMPLETED: {progression_messages['embed_responses']}")
     print_progress_message("embed_responses", "DONE")
@@ -133,11 +133,11 @@ def detect_outliers(
     # compute the overall cosine similarity matrix between all embeddings
     S = np.dot(norm_embeddings, norm_embeddings.T)
     # get the average cosine similarities to the OUTLIER_K nearest neighbors for
-    # each word (excluding the word itself). The numpy.partition function helps us
+    # each response (excluding the response itself). The numpy.partition function helps us
     # with that because it can find the smallest values in an array efficiently.
     # So we use that to find the OUTLIER_K+1 smallest negative similarities,
     # take the second to OUTLIER_K+1 values of those (to exclude the similarity
-    # to the word itself), swap the sign again, and take the average.
+    # to the response itself), swap the sign again, and take the average.
     avg_neighbor_sim = np.mean(
         -np.partition(-S, outlier_k + 1, axis=1)[:, 1 : outlier_k + 1], axis=1
     )
@@ -158,7 +158,7 @@ def detect_outliers(
             }
         )
 
-    # take only the remaining words
+    # take only the remaining response
     remaining_indexes = np.where(np.logical_not(outlier_bools))[0]
     responses_remaining: list[str] = []
     for i in remaining_indexes:
@@ -211,13 +211,6 @@ def merge(
         metric="cosine",
     )
     meta_clustering.fit(np.asarray(cluster_centers))
-
-    # # Just to make the merging process more transparent, get the word
-    # # that is closest to each cluster center
-    # S = np.dot(cluster_centers, embeddings.T)
-    # exemplars = []
-    # for k in range(cluster_centers.shape[0]):
-    #     exemplars.append(words[np.argmax(S[k, :])])
 
     mergers: list[Merger] = []
     for label in np.unique(meta_clustering.labels_):
@@ -273,7 +266,7 @@ def save_cluster_assignments(
     cluster_idxs: np.ndarray,
     embeddings_normalized: np.ndarray,
     centers_normalized: np.ndarray,
-    words: list[str],
+    responses: list[str],
     col_delimiter: str = ",",
 ):
     output_file = f"{output_dir}/cluster_assignments.csv"
@@ -282,29 +275,29 @@ def save_cluster_assignments(
         writer.writerow(["response", "cluster_index", "similarity_to_center"])
         # similarity to center refers to the distance from embedding to the
         # cluster mean which is a measure of how representative
-        # the word is for the cluster
+        # the response is for the cluster
 
         for k in range(K):
-            # get the indices of all words in cluster k
+            # get the indices of all responses in cluster k
             in_cluster_k = np.where(cluster_idxs == k)[0]
 
             if len(in_cluster_k) == 0:
                 continue
 
-            # compute the cosine similarity of the embeddings of all words
+            # compute the cosine similarity of the embeddings of all responses
             # in cluster k to the mean of cluster k
             sim = np.dot(
                 embeddings_normalized[in_cluster_k, :], centers_normalized[k, :]
             )
-            # iterate over all words in cluster k - but sort descendingly
+            # iterate over all responses in cluster k - but sort descendingly
             # by the cosine similarity because we may want to label clusters by
-            # the most similar words
+            # the most similar responses
             for i in np.argsort(-sim):
                 cluster_col_idx = in_cluster_k[i]
-                word = words[cluster_col_idx]
+                response = responses[cluster_col_idx]
                 k = cluster_idxs[cluster_col_idx]
                 s = sim[i].item()
-                writer.writerow([word, k, s])
+                writer.writerow([response, k, s])
 
 
 def save_pairwise_similarities(
@@ -333,7 +326,7 @@ def save_pairwise_similarities(
 def save_amended_file(
     input_file_name: str,
     output_dir: str,
-    words: list[str],
+    responses: list[str],
     rows: list[list[str]],
     selected_columns: list[int],
     delimiter: str,
@@ -341,12 +334,12 @@ def save_amended_file(
     cluster_idxs: np.ndarray,
 ):
     output_file_path = f"{output_dir}/output.csv"
-    word_idx_map = {word: idx for idx, word in enumerate(words)}
+    response_index_map = {response: idx for idx, response in enumerate(responses)}
     for row in rows[1:]:
         for i in selected_columns:
-            # get the next word provided by the current participant
-            word = row[i]
-            cluster_col_idx = word_idx_map.get(word)
+            # get the next response provided by the current participant
+            response = row[i]
+            cluster_col_idx = response_index_map.get(response)
             if cluster_col_idx is None:
                 row.append("")
                 continue
@@ -398,7 +391,7 @@ def find_number_of_clusters(
         sil = silhouette_score(np.asarray(embeddings_normalized), clustering.labels_)
         sils.append(sil)
         # compute the BIC score, which is a combination of the distance of each
-        # word to its cluster center - provided by the clustering itself -
+        # response to its cluster center - provided by the clustering itself -
         bic = -clustering.score(embeddings_normalized)
         # ... and the number of parameters in our model, estimated by K
         bic += K
