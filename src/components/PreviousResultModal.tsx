@@ -14,7 +14,6 @@ const PreviousResultModal = ({
     {
       name: string;
       date: string;
-      original: string;
     }[]
   >([]);
 
@@ -30,12 +29,8 @@ const PreviousResultModal = ({
       });
   }, []);
 
-  const handleClick = (selectedResult: {
-    name: string;
-    date: string;
-    original: string;
-  }) => {
-    onSelect(selectedResult.original);
+  const handleClick = (selectedResult: { name: string; date: string }) => {
+    onSelect(selectedResult.name);
     setIsOpen(false);
   };
 
@@ -55,29 +50,37 @@ const PreviousResultModal = ({
         </div>
         {/* TODO: Turn into a table */}
         <div className="max-h-[65vh] flex-grow overflow-y-auto p-6">
-          <ol className="flex flex-wrap items-center gap-8">
-            {previousResults
-              .sort((a, b) => a.date.localeCompare(b.date))
-              .map((item, index) => (
-                <li key={index}>
-                  <button onClick={() => handleClick(item)}>
-                    <div className="flex w-60 items-center justify-start gap-4 rounded-lg bg-white p-4 shadow-md">
-                      <div className="text-primary hover:text-violet-900">
-                        <Info size={24} />
-                      </div>
-                      <div className="flex w-full flex-col items-center justify-start gap-1">
-                        <h3 className="text-clip text-lg font-semibold">
-                          {item.name}
-                        </h3>
-                        <p className="text-ellipsis text-sm text-gray-400">
-                          {item.date}
-                        </p>
-                      </div>
-                    </div>
-                  </button>
-                </li>
-              ))}
-          </ol>
+          <table className="w-full rounded-lg">
+            <thead>
+              <tr>
+                <th className="border-b border-r border-dashed border-b-text border-r-text p-1">
+                  Name
+                </th>
+
+                <th className="border-b border-r border-dashed border-b-text border-r-text p-1">
+                  Date
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {previousResults
+                .sort((a, b) => b.date.localeCompare(a.date))
+                .map((item, index) => (
+                  <tr
+                    key={index}
+                    className="cursor-pointer hover:bg-violet-200"
+                    onClick={() => handleClick(item)}
+                  >
+                    <td className="border border-dashed border-text p-2 pl-4">
+                      <p className="text-ellipsis font-semibold">{item.name}</p>
+                    </td>
+                    <td className="border border-dashed border-text p-2 pl-4">
+                      <p className="text-md text-ellipsis">{item.date}</p>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

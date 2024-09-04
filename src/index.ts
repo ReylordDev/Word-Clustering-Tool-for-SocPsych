@@ -306,18 +306,38 @@ app.on("ready", async () => {
   });
 
   ipcMain.handle("python:getRunName", async () => {
+    if (!currentRun.name) {
+      console.error("No current run name");
+    }
     return currentRun.name;
   });
 
   ipcMain.handle("python:setRunName", (event, name: string) => {
+    // Rename the results Dir
+    if (!currentRun.name) {
+      console.error("No current run name");
+    }
+    const oldPath = path.join(outputDir, currentRun.name);
+    const newPath = path.join(outputDir, name);
+    fs.rename(oldPath, newPath, (err) => {
+      if (err) {
+        console.error(err);
+      }
+    });
     currentRun.name = name;
   });
 
   ipcMain.handle("python:getResultsDir", () => {
+    if (!currentRun.name) {
+      console.error("No current run name");
+    }
     return path.join(outputDir, currentRun.name);
   });
 
   ipcMain.handle("python:openResultsDir", () => {
+    if (!currentRun.name) {
+      console.error("No current run name");
+    }
     const resultsDir = path.join(outputDir, currentRun.name);
     console.log(`Opening results directory: ${resultsDir}`);
     return shell.openPath(resultsDir);
@@ -328,7 +348,6 @@ app.on("ready", async () => {
       {
         name: string;
         date: string;
-        original: string;
       }[]
     >((resolve, reject) => {
       fs.readdir(outputDir, (err, files) => {
@@ -339,19 +358,60 @@ app.on("ready", async () => {
         const results: {
           name: string;
           date: string;
-          original: string;
         }[] = [];
         files.forEach((fileName) => {
-          const parts = fileName.split("_");
-          const timestamp = parts.pop();
-          const name = parts.join("_");
-          results.push({
-            name,
-            date: timestamp ? formatDate(parseInt(timestamp)) : "Invalid Date",
-            original: path.join(outputDir, fileName),
-          });
+          // Read timestamps.json
+          const timestampPath = path.join(
+            outputDir,
+            fileName,
+            "timestamps.json",
+          );
+          if (!fs.existsSync(timestampPath)) {
+            console.error(`Timestamps file not found: ${timestampPath}`);
+            return;
+          }
+          const timestamps = fs.readFileSync(timestampPath, "utf-8");
+          try {
+            const parsedTimestamps = JSON.parse(timestamps);
+            const startingTime = parsedTimestamps.timeStamps[0].time;
+            results.push({
+              name: fileName,
+              date: startingTime
+                ? formatDate(parseInt(startingTime))
+                : "Invalid Date",
+            });
+          } catch (error) {
+            console.error(
+              `Failed to parse timestamps file: ${timestampPath} because of ${error}`,
+            );
+            return;
+          }
         });
         resolve(results);
+      });
+    });
+  });
+
+  ipcMain.handle("python:loadRun", (event, runName: string) => {
+    fs.readdir(outputDir, (err, files) => {
+      if (err) {
+        console.error(err);
+        return;
+      }
+      files.forEach((fileName) => {
+        if (fileName === runName) {
+          console.log(`Loading run: ${runName}`);
+          currentRun = {
+            status: "COMPLETED",
+            progress: {
+              pendingTasks: [],
+              currentTask: null,
+              completedTasks: [],
+            },
+            name: runName,
+          };
+          return;
+        }
       });
     });
   });
@@ -421,9 +481,9 @@ declare global {
         {
           name: string;
           date: string;
-          original: string;
         }[]
       >;
+      loadRun(name: string): void;
       resetRun: () => void;
     };
     control: {

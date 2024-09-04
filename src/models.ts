@@ -48,7 +48,7 @@ export interface ClusterProgress {
 }
 
 export interface RunStatus {
-  status: "NOT_STARTED" | "IN_PROGRESS" | "COMPLETE" | "ERROR";
+  status: "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED" | "ERROR";
   progress: ClusterProgress;
   name: string;
 }

@@ -96,9 +96,10 @@ export default function FileSelectionPage({
         <PreviousResultModal
           isOpen={previousResultModalOpen}
           setIsOpen={setPreviousResultModalOpen}
-          onSelect={(result) =>
-            navigate("/results", { state: { resultsDir: result } })
-          }
+          onSelect={(result) => {
+            window.python.loadRun(result);
+            navigate("/results");
+          }}
         />
         <div className="flex w-full flex-col gap-2">
           <h1 className="text-5xl">
