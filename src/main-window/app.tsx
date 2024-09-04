@@ -30,6 +30,20 @@ export default function App() {
   });
   const [startTime, setStartTime] = useState<number | null>(null);
 
+  const setFileSettings = (fileSettings: FileSettings) => {
+    setFilePath(fileSettings.path);
+    setHasHeader(fileSettings.hasHeader);
+    setDelimiter(fileSettings.delimiter);
+    setSelectedColumns(fileSettings.selectedColumns);
+  };
+
+  const resetFileSettings = () => {
+    setFilePath(null);
+    setHasHeader(true);
+    setDelimiter(",");
+    setSelectedColumns([]);
+  };
+
   const startClustering = async () => {
     if (!filePath) {
       console.error("File not selected");
@@ -63,7 +77,11 @@ export default function App() {
         <Route
           path="/"
           element={
-            <FileSelectionPage filePath={filePath} setFilePath={setFilePath} />
+            <FileSelectionPage
+              filePath={filePath}
+              setFilePath={setFilePath}
+              setFileSettings={setFileSettings}
+            />
           }
         />
         <Route
@@ -104,7 +122,10 @@ export default function App() {
           path="/progress"
           element={<ProgressPage startTime={startTime} />}
         />
-        <Route path="/results" element={<ResultsPage />} />
+        <Route
+          path="/results"
+          element={<ResultsPage resetFileSettings={resetFileSettings} />}
+        />
       </Routes>
     </Router>
   );

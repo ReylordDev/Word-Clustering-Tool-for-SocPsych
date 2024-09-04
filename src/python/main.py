@@ -261,7 +261,7 @@ def merge(
 
 
 def save_cluster_assignments(
-    output_dir: str,
+    results_dir: str,
     K: int,
     cluster_idxs: np.ndarray,
     embeddings_normalized: np.ndarray,
@@ -269,7 +269,7 @@ def save_cluster_assignments(
     responses: list[str],
     col_delimiter: str = ",",
 ):
-    output_file = f"{output_dir}/cluster_assignments.csv"
+    output_file = f"{results_dir}/cluster_assignments.csv"
     with open(output_file, "w", encoding="utf-8") as f:
         writer = csv.writer(f, delimiter=col_delimiter, lineterminator="\n")
         writer.writerow(["response", "cluster_index", "similarity_to_center"])
@@ -301,11 +301,11 @@ def save_cluster_assignments(
 
 
 def save_pairwise_similarities(
-    output_dir: str,
+    results_dir: str,
     centers_normalized: np.ndarray,
     col_delimiter: str = ",",
 ):
-    pairwise_similarities_file = f"{output_dir}/pairwise_similarities.json"
+    pairwise_similarities_file = f"{results_dir}/pairwise_similarities.json"
     # compute the pairwise similarities between all cluster centers
     S = np.dot(centers_normalized, centers_normalized.T)
 
@@ -325,7 +325,7 @@ def save_pairwise_similarities(
 
 def save_amended_file(
     input_file_name: str,
-    output_dir: str,
+    results_dir: str,
     responses: list[str],
     rows: list[list[str]],
     selected_columns: list[int],
@@ -333,7 +333,7 @@ def save_amended_file(
     has_headers: bool,
     cluster_idxs: np.ndarray,
 ):
-    output_file_path = f"{output_dir}/output.csv"
+    output_file_path = f"{results_dir}/output.csv"
     response_index_map = {response: idx for idx, response in enumerate(responses)}
     for row in rows[1:]:
         for i in selected_columns:
@@ -421,22 +421,22 @@ def find_number_of_clusters(
     return K
 
 
-def save_outliers(output_dir: str, outlier_stats: list[dict]):
+def save_outliers(results_dir: str, outlier_stats: list[dict]):
     outlier_stats.sort(key=lambda x: x["similarity"], reverse=True)
-    outliers_file = output_dir + "/outliers.json"
+    outliers_file = results_dir + "/outliers.json"
     with open(outliers_file, "w") as f:
         json.dump(outlier_stats, f)
 
 
 def save_merged_clusters(
-    output_dir: str,
+    results_dir: str,
     mergers: list[Merger],
     cluster_idxs: np.ndarray,
     centers: np.ndarray,
     embeddings: np.ndarray,
     responses: list[str],
 ):
-    merged_clusters_file = output_dir + "/merged_clusters.json"
+    merged_clusters_file = results_dir + "/merged_clusters.json"
     for merger in mergers:
         merger.merged_clusters
         merger.similarity_pairs
@@ -462,8 +462,8 @@ def save_merged_clusters(
         f.write(mergers_model.model_dump_json(by_alias=True))
 
 
-def save_timestamps(output_dir: str):
-    timestamps_file = output_dir + "/timestamps.json"
+def save_timestamps(results_dir: str):
+    timestamps_file = results_dir + "/timestamps.json"
     timestamps_model = TimeStamps(time_stamps=time_stamps)
     with open(timestamps_file, "w") as f:
         f.write(timestamps_model.model_dump_json(by_alias=True))
@@ -472,14 +472,14 @@ def save_timestamps(output_dir: str):
 def save_args(
     file_settings: FileSettings,
     algorithm_settings: AlgorithmSettings,
-    output_dir: str,
+    results_dir: str,
 ):
     args: Args = Args(
         file_settings=file_settings,
         algorithm_settings=algorithm_settings,
-        output_dir=output_dir,
+        results_dir=results_dir,
     )
-    args_file = output_dir + "/args.json"
+    args_file = results_dir + "/args.json"
     with open(args_file, "w") as f:
         json_args = args.model_dump_json(by_alias=True)
         f.write(json_args)

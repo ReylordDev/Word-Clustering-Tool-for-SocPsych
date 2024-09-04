@@ -38,7 +38,7 @@ class Args(CamelModel):
     algorithm_settings: AlgorithmSettings
     # log_dir: str
     # log_level: str
-    output_dir: str
+    results_dir: str
 
 
 class SimilarityPair(CamelModel):

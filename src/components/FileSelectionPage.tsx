@@ -5,6 +5,7 @@ import { Database, FileText, FileSearch, Upload } from "lucide-react";
 import Button from "./Button";
 import PreviousResultModal from "./PreviousResultModal";
 import { useEffect, useState } from "react";
+import { Args, FileSettings } from "../models";
 
 function FileSelector({
   setFilePath,
@@ -72,9 +73,11 @@ function FileSelector({
 export default function FileSelectionPage({
   filePath,
   setFilePath,
+  setFileSettings,
 }: {
   filePath: string | null;
   setFilePath: (path: string) => void;
+  setFileSettings: (fileSettings: FileSettings) => void;
 }) {
   const [previousResultModalOpen, setPreviousResultModalOpen] = useState(false);
   const navigate = useNavigate();
@@ -89,6 +92,15 @@ export default function FileSelectionPage({
     }
   }, [filePath]);
 
+  const handlePreviousResultSelect = async (result: string) => {
+    await window.python.loadRun(result);
+    const resultsDir = await window.python.getResultsDir();
+    const output = await window.python.readJsonFile(`${resultsDir}/args.json`);
+    const args = output as Args;
+    setFileSettings(args.fileSettings);
+    navigate("/results");
+  };
+
   return (
     <>
       <TitleBar index={0} />
@@ -96,10 +108,7 @@ export default function FileSelectionPage({
         <PreviousResultModal
           isOpen={previousResultModalOpen}
           setIsOpen={setPreviousResultModalOpen}
-          onSelect={(result) => {
-            window.python.loadRun(result);
-            navigate("/results");
-          }}
+          onSelect={handlePreviousResultSelect}
         />
         <div className="flex w-full flex-col gap-2">
           <h1 className="text-5xl">

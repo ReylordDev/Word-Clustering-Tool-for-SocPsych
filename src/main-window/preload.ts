@@ -45,6 +45,9 @@ contextBridge.exposeInMainWorld("python", {
   pollClusterProgress: async () => {
     return await ipcRenderer.invoke("python:pollClusterProgress");
   },
+  resetClusterProgress: async () => {
+    return await ipcRenderer.invoke("python:resetClusterProgress");
+  },
   loadRun: async (name: string) => {
     return await ipcRenderer.invoke("python:loadRun", name);
   },

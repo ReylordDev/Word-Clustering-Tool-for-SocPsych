@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import Button from "./Button";
 import ClusterAssignmentModal from "./ClusterAssignmentModal";
+import ExpandableButton from "./ExpandableButton";
 import { useState, useEffect } from "react";
 
 import { formatTime } from "../utils";
@@ -24,6 +25,7 @@ import { Args } from "../models";
 import OutliersModal from "./OutliersModal";
 import MergedClustersModal from "./MergedClustersModal";
 import ClusterSimilarityModal from "./ClusterSimilaritiesModal";
+import { useNavigate } from "react-router-dom";
 
 interface TimeStamp {
   name: string;
@@ -112,7 +114,11 @@ const isValidFileName = (name: string) => {
   return condition;
 };
 
-export default function ResultsPage() {
+export default function ResultsPage({
+  resetFileSettings,
+}: {
+  resetFileSettings: () => void;
+}) {
   const [resultsDir, setResultsDir] = useState<string | undefined>(undefined);
   const [runName, setRunName] = useState<string | undefined>(undefined);
   const [runNameInput, setRunNameInput] = useState<string | undefined>(
@@ -127,6 +133,8 @@ export default function ResultsPage() {
     useState(false);
   const [outliersModalOpen, setOutliersModalOpen] = useState(false);
   const [mergedClustersModalOpen, setMergedClustersModalOpen] = useState(false);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     window.python
@@ -337,6 +345,22 @@ export default function ResultsPage() {
               }
             />
             <TotalTimeDropdown path={`${resultsDir}/timestamps.json`} />
+            <ExpandableButton
+              text="Start a new run"
+              option1="Change the algorithm settings"
+              onClick1={() => {
+                console.log("Back to Algorithm Settings");
+                window.python.resetClusterProgress();
+                navigate("/algorithm_settings");
+              }}
+              option2="Select a new input file"
+              onClick2={() => {
+                console.log("Back to File Selection");
+                window.python.resetRun();
+                resetFileSettings();
+                navigate("/");
+              }}
+            />
           </div>
         </div>
       </div>

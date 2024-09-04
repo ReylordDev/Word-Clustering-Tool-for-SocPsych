@@ -41,6 +41,7 @@ app.setAppLogsPath(path.join(dataDir, "logs"));
 
 console.log(`Root directory: ${rootDir}`);
 console.log(`Data directory: ${dataDir}`);
+console.log(`Output directory: ${outputDir}`);
 
 let script: ChildProcess | undefined;
 let mainWindow: BrowserWindow;
@@ -305,6 +306,14 @@ app.on("ready", async () => {
     return currentRun.progress;
   });
 
+  ipcMain.handle("python:resetClusterProgress", () => {
+    currentRun.progress = {
+      pendingTasks: [],
+      currentTask: null,
+      completedTasks: [],
+    };
+  });
+
   ipcMain.handle("python:getRunName", async () => {
     if (!currentRun.name) {
       console.error("No current run name");
@@ -316,6 +325,7 @@ app.on("ready", async () => {
     // Rename the results Dir
     if (!currentRun.name) {
       console.error("No current run name");
+      return;
     }
     const oldPath = path.join(outputDir, currentRun.name);
     const newPath = path.join(outputDir, name);
@@ -330,6 +340,7 @@ app.on("ready", async () => {
   ipcMain.handle("python:getResultsDir", () => {
     if (!currentRun.name) {
       console.error("No current run name");
+      return;
     }
     return path.join(outputDir, currentRun.name);
   });
@@ -337,6 +348,7 @@ app.on("ready", async () => {
   ipcMain.handle("python:openResultsDir", () => {
     if (!currentRun.name) {
       console.error("No current run name");
+      return;
     }
     const resultsDir = path.join(outputDir, currentRun.name);
     console.log(`Opening results directory: ${resultsDir}`);
@@ -473,6 +485,7 @@ declare global {
         algorithmSettings: AlgorithmSettings,
       ) => Promise<void>;
       pollClusterProgress: () => Promise<ClusterProgress>;
+      resetClusterProgress: () => void;
       getRunName: () => Promise<string | undefined>;
       setRunName: (name: string) => void;
       getResultsDir: () => Promise<string>;
