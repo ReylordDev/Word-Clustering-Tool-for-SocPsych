@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, shell } from "electron";
+import { app, BrowserWindow, ipcMain, shell, nativeTheme } from "electron";
 import { ChildProcess, spawn } from "child_process";
 import log from "electron-log/main";
 import squirrel from "electron-squirrel-startup";
@@ -449,6 +449,19 @@ app.on("ready", async () => {
     }
   });
   ipcMain.on("control:close", () => mainWindow.close());
+
+  ipcMain.on("darkMode:toggle", () => {
+    if (nativeTheme.shouldUseDarkColors) {
+      nativeTheme.themeSource = "light";
+    } else {
+      nativeTheme.themeSource = "dark";
+    }
+    return nativeTheme.shouldUseDarkColors;
+  });
+
+  ipcMain.on("darkMode:system", () => {
+    nativeTheme.themeSource = "system";
+  });
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common
@@ -473,9 +486,6 @@ app.on("activate", () => {
 
 declare global {
   interface Window {
-    startup: {
-      complete: () => Promise<void>;
-    };
     python: {
       readFile: (path: string) => Promise<string>;
       showItemInFolder: (path: string) => Promise<void>;
@@ -503,6 +513,10 @@ declare global {
       minimize: () => void;
       maximize: () => void;
       close: () => void;
+    };
+    darkMode: {
+      toggle: () => void;
+      system: () => void;
     };
   }
 }

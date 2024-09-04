@@ -67,3 +67,12 @@ contextBridge.exposeInMainWorld("control", {
     ipcRenderer.send("control:maximize");
   },
 });
+
+contextBridge.exposeInMainWorld("darkMode", {
+  toggle: () => {
+    ipcRenderer.send("darkMode:toggle");
+  },
+  system: () => {
+    ipcRenderer.invoke("darkMode:system");
+  },
+});
