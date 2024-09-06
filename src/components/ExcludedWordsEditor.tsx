@@ -56,7 +56,7 @@ const ExcludedWordsEditor = ({
             leftIcon={<Plus size={20} />}
           />
         </div>
-        <div className="flex max-h-[55vh] flex-grow flex-col gap-4 overflow-y-auto p-6">
+        <div className="scrollbar flex max-h-[55vh] flex-grow flex-col gap-4 overflow-y-auto p-6">
           {excludedWords.length > 0 ? (
             excludedWords.map((word, index) => (
               <div

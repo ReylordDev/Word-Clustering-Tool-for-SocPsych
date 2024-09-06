@@ -69,11 +69,13 @@ export default function FilePreviewPage({
         <TitleBar index={1} />
         <div
           id="mainContent"
-          className="dark:dark flex flex-col justify-start px-24"
+          className="dark:dark flex flex-col items-center justify-start gap-4 bg-backgroundColor px-24"
         >
-          <h1 className="text-center text-2xl font-bold">
-            No file selected. Please select a file first.
-          </h1>
+          <div className="mt-24 flex w-full justify-center p-8">
+            <h1 className="text-4xl">
+              No file selected. Please select a file first.
+            </h1>
+          </div>
         </div>
       </>
     );
@@ -116,7 +118,7 @@ export default function FilePreviewPage({
           <p>
             Select all columns that contain responses to open-ended questions
           </p>
-          <div className="overflow-x-auto">
+          <div className="scrollbar overflow-x-auto">
             <table className="w-full overflow-hidden rounded-lg">
               <thead>
                 <tr>

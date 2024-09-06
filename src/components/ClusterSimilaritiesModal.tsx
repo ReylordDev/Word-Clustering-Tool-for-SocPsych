@@ -315,7 +315,7 @@ function ClusterSimilarityModal({
           {showDropdown &&
             filteredClusters.length > 0 &&
             searchTerm.length > 1 && (
-              <ul className="fixed mt-12 max-h-96 w-96 overflow-auto rounded-md border border-primaryColor bg-white shadow-lg dark:bg-zinc-900">
+              <ul className="scrollbar fixed mt-12 max-h-96 w-96 overflow-auto rounded-md border border-primaryColor bg-white shadow-lg dark:bg-zinc-900">
                 {filteredClusters.map((cluster) => (
                   <li
                     key={cluster.index}
@@ -403,7 +403,7 @@ function ClusterSimilarityModal({
           {showDropdown &&
             filteredClusters.length > 0 &&
             searchTerm.length > 1 && (
-              <ul className="fixed mt-12 max-h-96 w-96 overflow-auto rounded-md border border-primaryColor bg-white shadow-lg dark:bg-zinc-900">
+              <ul className="scrollbar fixed mt-12 max-h-96 w-96 overflow-auto rounded-md border border-primaryColor bg-white shadow-lg dark:bg-zinc-900">
                 {filteredClusters.map((cluster) => (
                   <li
                     key={cluster.index}
@@ -454,7 +454,7 @@ function ClusterSimilarityModal({
             <p>Select a cluster to view details and compare similarities.</p>
           </div>
         </div>
-        <div className="max-h-[77vh] flex-grow overflow-y-auto p-6">
+        <div className="scrollbar max-h-[77vh] flex-grow overflow-y-auto p-6">
           <div className="flex flex-col justify-start gap-1 px-4 py-2">
             <h5 className="font-medium">Select a cluster:</h5>
             <MainClusterSelector />

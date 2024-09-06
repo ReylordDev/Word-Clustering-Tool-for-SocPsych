@@ -92,7 +92,7 @@ function MergedClustersModal({
                 <X size={36} />
               </button>
             </div>
-            <div className="flex max-h-[70vh] flex-grow flex-col gap-4 overflow-y-auto p-6">
+            <div className="scrollbar flex max-h-[70vh] flex-grow flex-col gap-4 overflow-y-auto p-6">
               {mergers.length > 0 ? (
                 mergers.map((merger, mergerIndex) => (
                   <div

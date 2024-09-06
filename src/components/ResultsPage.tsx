@@ -181,13 +181,10 @@ export default function ResultsPage({
         <TitleBar index={4} />
         <div
           id="mainContent"
-          className="dark:dark flex flex-col justify-start px-32"
+          className="dark:dark flex flex-col items-center justify-start gap-4 bg-backgroundColor px-24"
         >
-          <h1 className="text-4xl">{runName}</h1>
-          <div className="flex items-center justify-center gap-4">
-            <p className="py-2 text-xl font-semibold text-primaryColor">
-              No clustering process started.
-            </p>
+          <div className="mt-24 flex w-full justify-center p-8">
+            <h1 className="text-4xl">No Run Selected</h1>
           </div>
         </div>
       </>
@@ -201,7 +198,7 @@ export default function ResultsPage({
       <TitleBar index={4} />
       <div
         id="mainContent"
-        className="dark:dark h-[90vh] w-full bg-backgroundColor text-textColor"
+        className="dark:dark h-screen w-full bg-backgroundColor text-textColor"
       >
         <ClusterAssignmentModal
           path={`${resultsDir}/cluster_assignments.csv`}
@@ -240,7 +237,7 @@ export default function ResultsPage({
             setIsOpen={setMergedClustersModalOpen}
           />
         )}
-        <div className="flex max-h-[90vh] flex-col items-start justify-start gap-8 overflow-y-auto px-32 pt-8">
+        <div className="scrollbar flex max-h-[90vh] flex-col items-start justify-start gap-8 overflow-y-auto px-32 pt-8">
           <div className="flex w-full flex-col justify-start gap-2">
             <div className="flex w-full items-center gap-4">
               {editingRunName ? (

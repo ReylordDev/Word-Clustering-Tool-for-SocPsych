@@ -140,7 +140,7 @@ function OutliersModal({
                 </p>
               </div>
             </div>
-            <div className="flex max-h-[74vh] flex-grow flex-col gap-4 overflow-y-auto p-6">
+            <div className="scrollbar flex max-h-[74vh] flex-grow flex-col gap-4 overflow-y-auto p-6">
               {outliers.map((outlier, index) => (
                 <OutlierCard
                   key={index}

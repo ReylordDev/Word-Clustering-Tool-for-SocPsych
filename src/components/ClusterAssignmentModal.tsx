@@ -95,7 +95,7 @@ const ClusterAssignmentModal = ({
             <X size={36} />
           </button>
         </div>
-        <div className="max-h-[80vh] flex-grow space-y-4 overflow-y-auto p-6">
+        <div className="scrollbar max-h-[80vh] flex-grow space-y-4 overflow-y-auto p-6">
           {groupedResponses.map((group) => (
             <div
               key={group.clusterIndex}

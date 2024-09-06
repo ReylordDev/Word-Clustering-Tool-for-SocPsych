@@ -273,3 +273,70 @@ button {
   top: env(titlebar-area-height, var(--fallback-title-bar-height));
   overflow-y: scroll;
 }
+
+/* Scrollbar styles */
+
+/* ::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar::-webkit-scrollbar {
+  display: block;
+  background-color: var(--background);
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--accent);
+  width: 5px;
+  border-radius: 5px;
+  padding: 2px;
+  border: 1px solid (var(--background-200));
+}
+
+.scrollbar::-webkit-scrollbar-track:horizontal {
+  background-color: var(--background-200);
+}
+
+.scrollbar::-webkit-scrollbar-button {
+  background-color: var(--background);
+}
+
+.scrollbar::-webkit-scrollbar-button:horizontal {
+  background-color: var(--background-200);
+}
+
+.scrollbar::-webkit-scrollbar-corner {
+  background-color: var(--background);
+}
+
+.scrollbar::-webkit-scrollbar-track-piece {
+  background-color: var(--background);
+}
+
+.scrollbar::-webkit-scrollbar:horizontal {
+  height: 20px;
+} */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar:horizontal {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--accent-100);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: 4px;
+  transition: background 0.3s ease-in-out;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-500);
+}
