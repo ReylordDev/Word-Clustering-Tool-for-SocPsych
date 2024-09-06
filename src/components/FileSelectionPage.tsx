@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import { TitleBar } from "./TitleBar";
-// import { FileSelector } from "./FileSelector";
 import { Database, FileText, FileSearch, Upload } from "lucide-react";
 import Button from "./Button";
 import PreviousResultModal from "./PreviousResultModal";
@@ -39,7 +38,7 @@ function FileSelector({
 
   function BrowseButton() {
     return (
-      <label className="flex cursor-pointer items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-white hover:bg-purple-800 disabled:cursor-not-allowed disabled:opacity-50">
+      <label className="flex cursor-pointer items-center justify-center gap-2 rounded-md bg-primaryColor px-4 py-2 text-backgroundColor hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50">
         <FileSearch size={24} />
         <p className="font-normal">Browse</p>
         <input
@@ -54,12 +53,12 @@ function FileSelector({
 
   return (
     <div
-      className="flex h-full w-fit flex-col items-center justify-center gap-4 rounded-3xl border-4 border-dashed border-accent"
+      className="flex h-full w-fit flex-col items-center justify-center gap-4 rounded-3xl border-4 border-dashed border-accentColor"
       onDrop={handleDrop}
       onDragOver={handleDragOver}
     >
       <div className="flex flex-col items-center justify-start gap-2 p-4">
-        <Upload size={48} className="text-primary" />
+        <Upload size={48} className="text-primaryColor" />
         <p className="w-full text-nowrap">Drag and drop your CSV file here</p>
       </div>
       <div className="flex items-center justify-center gap-2">
@@ -104,7 +103,10 @@ export default function FileSelectionPage({
   return (
     <>
       <TitleBar index={0} />
-      <div id="mainContent" className="mt-8 flex flex-col gap-12 px-24">
+      <div
+        id="mainContent"
+        className="dark:dark flex flex-col gap-12 bg-backgroundColor px-24 pt-8 text-textColor"
+      >
         <PreviousResultModal
           isOpen={previousResultModalOpen}
           setIsOpen={setPreviousResultModalOpen}
@@ -112,10 +114,10 @@ export default function FileSelectionPage({
         />
         <div className="flex w-full flex-col gap-2">
           <h1 className="text-5xl">
-            <span className="text-accent">Word</span>{" "}
-            <span className="font-bold text-primary">Clustering</span>
+            <span className="text-accentColor">Word</span>{" "}
+            <span className="font-bold text-primaryColor">Clustering</span>
             <br></br>
-            based on LLM <span className="text-accent">Embeddings</span>
+            based on LLM <span className="text-accentColor">Embeddings</span>
           </h1>
           <p>Analyze your open-ended survey responses with ease.</p>
         </div>

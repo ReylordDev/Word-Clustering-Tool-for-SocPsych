@@ -63,12 +63,12 @@ const AdvancedOptionsEditor = ({
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4">
-      <div className="max-w-4xl rounded-lg bg-background shadow-xl">
+      <div className="max-w-4xl rounded-lg bg-backgroundColor shadow-xl">
         <div className="flex items-center justify-between gap-4 border-b p-6">
-          <h2 className="text-3xl font-semibold">Cluster Assignments</h2>
+          <h2 className="text-3xl font-semibold">Advanced Options</h2>
           <button
             onClick={() => setIsOpen(false)}
-            className="text-gray-400 hover:text-text focus:outline-none"
+            className="text-gray-400 hover:text-textColor focus:outline-none"
           >
             <X size={36} />
           </button>
@@ -94,7 +94,7 @@ const AdvancedOptionsEditor = ({
                   id="nearestNeighbors"
                   value={nearestNeighbors}
                   onChange={(e) => setNearestNeighbors(e.target.valueAsNumber)}
-                  className="w-20 rounded-md border border-gray-300 p-2 text-center focus:outline-none focus:ring focus:ring-primary focus:ring-opacity-50"
+                  className="w-20 rounded-md border border-gray-300 p-2 text-center focus:outline-none focus:ring focus:ring-primaryColor focus:ring-opacity-50 dark:bg-backgroundColor"
                   disabled={!isOutlierDetectionEnabled}
                 />
               </div>
@@ -108,7 +108,7 @@ const AdvancedOptionsEditor = ({
                   id="zScoreThreshold"
                   value={zScoreThreshold}
                   onChange={(e) => setZScoreThreshold(e.target.valueAsNumber)}
-                  className="w-20 rounded-md border border-gray-300 p-2 text-center focus:outline-none focus:ring focus:ring-primary focus:ring-opacity-50"
+                  className="w-20 rounded-md border border-gray-300 p-2 text-center focus:outline-none focus:ring focus:ring-primaryColor focus:ring-opacity-50 dark:bg-backgroundColor"
                   disabled={!isOutlierDetectionEnabled}
                 />
               </div>
@@ -137,7 +137,7 @@ const AdvancedOptionsEditor = ({
                   onChange={(e) =>
                     setSimilarityThreshold(e.target.valueAsNumber)
                   }
-                  className="w-20 rounded-md border border-gray-300 p-2 text-center focus:outline-none focus:ring focus:ring-primary focus:ring-opacity-50"
+                  className="w-20 rounded-md border border-gray-300 p-2 text-center focus:outline-none focus:ring focus:ring-primaryColor focus:ring-opacity-50 dark:bg-backgroundColor"
                   disabled={!isAgglomerativeClusteringEnabled}
                 />
               </div>
@@ -157,7 +157,7 @@ const AdvancedOptionsEditor = ({
               id="languageModel"
               value={languageModel}
               onChange={(e) => setLanguageModel(e.target.value)}
-              className="w-full rounded-md border border-gray-300 p-2 text-center focus:outline-none focus:ring focus:ring-primary focus:ring-opacity-50"
+              className="w-full rounded-md border border-gray-300 p-2 text-center focus:outline-none focus:ring focus:ring-primaryColor focus:ring-opacity-50 dark:bg-backgroundColor"
             />
           </div>
         </div>

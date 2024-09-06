@@ -60,13 +60,7 @@ function ClusterSimilarityModal({
     (c) => c.index === comparisonClusterIndex,
   );
 
-  console.log("Cluster Similarities: ", clusterSimilarities);
-  console.log("Clusters: ", clusters);
-  console.log("Selected Cluster: ", selectedCluster);
-  console.log("Comparison Cluster: ", comparisonCluster);
-
   useEffect(() => {
-    console.log("Fetching cluster similarities and assignments...");
     window.python.readJsonFile(similaritiesPath).then((similarityUnknown) => {
       const similarity = similarityUnknown as Record<
         string,
@@ -157,9 +151,11 @@ function ClusterSimilarityModal({
     similarity: number;
     primary: boolean;
   }> = ({ similarity, primary = true }) => (
-    <div className="h-2 w-full rounded-full bg-gray-200">
+    <div
+      className={`h-2 w-full rounded-full ${primary ? "bg-primary-100" : "bg-secondary-100"}`}
+    >
       <div
-        className={`h-2 rounded-full ${primary ? "bg-primary" : "bg-secondary"}`}
+        className={`h-2 rounded-full ${primary ? "bg-primaryColor" : "bg-secondaryColor"}`}
         style={{ width: `${similarity * 100}%` }}
       />
     </div>
@@ -172,7 +168,7 @@ function ClusterSimilarityModal({
 
     if (!cluster) return null;
     return (
-      <div className="overflow-hidden rounded-lg border border-dashed border-accent">
+      <div className="overflow-hidden rounded-lg border border-dashed border-accentColor">
         <div className="p-4">
           <div>
             <h3 className="gap-1 p-1 text-xl font-medium">
@@ -189,9 +185,9 @@ function ClusterSimilarityModal({
                       {(response.similarity * 100).toFixed(1)}%
                     </span>
                   </p>
-                  <div className="h-2.5 w-1/2 rounded-full bg-gray-200">
+                  <div className="h-2.5 w-1/2 rounded-full bg-accent-100">
                     <div
-                      className="h-2.5 rounded-full bg-accent"
+                      className="h-2.5 rounded-full bg-accentColor"
                       style={{
                         width: `${response.similarity * 100}%`,
                       }}
@@ -218,7 +214,7 @@ function ClusterSimilarityModal({
         {similarClusters.map((sc) => (
           <div
             key={sc.cluster2}
-            className="rounded bg-white shadow-sm hover:bg-gray-50"
+            className="rounded bg-white shadow-sm hover:bg-gray-50 dark:bg-zinc-900 dark:hover:bg-zinc-800"
           >
             <div
               className="flex cursor-pointer items-center justify-between p-4"
@@ -240,9 +236,9 @@ function ClusterSimilarityModal({
                   <span>{(sc.similarity * 100).toFixed(2)}%</span>
                   <button className="focus:outline-none">
                     {expandedSimilarClusters.includes(sc.cluster2) ? (
-                      <ChevronUp size={20} className="text-secondary" />
+                      <ChevronUp size={20} className="text-secondaryColor" />
                     ) : (
-                      <ChevronDown size={20} className="text-secondary" />
+                      <ChevronDown size={20} className="text-secondaryColor" />
                     )}
                   </button>
                 </div>
@@ -279,7 +275,7 @@ function ClusterSimilarityModal({
 
     return (
       <div className="flex w-full items-center justify-center gap-4">
-        <div className="flex h-12 w-1/3 items-center gap-2 rounded-md border-2 border-primary bg-white p-2">
+        <div className="flex h-12 w-1/3 items-center gap-2 rounded-md border-2 border-primaryColor bg-white p-2 dark:bg-zinc-900">
           <TextCursor size={20} className="text-gray-400" />
           <input
             type="number"
@@ -305,7 +301,7 @@ function ClusterSimilarityModal({
         </div>
         <p>or</p>
         <div className="relative flex w-full flex-col gap-1">
-          <div className="flex h-12 items-center gap-2 rounded-md border-2 border-primary bg-white p-2">
+          <div className="flex h-12 items-center gap-2 rounded-md border-2 border-primaryColor bg-white p-2 dark:bg-zinc-900">
             <Search size={20} className="text-gray-400" />
             <input
               type="text"
@@ -319,7 +315,7 @@ function ClusterSimilarityModal({
           {showDropdown &&
             filteredClusters.length > 0 &&
             searchTerm.length > 1 && (
-              <ul className="fixed mt-12 max-h-96 w-96 overflow-auto rounded-md border border-primary bg-white shadow-lg">
+              <ul className="fixed mt-12 max-h-96 w-96 overflow-auto rounded-md border border-primaryColor bg-white shadow-lg dark:bg-zinc-900">
                 {filteredClusters.map((cluster) => (
                   <li
                     key={cluster.index}
@@ -369,7 +365,7 @@ function ClusterSimilarityModal({
 
     return (
       <div className="flex w-full items-center justify-center gap-4">
-        <div className="flex h-12 w-1/3 items-center gap-2 rounded-md border-2 border-primary bg-white p-2">
+        <div className="flex h-12 w-1/3 items-center gap-2 rounded-md border-2 border-primaryColor bg-white p-2 dark:bg-zinc-900">
           <TextCursor size={20} className="text-gray-400" />
           <input
             type="number"
@@ -393,7 +389,7 @@ function ClusterSimilarityModal({
         </div>
         <p>or</p>
         <div className="relative flex w-full flex-col gap-1">
-          <div className="flex h-12 items-center gap-2 rounded-md border-2 border-primary bg-white p-2">
+          <div className="flex h-12 items-center gap-2 rounded-md border-2 border-primaryColor bg-white p-2 dark:bg-zinc-900">
             <Search size={20} className="text-gray-400" />
             <input
               type="text"
@@ -407,7 +403,7 @@ function ClusterSimilarityModal({
           {showDropdown &&
             filteredClusters.length > 0 &&
             searchTerm.length > 1 && (
-              <ul className="fixed mt-12 max-h-96 w-96 overflow-auto rounded-md border border-primary bg-white shadow-lg">
+              <ul className="fixed mt-12 max-h-96 w-96 overflow-auto rounded-md border border-primaryColor bg-white shadow-lg dark:bg-zinc-900">
                 {filteredClusters.map((cluster) => (
                   <li
                     key={cluster.index}
@@ -442,13 +438,13 @@ function ClusterSimilarityModal({
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4">
-      <div className="h-[90vh] w-full max-w-4xl rounded-lg bg-background shadow-xl">
+      <div className="h-[90vh] w-full max-w-4xl rounded-lg bg-backgroundColor shadow-xl">
         <div className="h-[13vh] border-b p-6 pb-4">
           <div className="flex items-center justify-between">
             <h2 className="text-3xl font-semibold">Cluster Similarities</h2>
             <button
               onClick={() => setIsOpen(false)}
-              className="text-gray-400 hover:text-text focus:outline-none"
+              className="text-gray-400 hover:text-textColor focus:outline-none"
             >
               <X size={36} />
             </button>
@@ -465,7 +461,7 @@ function ClusterSimilarityModal({
           </div>
           {selectedClusterIndex !== undefined && (
             <div className="flex flex-col gap-4 px-4">
-              <div className="rounded-lg border bg-white shadow-md hover:bg-gray-50">
+              <div className="rounded-lg border bg-white shadow-md hover:bg-gray-50 dark:bg-zinc-900 dark:hover:bg-zinc-800">
                 <button
                   onClick={() => setSelectedClusterExpanded((prev) => !prev)}
                   className="flex w-full items-center justify-between p-4 focus:outline-none"
@@ -474,9 +470,9 @@ function ClusterSimilarityModal({
                     Cluster {selectedClusterIndex + 1}
                   </h2>
                   {selectedClusterExpanded ? (
-                    <ChevronUp size={28} className="text-secondary" />
+                    <ChevronUp size={28} className="text-secondaryColor" />
                   ) : (
-                    <ChevronDown size={28} className="text-secondary" />
+                    <ChevronDown size={28} className="text-secondaryColor" />
                   )}
                 </button>
                 {selectedClusterExpanded && (
@@ -504,7 +500,7 @@ function ClusterSimilarityModal({
                 {comparisonClusterIndex !== undefined &&
                   comparisonClusterIndex !== selectedClusterIndex && (
                     <div className="px-8">
-                      <div className="rounded bg-white shadow-sm hover:bg-gray-50">
+                      <div className="rounded bg-white shadow-sm hover:bg-gray-50 dark:bg-zinc-900 dark:hover:bg-zinc-800">
                         <button
                           onClick={() =>
                             setComparisonClusterExpanded((prev) => !prev)
@@ -515,16 +511,22 @@ function ClusterSimilarityModal({
                             Cluster {comparisonClusterIndex + 1}
                           </h2>
                           {comparisonClusterExpanded ? (
-                            <ChevronUp size={28} className="text-secondary" />
+                            <ChevronUp
+                              size={28}
+                              className="text-secondaryColor"
+                            />
                           ) : (
-                            <ChevronDown size={28} className="text-secondary" />
+                            <ChevronDown
+                              size={28}
+                              className="text-secondaryColor"
+                            />
                           )}
                         </button>
                         {comparisonClusterExpanded && (
                           <ClusterDetails cluster={comparisonCluster} />
                         )}
                       </div>
-                      <div className="mt-2 rounded bg-white p-4 shadow-md">
+                      <div className="mt-2 rounded bg-white p-4 shadow-md dark:bg-zinc-900">
                         <div className="flex justify-between">
                           <p>Similarity:</p>
                           <p>

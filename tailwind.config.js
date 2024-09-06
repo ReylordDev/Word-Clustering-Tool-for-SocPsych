@@ -4,6 +4,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        textColor: "var(--text)",
         text: {
           50: "var(--text-50)",
           100: "var(--text-100)",
@@ -17,6 +18,7 @@ module.exports = {
           900: "var(--text-900)",
           950: "var(--text-950)",
         },
+        backgroundColor: "var(--background)",
         background: {
           50: "var(--background-50)",
           100: "var(--background-100)",
@@ -30,6 +32,7 @@ module.exports = {
           900: "var(--background-900)",
           950: "var(--background-950)",
         },
+        primaryColor: "var(--primary)",
         primary: {
           50: "var(--primary-50)",
           100: "var(--primary-100)",
@@ -43,6 +46,7 @@ module.exports = {
           900: "var(--primary-900)",
           950: "var(--primary-950)",
         },
+        secondaryColor: "var(--secondary)",
         secondary: {
           50: "var(--secondary-50)",
           100: "var(--secondary-100)",
@@ -56,6 +60,7 @@ module.exports = {
           900: "var(--secondary-900)",
           950: "var(--secondary-950)",
         },
+        accentColor: "var(--accent)",
         accent: {
           50: "var(--accent-50)",
           100: "var(--accent-100)",

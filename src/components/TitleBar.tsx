@@ -1,5 +1,8 @@
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, Settings, X } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import Toggle from "./Toggle";
+import Button from "./Button";
 
 const routes = [
   "",
@@ -9,12 +12,83 @@ const routes = [
   "results",
 ];
 
-export function TitleBar({ index }: { index: number }) {
+function SettingsModal({
+  isOpen,
+  setIsOpen,
+}: {
+  isOpen: boolean;
+  setIsOpen: (open: boolean) => void;
+}) {
+  const [dark, setDark] = useState(false);
+
+  useEffect(() => {
+    window.darkMode.get().then((isDark) => {
+      setDark(isDark);
+    });
+  });
+
+  if (!isOpen) return null;
   return (
-    <div id="titleBarContainer" className="absolute w-full text-text">
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4">
+      <div className="w-full max-w-4xl rounded-lg bg-backgroundColor shadow-xl">
+        <div className="flex items-center justify-between gap-4 border-b p-6">
+          <h2 className="text-3xl font-semibold">Settings</h2>
+          <button
+            onClick={() => setIsOpen(false)}
+            className="text-gray-400 hover:text-textColor focus:outline-none"
+          >
+            <X size={36} />
+          </button>
+        </div>
+        <div className="flex flex-col gap-8 p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-2">
+              <h3 className="text-xl font-semibold">Toggle dark mode</h3>
+              <p>Whether you want to use light or dark mode.</p>
+            </div>
+            <div className="flex items-center gap-4">
+              <Toggle
+                onToggle={(state) => {
+                  window.darkMode.toggle();
+                  setDark(state);
+                }}
+                initialState={dark}
+              />
+            </div>
+          </div>
+          <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-2">
+              <h3 className="text-xl font-semibold">Reset to system theme</h3>
+              <p>Click to reset the theme to the system settings.</p>
+            </div>
+            <div className="flex items-center gap-4">
+              <Button
+                text="Reset"
+                onClick={() => {
+                  window.darkMode.system();
+                  setIsOpen(false);
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function TitleBar({ index }: { index: number }) {
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const enableSettings = false;
+  return (
+    <div
+      id="titleBarContainer"
+      className="dark:dark absolute z-30 w-full bg-backgroundColor text-textColor"
+    >
+      <SettingsModal isOpen={isSettingsOpen} setIsOpen={setIsSettingsOpen} />
       <div
         id="titleBar"
-        className="draggable absolute top-0 flex h-full select-none items-center justify-between border-accent pl-8"
+        className="draggable absolute top-0 flex h-full select-none items-center justify-between border-accentColor pl-8"
       >
         <Link to={"/"} className="no-drag flex">
           <svg
@@ -69,7 +143,7 @@ export function TitleBar({ index }: { index: number }) {
           {index > 0 ? (
             <Link
               to={`/${routes[index - 1]}`}
-              className="no-drag rounded p-1 hover:bg-gray-300"
+              className="no-drag rounded p-1 hover:bg-background-50"
             >
               <ArrowLeft size={24} />
             </Link>
@@ -82,7 +156,7 @@ export function TitleBar({ index }: { index: number }) {
           {index < routes.length - 1 ? (
             <Link
               to={`/${routes[index + 1]}`}
-              className="no-drag rounded p-1 hover:bg-gray-300"
+              className="no-drag rounded p-1 hover:bg-background-50"
             >
               <ArrowRight size={24} />
             </Link>
@@ -96,44 +170,51 @@ export function TitleBar({ index }: { index: number }) {
           <div className="flex flex-col">
             <p className="px-2">File Selection</p>
             {index >= 0 ? (
-              <div className="mx-1 h-1 rounded bg-accent"></div>
+              <div className="mx-1 h-1 rounded bg-accentColor"></div>
             ) : (
-              <div className="mx-1 h-1 rounded bg-accent opacity-25"></div>
+              <div className="mx-1 h-1 rounded bg-accentColor opacity-25"></div>
             )}
           </div>
           <div className="flex flex-col">
             <p className="px-2">File Preview</p>
             {index >= 1 ? (
-              <div className="mx-1 h-1 rounded bg-accent"></div>
+              <div className="mx-1 h-1 rounded bg-accentColor"></div>
             ) : (
-              <div className="mx-1 h-1 rounded bg-accent opacity-25"></div>
+              <div className="mx-1 h-1 rounded bg-accentColor opacity-25"></div>
             )}
           </div>
           <div className="flex flex-col">
             <p className="px-2">Algorithm Settings</p>
             {index >= 2 ? (
-              <div className="mx-1 h-1 rounded bg-accent"></div>
+              <div className="mx-1 h-1 rounded bg-accentColor"></div>
             ) : (
-              <div className="mx-1 h-1 rounded bg-accent opacity-25"></div>
+              <div className="mx-1 h-1 rounded bg-accentColor opacity-25"></div>
             )}
           </div>
           <div className="flex flex-col">
             <p className="px-2">Progress</p>
             {index >= 3 ? (
-              <div className="mx-1 h-1 rounded bg-accent"></div>
+              <div className="mx-1 h-1 rounded bg-accentColor"></div>
             ) : (
-              <div className="mx-1 h-1 rounded bg-accent opacity-25"></div>
+              <div className="mx-1 h-1 rounded bg-accentColor opacity-25"></div>
             )}
           </div>
           <div className="flex flex-col">
             <p className="px-2">Results</p>
             {index >= 4 ? (
-              <div className="mx-1 h-1 rounded bg-accent"></div>
+              <div className="mx-1 h-1 rounded bg-accentColor"></div>
             ) : (
-              <div className="mx-1 h-1 rounded bg-accent opacity-25"></div>
+              <div className="mx-1 h-1 rounded bg-accentColor opacity-25"></div>
             )}
           </div>
         </div>
+        {enableSettings && (
+          <div id="settings" className="flex items-center gap-4">
+            <button onClick={() => setIsSettingsOpen(true)}>
+              <Settings size={28} />
+            </button>
+          </div>
+        )}
         <div id="tutorial-mode"></div>
         {/* <div className="flex items-center gap-4">
           <button onClick={window.control.minimize}>

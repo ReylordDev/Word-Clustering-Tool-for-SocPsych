@@ -14,17 +14,15 @@ import {
   CheckCheck,
 } from "lucide-react";
 import Button from "./Button";
-import ClusterAssignmentModal from "./ClusterAssignmentModal";
 import ExpandableButton from "./ExpandableButton";
 import { useState, useEffect } from "react";
-
 import { formatTime } from "../utils";
-
 import { Args } from "../models";
 
+import ClusterAssignmentModal from "./ClusterAssignmentModal";
+import ClusterSimilarityModal from "./ClusterSimilaritiesModal";
 import OutliersModal from "./OutliersModal";
 import MergedClustersModal from "./MergedClustersModal";
-import ClusterSimilarityModal from "./ClusterSimilaritiesModal";
 import { useNavigate } from "react-router-dom";
 
 interface TimeStamp {
@@ -79,7 +77,7 @@ function TotalTimeDropdown({ path }: { path: string }) {
               <div key={index} className="flex justify-between">
                 <div className="flex items-center gap-2">
                   <Check
-                    className="rounded bg-accent text-background"
+                    className="rounded bg-accentColor text-backgroundColor"
                     size={20}
                   />
                   {step.name}
@@ -181,10 +179,13 @@ export default function ResultsPage({
     return (
       <>
         <TitleBar index={4} />
-        <div id="mainContent" className="flex flex-col justify-start px-32">
+        <div
+          id="mainContent"
+          className="dark:dark flex flex-col justify-start px-32"
+        >
           <h1 className="text-4xl">{runName}</h1>
           <div className="flex items-center justify-center gap-4">
-            <p className="py-2 text-xl font-semibold text-primary">
+            <p className="py-2 text-xl font-semibold text-primaryColor">
               No clustering process started.
             </p>
           </div>
@@ -198,7 +199,10 @@ export default function ResultsPage({
   return (
     <>
       <TitleBar index={4} />
-      <div id="mainContent" className="h-[90vh] w-full">
+      <div
+        id="mainContent"
+        className="dark:dark h-[90vh] w-full bg-backgroundColor text-textColor"
+      >
         <ClusterAssignmentModal
           path={`${resultsDir}/cluster_assignments.csv`}
           delimiter={args.fileSettings.delimiter}
@@ -212,21 +216,21 @@ export default function ResultsPage({
           isOpen={clusterSimilarityModalOpen}
           setIsOpen={setClusterSimilarityModalOpen}
         />
-        {(!args.algorithmSettings.advancedOptions.nearestNeighbors ||
-          !args.algorithmSettings.advancedOptions.zScoreThreshold) && (
-          <OutliersModal
-            path={`${resultsDir}/outliers.json`}
-            nearestNeighbors={
-              args.algorithmSettings.advancedOptions.nearestNeighbors
-            }
-            zScoreThreshold={
-              args.algorithmSettings.advancedOptions.zScoreThreshold
-            }
-            isOpen={outliersModalOpen}
-            setIsOpen={setOutliersModalOpen}
-          />
-        )}
-        {!args.algorithmSettings.advancedOptions.similarityThreshold && (
+        {args.algorithmSettings.advancedOptions.nearestNeighbors &&
+          args.algorithmSettings.advancedOptions.zScoreThreshold && (
+            <OutliersModal
+              path={`${resultsDir}/outliers.json`}
+              nearestNeighbors={
+                args.algorithmSettings.advancedOptions.nearestNeighbors
+              }
+              zScoreThreshold={
+                args.algorithmSettings.advancedOptions.zScoreThreshold
+              }
+              isOpen={outliersModalOpen}
+              setIsOpen={setOutliersModalOpen}
+            />
+          )}
+        {args.algorithmSettings.advancedOptions.similarityThreshold && (
           <MergedClustersModal
             path={`${resultsDir}/merged_clusters.json`}
             mergeThreshold={
@@ -243,7 +247,7 @@ export default function ResultsPage({
                 <input
                   value={runNameInput}
                   onChange={(e) => setRunNameInput(e.target.value)}
-                  className="rounded-md border border-secondary p-2 pl-5 text-4xl font-bold focus:outline-none focus:ring focus:ring-secondary focus:ring-opacity-50 disabled:border-gray-300"
+                  className="rounded-md border border-secondaryColor p-2 pl-5 text-4xl font-bold focus:outline-none focus:ring focus:ring-secondaryColor focus:ring-opacity-50 disabled:border-gray-300"
                 />
               ) : (
                 <h1 className="text-ellipsis p-2 pl-5 text-4xl">{runName}</h1>
@@ -265,7 +269,7 @@ export default function ResultsPage({
                     setEditingRunName(false);
                   }}
                 >
-                  <Save className="text-secondary" size={32} />
+                  <Save className="text-secondaryColor" size={32} />
                 </button>
               ) : (
                 <button
@@ -274,15 +278,15 @@ export default function ResultsPage({
                     setRunNameInput(runName);
                   }}
                 >
-                  <Pencil className="text-secondary" size={32} />
+                  <Pencil className="text-secondaryColor" size={32} />
                 </button>
               )}
             </div>
             {showInputError && (
               <p className="text-red-500">Input is not a valid file name</p>
             )}
-            <div className="flex items-center gap-2 pb-2 text-accent">
-              <CheckCheck className="rounded bg-background" size={24} />
+            <div className="flex items-center gap-2 pb-2 text-accentColor">
+              <CheckCheck className="rounded bg-backgroundColor" size={24} />
               <p className="text-xl font-semibold">
                 Your results have been saved.
               </p>

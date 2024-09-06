@@ -31,12 +31,12 @@ const ExcludedWordsEditor = ({
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4">
-      <div className="max-h-[75vh] min-h-[45vh] max-w-4xl rounded-lg bg-background shadow-xl">
+      <div className="max-h-[75vh] min-h-[45vh] max-w-4xl rounded-lg bg-backgroundColor shadow-xl">
         <div className="flex h-[10vh] items-center justify-between gap-4 border-b p-6">
-          <h2 className="text-3xl font-semibold">Cluster Assignments</h2>
+          <h2 className="text-3xl font-semibold">Excluded Words</h2>
           <button
             onClick={() => setIsOpen(false)}
-            className="text-gray-400 hover:text-text focus:outline-none"
+            className="hover:text-text text-gray-400 focus:outline-none"
           >
             <X size={36} />
           </button>
@@ -48,7 +48,7 @@ const ExcludedWordsEditor = ({
             onChange={(e) => setNewWord(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && addWord()}
             placeholder="Add a new word"
-            className="w-48 rounded-md border border-gray-300 p-2 text-center focus:outline-none focus:ring focus:ring-primary focus:ring-opacity-50"
+            className="w-48 rounded-md border border-gray-300 p-2 text-center focus:outline-none focus:ring focus:ring-primaryColor focus:ring-opacity-50 dark:bg-backgroundColor"
           />
           <Button
             onClick={addWord}
@@ -61,12 +61,12 @@ const ExcludedWordsEditor = ({
             excludedWords.map((word, index) => (
               <div
                 key={index}
-                className="flex w-full items-center justify-between gap-4 rounded-lg bg-white p-4 shadow-md"
+                className="flex w-full items-center justify-between gap-4 rounded-lg bg-white p-4 shadow-md dark:bg-zinc-900"
               >
                 <p className="text-lg">{word}</p>
                 <button
                   onClick={() => removeWord(word)}
-                  className="text-secondary hover:text-red-800 focus:outline-none"
+                  className="text-secondaryColor hover:text-red-800 focus:outline-none"
                 >
                   <X size={32} />
                 </button>

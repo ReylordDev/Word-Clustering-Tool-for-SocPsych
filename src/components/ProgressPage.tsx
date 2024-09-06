@@ -86,7 +86,7 @@ export default function ProgressPage({
         <TitleBar index={3} />
         <div
           id="mainContent"
-          className="flex flex-col items-center justify-start gap-4 px-24"
+          className="dark:dark flex flex-col items-center justify-start gap-4 px-24"
         >
           <div className="mt-24 flex w-full justify-center p-8">
             <h1 className="text-4xl">No Clustering in Progress</h1>
@@ -101,7 +101,7 @@ export default function ProgressPage({
       <TitleBar index={3} />
       <div
         id="mainContent"
-        className="flex flex-col items-center justify-start gap-12 px-24"
+        className="dark:dark flex flex-col items-center justify-start gap-12 bg-backgroundColor px-24 text-textColor"
       >
         <div className="flex w-full items-center justify-between p-8">
           <h1 className="text-4xl">Clustering in Progress</h1>
@@ -121,7 +121,7 @@ export default function ProgressPage({
                   <div className="flex items-center gap-4">
                     <Check
                       size={24}
-                      className="rounded bg-slate-800 text-background"
+                      className="rounded bg-text-800 text-backgroundColor"
                     />
                     <div className="text-lg line-through">
                       {progression_messages[message[0]]}
@@ -145,14 +145,14 @@ export default function ProgressPage({
                 <div className="flex items-center gap-4">
                   <Square
                     size={24}
-                    className="rounded border-2 border-primary bg-background text-background"
+                    className="rounded border-2 border-primaryColor bg-backgroundColor text-backgroundColor"
                   />
                   <div className="text-lg">
                     {progression_messages[currentTask[0]]}
                   </div>
                 </div>
                 <div className="flex justify-start gap-2">
-                  <Clock className="text-primary" />
+                  <Clock className="text-primaryColor" />
                   <p className="min-w-28">{formatTime(currentTaskTimer)}</p>
                 </div>
               </div>
@@ -164,7 +164,7 @@ export default function ProgressPage({
                 <div className="flex gap-4">
                   <Check
                     size={24}
-                    className="rounded border-2 border-slate-800 bg-background text-background"
+                    className="rounded border-2 border-text-800 bg-backgroundColor text-backgroundColor"
                   />
                   <div className="text-lg">{progression_messages[message]}</div>
                 </div>

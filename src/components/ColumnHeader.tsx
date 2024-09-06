@@ -18,7 +18,7 @@ const ColumnHeader = ({
   return (
     <div
       className={`flex cursor-pointer items-center justify-center gap-2 rounded-md p-2 ${
-        isOn ? "bg-accent text-background" : "hover:bg-pink-200"
+        isOn ? "bg-accentColor text-backgroundColor" : "hover:bg-accent-200"
       }`}
       onClick={toggleCheckbox}
     >

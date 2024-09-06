@@ -70,7 +70,10 @@ contextBridge.exposeInMainWorld("control", {
 
 contextBridge.exposeInMainWorld("darkMode", {
   toggle: () => {
-    ipcRenderer.send("darkMode:toggle");
+    ipcRenderer.invoke("darkMode:toggle");
+  },
+  get: () => {
+    return ipcRenderer.invoke("darkMode:get");
   },
   system: () => {
     ipcRenderer.invoke("darkMode:system");

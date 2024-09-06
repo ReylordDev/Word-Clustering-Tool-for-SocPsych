@@ -85,12 +85,12 @@ const ClusterAssignmentModal = ({
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4">
-      <div className="h-[90vh] w-full max-w-4xl rounded-lg bg-background shadow-xl">
+      <div className="h-[90vh] w-full max-w-4xl rounded-lg bg-backgroundColor shadow-xl">
         <div className="flex h-[10vh] items-center justify-between border-b p-6">
           <h2 className="text-3xl font-semibold">Cluster Assignments</h2>
           <button
             onClick={() => setIsOpen(false)}
-            className="text-gray-400 hover:text-text focus:outline-none"
+            className="text-gray-400 hover:text-textColor focus:outline-none"
           >
             <X size={36} />
           </button>
@@ -99,7 +99,7 @@ const ClusterAssignmentModal = ({
           {groupedResponses.map((group) => (
             <div
               key={group.clusterIndex}
-              className="rounded-lg border bg-white shadow-md hover:bg-gray-50"
+              className="rounded-lg border bg-white shadow-md hover:bg-gray-50 dark:bg-zinc-900 dark:hover:bg-zinc-800"
             >
               <button
                 onClick={() => toggleCluster(group.clusterIndex)}
@@ -109,13 +109,13 @@ const ClusterAssignmentModal = ({
                   Cluster {group.clusterIndex + 1}
                 </h2>
                 {expandedClusters.includes(group.clusterIndex) ? (
-                  <ChevronUp className="text-primary" size={32} />
+                  <ChevronUp className="text-primaryColor" size={32} />
                 ) : (
-                  <ChevronDown className="text-primary" size={32} />
+                  <ChevronDown className="text-primaryColor" size={32} />
                 )}
               </button>
               {expandedClusters.includes(group.clusterIndex) && (
-                <div className="overflow-hidden rounded-lg border border-dashed border-primary">
+                <div className="overflow-hidden rounded-lg border border-dashed border-primaryColor">
                   <div className="p-4">
                     {group.responses.map((response, index) => (
                       <div key={index} className="rounded p-3 py-5">
@@ -124,9 +124,9 @@ const ClusterAssignmentModal = ({
                         <div className="mt-3 flex items-end justify-between">
                           <div className="flex w-full flex-col">
                             <p>Similarity to cluster center: </p>
-                            <div className="h-2.5 rounded-full bg-gray-200">
+                            <div className="h-2.5 rounded-full bg-primary-100">
                               <div
-                                className="h-2.5 rounded-full bg-primary"
+                                className="h-2.5 rounded-full bg-primaryColor"
                                 style={{
                                   width: `${response.similarity * 100}%`,
                                 }}

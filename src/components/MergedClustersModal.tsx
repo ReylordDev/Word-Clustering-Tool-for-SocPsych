@@ -32,7 +32,7 @@ function MergedClustersModal({
   setIsOpen,
 }: {
   path: string;
-  mergeThreshold: number | undefined;
+  mergeThreshold: number;
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
 }) {
@@ -72,15 +72,11 @@ function MergedClustersModal({
     });
   }, [path]);
 
-  if (!mergeThreshold) {
-    return null;
-  }
-
   return (
     <>
       {isOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4">
-          <div className="h-[90vh] w-full max-w-4xl rounded-lg bg-background shadow-xl">
+          <div className="h-[90vh] w-full max-w-4xl rounded-lg bg-backgroundColor shadow-xl">
             <div className="flex items-center justify-between border-b p-6 pb-4">
               <div className="flex flex-col gap-2">
                 <h2 className="text-3xl font-semibold">Merged Clusters</h2>
@@ -91,7 +87,7 @@ function MergedClustersModal({
               </div>
               <button
                 onClick={() => setIsOpen(false)}
-                className="text-gray-400 hover:text-text focus:outline-none"
+                className="hover:text-textcolor text-gray-400 focus:outline-none"
               >
                 <X size={36} />
               </button>
@@ -101,14 +97,14 @@ function MergedClustersModal({
                 mergers.map((merger, mergerIndex) => (
                   <div
                     key={mergerIndex}
-                    className="rounded-lg bg-white p-4 shadow-md"
+                    className="rounded-lg bg-white p-4 shadow-md dark:bg-zinc-900"
                   >
                     <div className="flex items-center justify-between">
                       <h2 className="mb-2 text-xl font-semibold">
                         Merged Group {mergerIndex + 1}
                       </h2>
                       <button
-                        className="px-4 text-primary hover:text-violet-900"
+                        className="px-4 text-primaryColor hover:text-primary-900"
                         onClick={() => {
                           toggleClusterGroup(mergerIndex);
                           merger.mergedClusters.forEach((cluster) =>
@@ -140,17 +136,17 @@ function MergedClustersModal({
                             {expandedClusters.includes(cluster.index) ? (
                               <ChevronUp
                                 size={24}
-                                className="text-secondary hover:text-pink-700"
+                                className="text-secondaryColor hover:text-secondary-700"
                               />
                             ) : (
                               <ChevronDown
                                 size={24}
-                                className="text-secondary hover:text-pink-700"
+                                className="text-secondaryColor hover:text-secondary-700"
                               />
                             )}
                           </button>
                           {expandedClusters.includes(cluster.index) && (
-                            <div className="mt-2 overflow-hidden rounded-lg border border-dashed border-accent">
+                            <div className="mt-2 overflow-hidden rounded-lg border border-dashed border-accentColor">
                               <div className="p-2">
                                 <div>
                                   <h3 className="gap-1 p-1 text-xl font-medium">
@@ -177,9 +173,9 @@ function MergedClustersModal({
                                             </span>
                                           </p>
                                         </div>
-                                        <div className="h-2.5 w-full rounded-full bg-gray-200">
+                                        <div className="h-2.5 w-full rounded-full bg-accent-100">
                                           <div
-                                            className="h-2.5 rounded-full bg-accent"
+                                            className="h-2.5 rounded-full bg-accentColor"
                                             style={{
                                               width: `${response.similarity * 100}%`,
                                             }}
@@ -214,9 +210,9 @@ function MergedClustersModal({
                                 </span>
                                 :
                               </p>
-                              <div className="h-2.5 w-full rounded-full bg-gray-200">
+                              <div className="h-2.5 w-full rounded-full bg-primary-100">
                                 <div
-                                  className="h-2.5 rounded-full bg-primary"
+                                  className="h-2.5 rounded-full bg-primaryColor"
                                   style={{
                                     width: `${pair.similarity * 100}%`,
                                   }}
@@ -240,7 +236,7 @@ function MergedClustersModal({
                 </div>
               )}
             </div>
-            <div className="flex items-center gap-2 rounded-b-lg border-t bg-background px-6 py-4">
+            <div className="flex items-center gap-2 rounded-b-lg border-t bg-backgroundColor px-6 py-4">
               <AlertCircle size={20} />
               <p>
                 Cluster IDs on this page are not comparable to the other views.

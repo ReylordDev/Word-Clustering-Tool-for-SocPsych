@@ -73,7 +73,10 @@ export default function AlgorithmSettingsPage({
   return (
     <>
       <TitleBar index={2} />
-      <div id="mainContent">
+      <div
+        id="mainContent"
+        className="dark:dark bg-backgroundColor text-textColor"
+      >
         <ExcludedWordsEditor
           isOpen={isExcludedWordsEditorOpen}
           setIsOpen={setIsExcludedWordsEditorOpen}
@@ -109,7 +112,7 @@ export default function AlgorithmSettingsPage({
                 min={1}
                 onChange={(e) => setMaxClusters(e.target.valueAsNumber)}
                 id="maxClusterCount"
-                className="w-24 rounded-md border border-primary p-2 pl-5 focus:outline-none focus:ring focus:ring-primary focus:ring-opacity-50 disabled:border-gray-300"
+                className="w-24 rounded-md border border-primaryColor p-2 pl-5 focus:outline-none focus:ring focus:ring-primaryColor focus:ring-opacity-50 disabled:border-gray-300 dark:bg-backgroundColor dark:disabled:border-gray-800"
                 disabled={!autoChooseClusters}
               />
             </div>
@@ -124,7 +127,7 @@ export default function AlgorithmSettingsPage({
                 id="clusterCount"
                 min={1}
                 onChange={(e) => setClusterCount(e.target.valueAsNumber)}
-                className="w-24 rounded-md border border-primary p-2 pl-5 focus:outline-none focus:ring focus:ring-primary focus:ring-opacity-50 disabled:border-gray-300"
+                className="w-24 rounded-md border border-primaryColor p-2 pl-5 focus:outline-none focus:ring focus:ring-primaryColor focus:ring-opacity-50 disabled:border-gray-300 dark:bg-backgroundColor dark:disabled:border-gray-800"
                 disabled={autoChooseClusters}
               />
             </div>
@@ -142,7 +145,7 @@ export default function AlgorithmSettingsPage({
                 type="number"
                 value={seed}
                 onChange={(e) => setSeed(parseInt(e.target.value))}
-                className="w-24 rounded-md border border-gray-300 p-2 pl-5 text-center focus:outline-none focus:ring focus:ring-primary focus:ring-opacity-50"
+                className="w-24 rounded-md border border-gray-300 p-2 pl-5 text-center focus:outline-none focus:ring focus:ring-primaryColor focus:ring-opacity-50 dark:bg-backgroundColor"
               />
             </div>
             <div className="flex items-center justify-between">

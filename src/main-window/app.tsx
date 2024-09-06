@@ -1,5 +1,5 @@
 import { MemoryRouter as Router, Routes, Route } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import FileSelectionPage from "../components/FileSelectionPage";
 import FilePreviewPage from "../components/FilePreviewPage";

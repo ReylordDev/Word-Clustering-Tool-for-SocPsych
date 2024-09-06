@@ -67,7 +67,10 @@ export default function FilePreviewPage({
     return (
       <>
         <TitleBar index={1} />
-        <div id="mainContent" className="flex flex-col justify-start px-24">
+        <div
+          id="mainContent"
+          className="dark:dark flex flex-col justify-start px-24"
+        >
           <h1 className="text-center text-2xl font-bold">
             No file selected. Please select a file first.
           </h1>
@@ -79,7 +82,10 @@ export default function FilePreviewPage({
   return (
     <>
       <TitleBar index={1} />
-      <div id="mainContent" className="flex flex-col justify-start gap-4 px-24">
+      <div
+        id="mainContent"
+        className="dark:dark flex flex-col justify-start gap-4 bg-backgroundColor px-24 text-textColor"
+      >
         <h1 className="flex items-center justify-center p-8 text-4xl">
           File Preview
         </h1>
@@ -102,7 +108,7 @@ export default function FilePreviewPage({
               id="separator"
               value={delimiter}
               onChange={(e) => setDelimiter(e.target.value)}
-              className="rounded-md border border-gray-300 p-2 pl-5 focus:outline-none focus:ring focus:ring-primary focus:ring-opacity-50"
+              className="rounded-md border border-gray-300 p-2 pl-5 focus:outline-none focus:ring focus:ring-primaryColor focus:ring-opacity-50 dark:bg-backgroundColor"
             />
           </div>
         </div>
@@ -118,7 +124,7 @@ export default function FilePreviewPage({
                     headers.map((header, index) => (
                       <th
                         key={index}
-                        className="border-b border-r border-dashed border-b-text border-r-text p-1"
+                        className="border-b border-r border-dashed border-b-textColor border-r-textColor p-1"
                       >
                         <ColumnHeader
                           key={index}
@@ -136,7 +142,7 @@ export default function FilePreviewPage({
                       {row.map((cell, cellIndex) => (
                         <td
                           key={cellIndex}
-                          className="border-r border-dashed border-r-text p-1"
+                          className="border-r border-dashed border-r-textColor p-1"
                         >
                           <p className="line-clamp-1 max-w-64 text-center">
                             {cell}

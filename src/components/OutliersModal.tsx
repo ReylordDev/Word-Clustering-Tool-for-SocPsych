@@ -9,8 +9,8 @@ function OutliersModal({
   setIsOpen,
 }: {
   path: string;
-  nearestNeighbors: number | undefined;
-  zScoreThreshold: number | undefined;
+  nearestNeighbors: number;
+  zScoreThreshold: number;
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
 }) {
@@ -18,6 +18,8 @@ function OutliersModal({
     { response: string; similarity: number }[]
   >([]);
   const precision = 3;
+
+  console.log("OutliersModal");
 
   useEffect(() => {
     if (!nearestNeighbors || !zScoreThreshold) {
@@ -51,9 +53,12 @@ function OutliersModal({
     const shouldTruncate = outlier.response.length > 100;
 
     return (
-      <div className="rounded-lg border bg-white p-4 shadow-md">
+      <div className="rounded-lg border bg-white p-4 shadow-md dark:bg-zinc-900">
         <div className="flex items-start space-x-3">
-          <AlertCircle className="mt-0.5 flex-shrink-0 text-accent" size={20} />
+          <AlertCircle
+            className="mt-0.5 flex-shrink-0 text-accentColor"
+            size={20}
+          />
           <div className="flex-grow">
             <p
               className={`${shouldTruncate && !isExpanded ? "line-clamp-2" : ""}`}
@@ -94,7 +99,7 @@ function OutliersModal({
             </div>
             <div className="mt-2 h-2.5 w-full rounded-full bg-gray-200">
               <div
-                className="h-2.5 rounded-full bg-accent"
+                className="h-2.5 rounded-full bg-accentColor"
                 style={{
                   width: `${(outlier.similarity / threshold) * 100}%`,
                 }}
@@ -106,21 +111,17 @@ function OutliersModal({
     );
   };
 
-  if (!nearestNeighbors || !zScoreThreshold) {
-    return null;
-  }
-
   return (
     <>
       {isOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4">
-          <div className="h-[90vh] w-full max-w-4xl rounded-lg bg-background shadow-xl">
+          <div className="h-[90vh] w-full max-w-4xl rounded-lg bg-backgroundColor shadow-xl">
             <div className="flex h-[16vh] flex-col gap-2 border-b p-6 pb-4">
               <div className="flex items-center justify-between">
                 <h2 className="text-3xl font-semibold">Response Outliers</h2>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="text-gray-400 hover:text-text focus:outline-none"
+                  className="text-gray-400 hover:text-textColor focus:outline-none"
                 >
                   <X size={36} />
                 </button>

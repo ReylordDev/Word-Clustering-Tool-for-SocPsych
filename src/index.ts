@@ -233,8 +233,10 @@ const createMainWindow = () => {
     width: 1024,
     titleBarStyle: "hidden",
     titleBarOverlay: {
-      color: "rgba(255,255,255,0)",
-      symbolColor: "#140621",
+      color: nativeTheme.shouldUseDarkColors
+        ? "rgba(0,0,0,0)"
+        : "rgba(255,255,255,0)",
+      symbolColor: nativeTheme.shouldUseDarkColors ? "#eddcf9" : "#160622",
       height: 60,
     },
     icon: path.join(rootDir, "assets", "icons", "icon.png"),
@@ -255,6 +257,7 @@ const createMainWindow = () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on("ready", async () => {
+  nativeTheme.themeSource = "light";
   console.log("App is ready");
   const mainWindow = createMainWindow();
 
@@ -450,7 +453,7 @@ app.on("ready", async () => {
   });
   ipcMain.on("control:close", () => mainWindow.close());
 
-  ipcMain.on("darkMode:toggle", () => {
+  ipcMain.handle("darkMode:toggle", () => {
     if (nativeTheme.shouldUseDarkColors) {
       nativeTheme.themeSource = "light";
     } else {
@@ -459,7 +462,11 @@ app.on("ready", async () => {
     return nativeTheme.shouldUseDarkColors;
   });
 
-  ipcMain.on("darkMode:system", () => {
+  ipcMain.handle("darkMode:get", () => {
+    return nativeTheme.shouldUseDarkColors;
+  });
+
+  ipcMain.handle("darkMode:system", () => {
     nativeTheme.themeSource = "system";
   });
 });
@@ -516,6 +523,7 @@ declare global {
     };
     darkMode: {
       toggle: () => void;
+      get: () => Promise<boolean>;
       system: () => void;
     };
   }

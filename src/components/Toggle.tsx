@@ -17,12 +17,12 @@ const Toggle = ({
   return (
     <button
       className={`flex h-8 w-14 cursor-pointer items-center rounded-full p-1 ${
-        isOn ? "bg-primary" : "bg-gray-300"
+        isOn ? "bg-primaryColor" : "bg-background-300"
       }`}
       onClick={toggleSwitch}
     >
       <div
-        className={`size-6 transform rounded-full bg-white shadow-md transition-transform duration-300 ease-in-out ${
+        className={`bg-backgroundColor size-6 transform rounded-full shadow-md transition-transform duration-300 ease-in-out ${
           isOn ? "translate-x-6" : ""
         }`}
       />
