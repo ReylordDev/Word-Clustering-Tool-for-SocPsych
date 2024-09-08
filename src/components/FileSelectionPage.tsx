@@ -82,7 +82,9 @@ export default function FileSelectionPage({
   const navigate = useNavigate();
 
   const submitExampleFile = () => {
-    console.log("not implemented");
+    window.python.getExampleFilePath().then((path) => {
+      setFilePath(path);
+    });
   };
 
   useEffect(() => {

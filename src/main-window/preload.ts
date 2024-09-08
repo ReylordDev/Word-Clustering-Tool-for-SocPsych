@@ -33,6 +33,9 @@ contextBridge.exposeInMainWorld("python", {
   setRunName: async (name: string) => {
     return await ipcRenderer.invoke("python:setRunName", name);
   },
+  getExampleFilePath: async () => {
+    return await ipcRenderer.invoke("python:getExampleFilePath");
+  },
   getResultsDir: async () => {
     return await ipcRenderer.invoke("python:getResultsDir");
   },

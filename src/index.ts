@@ -340,6 +340,10 @@ app.on("ready", async () => {
     currentRun.name = name;
   });
 
+  ipcMain.handle("python:getExampleFilePath", () => {
+    return path.join(rootDir, "example_data", "example.csv");
+  });
+
   ipcMain.handle("python:getResultsDir", () => {
     if (!currentRun.name) {
       console.error("No current run name");
@@ -505,6 +509,7 @@ declare global {
       resetClusterProgress: () => void;
       getRunName: () => Promise<string | undefined>;
       setRunName: (name: string) => void;
+      getExampleFilePath: () => Promise<string>;
       getResultsDir: () => Promise<string>;
       openResultsDir: () => Promise<string>;
       fetchPreviousResults: () => Promise<
