@@ -63,8 +63,8 @@ const AdvancedOptionsEditor = ({
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4">
-      <div className="max-w-4xl rounded-lg bg-backgroundColor shadow-xl">
-        <div className="flex items-center justify-between gap-4 border-b p-6">
+      <div className="mt-[60px] w-full max-w-4xl rounded-lg bg-backgroundColor shadow-xl">
+        <div className="flex items-center justify-between border-b p-6 pb-4">
           <h2 className="text-3xl font-semibold">Advanced Options</h2>
           <button
             onClick={() => setIsOpen(false)}
@@ -73,45 +73,43 @@ const AdvancedOptionsEditor = ({
             <X size={36} />
           </button>
         </div>
-        <div className="flex flex-col gap-8 p-6">
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center justify-between">
-              <p>Outlier Detection</p>
-              <Toggle
-                initialState={isOutlierDetectionEnabled}
-                onToggle={setIsOutlierDetectionEnabled}
+        <div className="flex flex-col gap-4 p-6 text-lg">
+          <div className="flex items-center justify-between">
+            <p>Outlier Detection</p>
+            <Toggle
+              initialState={isOutlierDetectionEnabled}
+              onToggle={setIsOutlierDetectionEnabled}
+            />
+          </div>
+          <div
+            className={`flex flex-col gap-1 pl-4 ${!isOutlierDetectionEnabled && "text-gray-400"}`}
+          >
+            <div className="flex items-center justify-between gap-4">
+              <label htmlFor="nearestNeighbors">
+                <p>Number of nearest neighbors to consider</p>
+              </label>
+              <input
+                type="number"
+                id="nearestNeighbors"
+                value={nearestNeighbors || ""}
+                onChange={(e) => setNearestNeighbors(e.target.valueAsNumber)}
+                className="w-20 rounded-md border border-gray-300 p-2 text-center focus:outline-none focus:ring focus:ring-primaryColor focus:ring-opacity-50 dark:bg-backgroundColor"
+                disabled={!isOutlierDetectionEnabled}
               />
             </div>
-            <div
-              className={`flex flex-col gap-1 pl-4 ${!isOutlierDetectionEnabled && "text-gray-400"}`}
-            >
-              <div className="flex items-center justify-between gap-4">
-                <label htmlFor="nearestNeighbors">
-                  <p>Number of nearest neighbors to consider</p>
-                </label>
-                <input
-                  type="number"
-                  id="nearestNeighbors"
-                  value={nearestNeighbors || ""}
-                  onChange={(e) => setNearestNeighbors(e.target.valueAsNumber)}
-                  className="w-20 rounded-md border border-gray-300 p-2 text-center focus:outline-none focus:ring focus:ring-primaryColor focus:ring-opacity-50 dark:bg-backgroundColor"
-                  disabled={!isOutlierDetectionEnabled}
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <label htmlFor="nearestNeighbors">
-                  <p>Z-score threshold</p>
-                </label>
-                <input
-                  type="number"
-                  step={0.1}
-                  id="zScoreThreshold"
-                  value={zScoreThreshold || ""}
-                  onChange={(e) => setZScoreThreshold(e.target.valueAsNumber)}
-                  className="w-20 rounded-md border border-gray-300 p-2 text-center focus:outline-none focus:ring focus:ring-primaryColor focus:ring-opacity-50 dark:bg-backgroundColor"
-                  disabled={!isOutlierDetectionEnabled}
-                />
-              </div>
+            <div className="flex items-center justify-between">
+              <label htmlFor="nearestNeighbors">
+                <p>Z-score threshold</p>
+              </label>
+              <input
+                type="number"
+                step={0.1}
+                id="zScoreThreshold"
+                value={zScoreThreshold || ""}
+                onChange={(e) => setZScoreThreshold(e.target.valueAsNumber)}
+                className="w-20 rounded-md border border-gray-300 p-2 text-center focus:outline-none focus:ring focus:ring-primaryColor focus:ring-opacity-50 dark:bg-backgroundColor"
+                disabled={!isOutlierDetectionEnabled}
+              />
             </div>
           </div>
           <div className="flex flex-col gap-2">
@@ -143,7 +141,7 @@ const AdvancedOptionsEditor = ({
               </div>
             </div>
           </div>
-          <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between">
             <label htmlFor="languageModel">
               <div className="flex flex-col">
                 <p>Language Model</p>
@@ -157,7 +155,7 @@ const AdvancedOptionsEditor = ({
               id="languageModel"
               value={languageModel}
               onChange={(e) => setLanguageModel(e.target.value)}
-              className="w-full rounded-md border border-gray-300 p-2 text-center focus:outline-none focus:ring focus:ring-primaryColor focus:ring-opacity-50 dark:bg-backgroundColor"
+              className="w-96 rounded-md border border-gray-300 p-2 text-center focus:outline-none focus:ring focus:ring-primaryColor focus:ring-opacity-50 dark:bg-backgroundColor"
             />
           </div>
         </div>

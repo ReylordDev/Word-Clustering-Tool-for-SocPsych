@@ -100,11 +100,9 @@ export default function AlgorithmSettingsPage({
           advancedOptions={advancedOptions}
           setAdvancedOptions={setAdvancedOptions}
         />
-        <div className="mt-8 flex flex-col gap-12 px-24">
-          <h1 className="flex w-full flex-col gap-2 text-5xl">
-            Algorithm Settings
-          </h1>
-          <div className="flex flex-col gap-8 text-lg">
+        <div className="mt-8 flex flex-col gap-6 px-24">
+          <h1 className="flex w-full flex-col text-5xl">Algorithm Settings</h1>
+          <div className="flex flex-col gap-4 text-lg">
             <div className="flex items-center justify-between">
               <p>Automatically choose number of clusters</p>
               <Toggle
@@ -119,6 +117,7 @@ export default function AlgorithmSettingsPage({
                     setClusterCount(null);
                   }
                 }}
+                modalOpen={anyModalOpen}
               />
             </div>
             <div

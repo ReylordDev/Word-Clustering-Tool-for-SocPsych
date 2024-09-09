@@ -31,8 +31,8 @@ const ExcludedWordsEditor = ({
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4">
-      <div className="max-h-[75vh] min-h-[45vh] max-w-4xl rounded-lg bg-backgroundColor shadow-xl">
-        <div className="flex h-[10vh] items-center justify-between gap-4 border-b p-6">
+      <div className="mt-[60px] w-full max-w-2xl rounded-lg bg-backgroundColor shadow-xl">
+        <div className="flex items-center justify-between p-6 pb-4">
           <h2 className="text-3xl font-semibold">Excluded Words</h2>
           <button
             onClick={() => setIsOpen(false)}
@@ -41,7 +41,7 @@ const ExcludedWordsEditor = ({
             <X size={36} />
           </button>
         </div>
-        <div className="flex h-[10vh] items-center justify-between gap-4 p-6">
+        <div className="flex items-center justify-between border-b px-6 pb-4">
           <input
             type="text"
             value={newWord}

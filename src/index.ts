@@ -229,7 +229,7 @@ const startScript = async (
 const createMainWindow = () => {
   console.log("Creating main window");
   const mainWindow = new BrowserWindow({
-    height: 768,
+    height: 640,
     width: 1024,
     titleBarStyle: "hidden",
     titleBarOverlay: {

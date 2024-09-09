@@ -104,14 +104,14 @@ export default function FileSelectionPage({
       <TitleBar index={0} />
       <div
         id="mainContent"
-        className="dark:dark flex flex-col gap-12 bg-backgroundColor px-24 pt-8 text-textColor"
+        className="dark:dark flex flex-col bg-backgroundColor px-24 pt-8 text-textColor"
       >
         <PreviousResultModal
           isOpen={previousResultModalOpen}
           setIsOpen={setPreviousResultModalOpen}
           onSelect={handlePreviousResultSelect}
         />
-        <div className="flex w-full flex-col gap-2">
+        <div className="mb-8 flex w-full flex-col gap-2">
           <h1 className="text-5xl">
             <span className="text-accentColor">Word</span>{" "}
             <span className="font-bold text-primaryColor">Clustering</span>
@@ -120,7 +120,7 @@ export default function FileSelectionPage({
           </h1>
           <p>Analyze your open-ended survey responses with ease.</p>
         </div>
-        <div className="mb-36 flex h-full items-center justify-between">
+        <div className="mb-8 flex h-full items-center justify-between">
           <FileSelector
             selectFile={(path: string) => {
               setFilePath(path);

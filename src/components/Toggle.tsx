@@ -3,9 +3,11 @@ import { useState } from "react";
 const Toggle = ({
   initialState = false,
   onToggle,
+  modalOpen,
 }: {
   initialState?: boolean;
   onToggle: (isOn: boolean) => void;
+  modalOpen?: boolean;
 }) => {
   const [isOn, setIsOn] = useState(initialState);
 
@@ -13,6 +15,8 @@ const Toggle = ({
     setIsOn(!isOn);
     onToggle(!isOn);
   };
+
+  if (modalOpen) return null;
 
   return (
     <button
@@ -22,7 +26,7 @@ const Toggle = ({
       onClick={toggleSwitch}
     >
       <div
-        className={`bg-backgroundColor size-6 transform rounded-full shadow-md transition-transform duration-300 ease-in-out ${
+        className={`size-6 transform rounded-full bg-backgroundColor shadow-md transition-transform duration-300 ease-in-out ${
           isOn ? "translate-x-6" : ""
         }`}
       />

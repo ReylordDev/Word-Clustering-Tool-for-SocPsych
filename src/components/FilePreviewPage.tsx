@@ -82,47 +82,49 @@ export default function FilePreviewPage({
       <TitleBar index={1} resetState={resetState} />
       <div
         id="mainContent"
-        className="dark:dark flex flex-col justify-start gap-4 bg-backgroundColor px-24 text-textColor"
+        className="dark:dark flex flex-col justify-start gap-4 bg-backgroundColor px-24 pt-8 text-textColor"
       >
-        <h1 className="flex items-center justify-center p-8 text-4xl">
-          File Preview
-        </h1>
-        <div className="flex items-center justify-between p-4">
-          <div className="flex items-start">
-            <div className="flex max-w-72 flex-col">
-              <p>The file contains a header row</p>
-              <p className="text-wrap text-sm font-normal text-gray-500">
+        <h1 className="flex w-full flex-col text-5xl">File Preview</h1>
+        <div className="flex flex-col gap-2 border-b pb-4">
+          <div className="flex w-full items-start justify-between">
+            <div className="flex flex-col">
+              <p>Header row</p>
+              <p className="text-wrap text-base font-normal text-gray-500">
                 Whether the first line of data already contains responses.
               </p>
             </div>
             <Toggle initialState={hasHeader} onToggle={setHasHeader} />
           </div>
-          <div className="flex w-60 flex-col">
-            <label htmlFor="separator" className="px-2">
-              <p>Select the line separator</p>
+          <div className="flex items-center justify-between">
+            <label htmlFor="delimiter">
+              <div className="flex flex-col">
+                <p>Line separator</p>
+                <p className="text-base font-normal text-gray-500">
+                  Enter the character that separates each column
+                </p>
+              </div>
             </label>
             <input
-              type="text"
-              id="separator"
-              value={delimiter}
+              id="delimiter"
+              value={delimiter || ""}
               onChange={(e) => setDelimiter(e.target.value)}
-              className="rounded-md border border-gray-300 p-2 pl-5 focus:outline-none focus:ring focus:ring-primaryColor focus:ring-opacity-50 dark:bg-backgroundColor"
+              className="w-20 rounded-md border border-gray-300 p-2 text-center focus:outline-none focus:ring focus:ring-primaryColor focus:ring-opacity-50 dark:bg-backgroundColor"
             />
           </div>
         </div>
         <div className="flex flex-col gap-2">
-          <p>
-            Select all columns that contain responses to open-ended questions
+          <p className="text-gray-500">
+            Select all columns that contain responses to open-ended questions:
           </p>
           <div className="scrollbar overflow-x-auto">
-            <table className="w-full overflow-hidden rounded-lg">
+            <table className="w-full overflow-hidden">
               <thead>
                 <tr>
                   {headers &&
                     headers.map((header, index) => (
                       <th
                         key={index}
-                        className="border-b border-r border-dashed border-b-textColor border-r-textColor p-1"
+                        className="border-x border-b border-dashed border-textColor p-1"
                       >
                         <ColumnHeader
                           key={index}
@@ -141,7 +143,7 @@ export default function FilePreviewPage({
                       {row.map((cell, cellIndex) => (
                         <td
                           key={cellIndex}
-                          className="border-r border-dashed border-r-textColor p-1"
+                          className="border-x border-dashed border-textColor p-1"
                         >
                           <p className="line-clamp-1 max-w-64 text-center">
                             {cell}
@@ -152,9 +154,10 @@ export default function FilePreviewPage({
                   ))}
               </tbody>
             </table>
+            <div className="my-2"></div>
           </div>
         </div>
-        <div className="flex items-center justify-end gap-2 p-4">
+        <div className="flex items-center justify-end gap-4">
           {/* TODO: fix the case for 1 column selected */}
           <p>{selectedColumns.length} columns selected</p>
           <Link to="/algorithm_settings">

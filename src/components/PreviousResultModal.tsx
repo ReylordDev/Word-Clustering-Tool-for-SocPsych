@@ -37,11 +37,8 @@ const PreviousResultModal = ({
   if (!isOpen) return null;
 
   return (
-    <div
-      id="modal"
-      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4"
-    >
-      <div className="max-h-[75vh] w-full max-w-4xl rounded-lg bg-backgroundColor shadow-xl">
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4">
+      <div className="mt-[60px] w-full max-w-4xl rounded-lg bg-backgroundColor shadow-xl">
         <div className="flex items-center justify-between border-b p-6 pb-4">
           <h2 className="text-3xl font-semibold">Select Previous Result</h2>
           <button
@@ -51,7 +48,7 @@ const PreviousResultModal = ({
             <X size={36} />
           </button>
         </div>
-        <div className="scrollbar max-h-[65vh] flex-grow overflow-y-auto p-6">
+        <div className="scrollbar max-h-[70vh] flex-grow overflow-y-scroll p-6">
           <table className="w-full rounded-lg">
             <thead>
               <tr>
