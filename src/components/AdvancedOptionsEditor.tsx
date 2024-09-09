@@ -23,15 +23,15 @@ const AdvancedOptionsEditor = ({
     setIsAgglomerativeClusteringEnabled,
   ] = useState(advancedOptions.agglomerativeClustering);
 
-  const [nearestNeighbors, setNearestNeighbors] = useState<number | undefined>(
+  const [nearestNeighbors, setNearestNeighbors] = useState<number | null>(
     advancedOptions.nearestNeighbors,
   );
-  const [zScoreThreshold, setZScoreThreshold] = useState<number | undefined>(
+  const [zScoreThreshold, setZScoreThreshold] = useState<number | null>(
     advancedOptions.zScoreThreshold,
   );
-  const [similarityThreshold, setSimilarityThreshold] = useState<
-    number | undefined
-  >(advancedOptions.similarityThreshold);
+  const [similarityThreshold, setSimilarityThreshold] = useState<number | null>(
+    advancedOptions.similarityThreshold,
+  );
   const [languageModel, setLanguageModel] = useState<string>(
     advancedOptions.languageModel,
   );
@@ -42,11 +42,11 @@ const AdvancedOptionsEditor = ({
     let localZScoreThreshold = zScoreThreshold;
     let localSimilarityThreshold = similarityThreshold;
     if (!isOutlierDetectionEnabled) {
-      localNearestNeighbors = undefined;
-      localZScoreThreshold = undefined;
+      localNearestNeighbors = null;
+      localZScoreThreshold = null;
     }
     if (!isAgglomerativeClusteringEnabled) {
-      localSimilarityThreshold = undefined;
+      localSimilarityThreshold = null;
     }
     setAdvancedOptions({
       outlierDetection: isOutlierDetectionEnabled,
@@ -78,21 +78,21 @@ const AdvancedOptionsEditor = ({
             <div className="flex items-center justify-between">
               <p>Outlier Detection</p>
               <Toggle
-                initialState={true}
+                initialState={isOutlierDetectionEnabled}
                 onToggle={setIsOutlierDetectionEnabled}
               />
             </div>
             <div
               className={`flex flex-col gap-1 pl-4 ${!isOutlierDetectionEnabled && "text-gray-400"}`}
             >
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-4">
                 <label htmlFor="nearestNeighbors">
                   <p>Number of nearest neighbors to consider</p>
                 </label>
                 <input
                   type="number"
                   id="nearestNeighbors"
-                  value={nearestNeighbors}
+                  value={nearestNeighbors || ""}
                   onChange={(e) => setNearestNeighbors(e.target.valueAsNumber)}
                   className="w-20 rounded-md border border-gray-300 p-2 text-center focus:outline-none focus:ring focus:ring-primaryColor focus:ring-opacity-50 dark:bg-backgroundColor"
                   disabled={!isOutlierDetectionEnabled}
@@ -106,7 +106,7 @@ const AdvancedOptionsEditor = ({
                   type="number"
                   step={0.1}
                   id="zScoreThreshold"
-                  value={zScoreThreshold}
+                  value={zScoreThreshold || ""}
                   onChange={(e) => setZScoreThreshold(e.target.valueAsNumber)}
                   className="w-20 rounded-md border border-gray-300 p-2 text-center focus:outline-none focus:ring focus:ring-primaryColor focus:ring-opacity-50 dark:bg-backgroundColor"
                   disabled={!isOutlierDetectionEnabled}
@@ -118,7 +118,7 @@ const AdvancedOptionsEditor = ({
             <div className="flex items-center justify-between">
               <p>Agglomerative Clustering Post-KMeans</p>
               <Toggle
-                initialState={true}
+                initialState={isAgglomerativeClusteringEnabled}
                 onToggle={setIsAgglomerativeClusteringEnabled}
               />
             </div>
@@ -133,7 +133,7 @@ const AdvancedOptionsEditor = ({
                   type="number"
                   id="similarityThreshold"
                   step={0.01}
-                  value={similarityThreshold}
+                  value={similarityThreshold || ""}
                   onChange={(e) =>
                     setSimilarityThreshold(e.target.valueAsNumber)
                   }

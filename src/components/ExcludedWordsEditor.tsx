@@ -41,7 +41,7 @@ const ExcludedWordsEditor = ({
             <X size={36} />
           </button>
         </div>
-        <div className="flex h-[10vh] items-center justify-between p-6">
+        <div className="flex h-[10vh] items-center justify-between gap-4 p-6">
           <input
             type="text"
             value={newWord}

@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowRight, Settings, X } from "lucide-react";
+import { Settings, X, Undo } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Toggle from "./Toggle";
@@ -77,9 +77,16 @@ function SettingsModal({
   );
 }
 
-export function TitleBar({ index }: { index: number }) {
+export function TitleBar({
+  index,
+  resetState,
+}: {
+  index: number;
+  resetState?: () => void;
+}) {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const enableSettings = false;
+
   return (
     <div
       id="titleBarContainer"
@@ -142,18 +149,20 @@ export function TitleBar({ index }: { index: number }) {
         <div className="flex items-center">
           {index > 0 ? (
             <Link
-              to={`/${routes[index - 1]}`}
+              to={`/${routes[index - 1] === "progress" ? routes[index - 2] : routes[index - 1]}`}
               className="no-drag rounded p-1 hover:bg-background-50"
+              onClick={resetState}
             >
-              <ArrowLeft size={24} />
+              <Undo size={24} />
             </Link>
           ) : (
             <div className="rounded p-1 opacity-25">
-              <ArrowLeft size={24} />
+              <Undo size={24} />
             </div>
           )}
 
-          {index < routes.length - 1 ? (
+          {/* I'm not sure if there is any reason for having a forward arrow. */}
+          {/* {index < routes.length - 1 ? (
             <Link
               to={`/${routes[index + 1]}`}
               className="no-drag rounded p-1 hover:bg-background-50"
@@ -164,7 +173,7 @@ export function TitleBar({ index }: { index: number }) {
             <div className="rounded p-1 opacity-25">
               <ArrowRight size={24} />
             </div>
-          )}
+          )} */}
         </div>
         <div className="flex">
           <div className="flex flex-col">

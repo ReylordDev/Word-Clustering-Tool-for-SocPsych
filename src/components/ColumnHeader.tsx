@@ -2,13 +2,15 @@ import { useState } from "react";
 import { Square, Check } from "lucide-react";
 
 const ColumnHeader = ({
+  initialState,
   onChange,
   title,
 }: {
+  initialState: boolean;
   onChange: (isOn: boolean) => void;
   title: string;
 }) => {
-  const [isOn, setIsOn] = useState(false);
+  const [isOn, setIsOn] = useState(initialState);
 
   const toggleCheckbox = () => {
     setIsOn(!isOn);

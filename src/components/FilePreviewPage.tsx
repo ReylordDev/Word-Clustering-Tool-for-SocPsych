@@ -25,12 +25,6 @@ export default function FilePreviewPage({
 }) {
   const [previewData, setPreviewData] = useState<string[][]>([]);
 
-  console.log(filePath);
-  console.log(hasHeader);
-  console.log(delimiter);
-  console.log(previewData);
-  console.log(selectedColumns);
-
   useEffect(() => {
     const fetchPreviewData = async () => {
       if (!delimiter || !filePath) {
@@ -38,9 +32,7 @@ export default function FilePreviewPage({
       }
       try {
         const input = await window.python.readFile(filePath);
-        console.log(input.length);
         const lines = input.split("\n");
-        console.log(lines.length);
         const parsedData = lines.map((line) => line.split(delimiter));
         setPreviewData(parsedData.slice(0, 6)); // Get first 6 rows (including header if present)
       } catch (error) {
@@ -54,13 +46,17 @@ export default function FilePreviewPage({
   const displayData = hasHeader ? previewData.slice(1) : previewData;
   const headers = hasHeader ? previewData[0] : [];
 
-  console.log(displayData);
-  console.log(headers);
-
   const toggleColumn = (index: number) => {
     selectedColumns.includes(index)
       ? setSelectedColumns(selectedColumns.filter((col) => col !== index))
       : setSelectedColumns([...selectedColumns, index]);
+  };
+
+  const resetState = () => {
+    console.log("Resetting state");
+    setHasHeader(true);
+    setDelimiter(",");
+    setSelectedColumns([]);
   };
 
   if (!filePath) {
@@ -83,7 +79,7 @@ export default function FilePreviewPage({
 
   return (
     <>
-      <TitleBar index={1} />
+      <TitleBar index={1} resetState={resetState} />
       <div
         id="mainContent"
         className="dark:dark flex flex-col justify-start gap-4 bg-backgroundColor px-24 text-textColor"
@@ -132,6 +128,7 @@ export default function FilePreviewPage({
                           key={index}
                           onChange={() => toggleColumn(index)}
                           title={header}
+                          initialState={selectedColumns.includes(index)}
                         />
                       </th>
                     ))}
@@ -162,7 +159,12 @@ export default function FilePreviewPage({
           <p>{selectedColumns.length} columns selected</p>
           <Link to="/algorithm_settings">
             <Button
-              onClick={() => null}
+              onClick={() =>
+                console.log(
+                  "Selected columns: ",
+                  selectedColumns.map((col) => headers[col]),
+                )
+              }
               className="rounded-md"
               disabled={selectedColumns.length <= 0}
               text="Continue"

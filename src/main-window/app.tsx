@@ -14,12 +14,14 @@ export default function App() {
   const [delimiter, setDelimiter] = useState(",");
   const [selectedColumns, setSelectedColumns] = useState<number[]>([]);
   const [autoClusterCount, setAutoChooseClusters] = useState(true);
-  const [maxClusters, setMaxClusters] = useState<number | undefined>(undefined);
-  const [clusterCount, setClusterCount] = useState<number | undefined>(
+  const [maxClusters, setMaxClusters] = useState<number | null | undefined>(
+    null,
+  );
+  const [clusterCount, setClusterCount] = useState<number | null | undefined>(
     undefined,
   );
   const [excludedWords, setExcludedWords] = useState<string[]>([]);
-  const [seed, setSeed] = useState<number | undefined>(undefined);
+  const [seed, setSeed] = useState<number | null>(null);
   const [advancedOptions, setAdvancedOptions] = useState<AdvancedOptions>({
     outlierDetection: true,
     agglomerativeClustering: true,

@@ -6,17 +6,13 @@ import PreviousResultModal from "./PreviousResultModal";
 import { useEffect, useState } from "react";
 import { Args, FileSettings } from "../models";
 
-function FileSelector({
-  setFilePath,
-}: {
-  setFilePath: (path: string) => void;
-}) {
+function FileSelector({ selectFile }: { selectFile: (path: string) => void }) {
   const checkFiles = (files: FileList | null) => {
     if (files) {
       const file = files[0];
       if (file && file.size > 0 && file.type === "text/csv") {
         console.log("File selected: ", file);
-        setFilePath(file.path);
+        selectFile(file.path);
       }
     }
   };
@@ -84,14 +80,15 @@ export default function FileSelectionPage({
   const submitExampleFile = () => {
     window.python.getExampleFilePath().then((path) => {
       setFilePath(path);
+      navigate("/file_preview");
     });
   };
 
-  useEffect(() => {
-    if (filePath) {
-      navigate("/file_preview");
-    }
-  }, [filePath]);
+  // useEffect(() => {
+  //   if (filePath) {
+  //     navigate("/file_preview");
+  //   }
+  // }, [filePath]);
 
   const handlePreviousResultSelect = async (result: string) => {
     await window.python.loadRun(result);
@@ -124,7 +121,12 @@ export default function FileSelectionPage({
           <p>Analyze your open-ended survey responses with ease.</p>
         </div>
         <div className="mb-36 flex h-full items-center justify-between">
-          <FileSelector setFilePath={setFilePath} />
+          <FileSelector
+            selectFile={(path: string) => {
+              setFilePath(path);
+              navigate("/file_preview");
+            }}
+          />
           <div className="flex h-full flex-col items-center justify-between gap-8 p-4 text-center">
             <div className="flex flex-col gap-2">
               <h5>Start by selecting an input file.</h5>

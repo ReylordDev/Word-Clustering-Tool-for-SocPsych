@@ -25,14 +25,14 @@ export default function AlgorithmSettingsPage({
 }: {
   autoChooseClusters: boolean;
   setAutoChooseClusters: (autoChooseClusters: boolean) => void;
-  maxClusters: number | undefined;
-  setMaxClusters: (maxClusters: number | undefined) => void;
-  clusterCount: number | undefined;
-  setClusterCount: (clusterCount: number | undefined) => void;
+  maxClusters: number | null | undefined;
+  setMaxClusters: (maxClusters: number | null | undefined) => void;
+  clusterCount: number | null | undefined;
+  setClusterCount: (clusterCount: number | null | undefined) => void;
   excludedWords: string[];
   setExcludedWords: (excludedWords: string[]) => void;
-  seed: number | undefined;
-  setSeed: (seed: number | undefined) => void;
+  seed: number | null;
+  setSeed: (seed: number | null) => void;
   advancedOptions: AdvancedOptions;
   setAdvancedOptions: (advancedOptions: AdvancedOptions) => void;
   startClustering: () => void;
@@ -42,13 +42,6 @@ export default function AlgorithmSettingsPage({
   const [isAdvancedOptionsEditorOpen, setIsAdvancedOptionsEditorOpen] =
     useState(false);
   const navigate = useNavigate();
-
-  console.log("Auto Choose Clusters: ", autoChooseClusters);
-  console.log("Max Clusters: ", maxClusters);
-  console.log("Cluster Count: ", clusterCount);
-  console.log("Excluded Words: ", excludedWords);
-  console.log("Seed: ", seed);
-  console.log("Advanced Options: ", advancedOptions);
 
   const submitAlgorithmSettings = () => {
     console.log("Submitting settings...");
@@ -70,9 +63,26 @@ export default function AlgorithmSettingsPage({
     navigate("/progress");
   };
 
+  const resetState = () => {
+    console.log("Resetting state");
+    setAutoChooseClusters(true);
+    setMaxClusters(null);
+    setClusterCount(undefined);
+    setExcludedWords([]);
+    setSeed(null);
+    setAdvancedOptions({
+      outlierDetection: true,
+      agglomerativeClustering: true,
+      nearestNeighbors: 5,
+      zScoreThreshold: 3,
+      similarityThreshold: 0.95,
+      languageModel: "BAAI/bge-large-en-v1.5",
+    });
+  };
+
   return (
     <>
-      <TitleBar index={2} />
+      <TitleBar index={2} resetState={resetState} />
       <div
         id="mainContent"
         className="dark:dark bg-backgroundColor text-textColor"
@@ -98,7 +108,16 @@ export default function AlgorithmSettingsPage({
               <p>Automatically choose number of clusters</p>
               <Toggle
                 initialState={autoChooseClusters}
-                onToggle={setAutoChooseClusters}
+                onToggle={(isOn) => {
+                  setAutoChooseClusters(isOn);
+                  if (isOn) {
+                    setClusterCount(undefined);
+                    setMaxClusters(null);
+                  } else {
+                    setMaxClusters(undefined);
+                    setClusterCount(null);
+                  }
+                }}
               />
             </div>
             <div
@@ -110,6 +129,7 @@ export default function AlgorithmSettingsPage({
               <input
                 type="number"
                 min={1}
+                value={maxClusters || ""}
                 onChange={(e) => setMaxClusters(e.target.valueAsNumber)}
                 id="maxClusterCount"
                 className="w-24 rounded-md border border-primaryColor p-2 pl-5 focus:outline-none focus:ring focus:ring-primaryColor focus:ring-opacity-50 disabled:border-gray-300 dark:bg-backgroundColor dark:disabled:border-gray-800"
@@ -126,6 +146,7 @@ export default function AlgorithmSettingsPage({
                 type="number"
                 id="clusterCount"
                 min={1}
+                value={clusterCount || ""}
                 onChange={(e) => setClusterCount(e.target.valueAsNumber)}
                 className="w-24 rounded-md border border-primaryColor p-2 pl-5 focus:outline-none focus:ring focus:ring-primaryColor focus:ring-opacity-50 disabled:border-gray-300 dark:bg-backgroundColor dark:disabled:border-gray-800"
                 disabled={autoChooseClusters}
@@ -143,7 +164,7 @@ export default function AlgorithmSettingsPage({
               <input
                 id="seed"
                 type="number"
-                value={seed}
+                value={seed || ""}
                 onChange={(e) => setSeed(parseInt(e.target.value))}
                 className="w-24 rounded-md border border-gray-300 p-2 pl-5 text-center focus:outline-none focus:ring focus:ring-primaryColor focus:ring-opacity-50 dark:bg-backgroundColor"
               />

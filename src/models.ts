@@ -7,19 +7,19 @@ export interface FileSettings {
 
 export interface AlgorithmSettings {
   autoClusterCount: boolean;
-  maxClusters: number | undefined;
-  clusterCount: number | undefined;
-  seed: number | undefined;
+  maxClusters: number | null | undefined;
+  clusterCount: number | null | undefined;
+  seed: number | null;
   excludedWords: string[];
   advancedOptions: AdvancedOptions;
 }
 
 export interface AdvancedOptions {
   outlierDetection: boolean;
-  nearestNeighbors: number | undefined;
-  zScoreThreshold: number | undefined;
+  nearestNeighbors: number | null;
+  zScoreThreshold: number | null;
   agglomerativeClustering: boolean;
-  similarityThreshold: number | undefined;
+  similarityThreshold: number | null;
   languageModel: string;
 }
 
