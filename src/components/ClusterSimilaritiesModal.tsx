@@ -23,6 +23,61 @@ interface ClusterSimilarity {
   similarity: number;
 }
 
+const SimilarityVisualizer: React.FC<{
+  similarity: number;
+  primary: boolean;
+}> = ({ similarity, primary = true }) => (
+  <div
+    className={`h-2 w-full rounded-full ${primary ? "bg-primary-100" : "bg-secondary-100"}`}
+  >
+    <div
+      className={`h-2 rounded-full ${primary ? "bg-primaryColor" : "bg-secondaryColor"}`}
+      style={{ width: `${similarity * 100}%` }}
+    />
+  </div>
+);
+
+const ClusterDetails: React.FC<{ cluster: Cluster | undefined }> = ({
+  cluster,
+}) => {
+  console.log("Cluster Details: ", cluster);
+
+  if (!cluster) return null;
+  return (
+    <div className="overflow-hidden rounded-lg border border-dashed border-accentColor">
+      <div className="p-4">
+        <div>
+          <h3 className="gap-1 p-1 text-xl font-medium">
+            Representative Responses:
+          </h3>
+          {cluster.representativeResponses.map((response, index) => (
+            <div key={index} className="rounded p-3">
+              {/* TODO: Better Line Clamping */}
+              <p className="line-clamp-2">"{response.text}"</p>
+              <div className="mt-2 flex items-center justify-between px-2 text-sm">
+                <p>
+                  Similarity to cluster center:{" "}
+                  <span className="font-semibold">
+                    {(response.similarity * 100).toFixed(1)}%
+                  </span>
+                </p>
+                <div className="h-2.5 w-1/2 rounded-full bg-accent-100">
+                  <div
+                    className="h-2.5 rounded-full bg-accentColor"
+                    style={{
+                      width: `${response.similarity * 100}%`,
+                    }}
+                  ></div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 function ClusterSimilarityModal({
   similaritiesPath,
   clusterAssignmentsPath,
@@ -147,60 +202,19 @@ function ClusterSimilarityModal({
     [clusterSimilarities],
   );
 
-  const SimilarityVisualizer: React.FC<{
-    similarity: number;
-    primary: boolean;
-  }> = ({ similarity, primary = true }) => (
-    <div
-      className={`h-2 w-full rounded-full ${primary ? "bg-primary-100" : "bg-secondary-100"}`}
-    >
-      <div
-        className={`h-2 rounded-full ${primary ? "bg-primaryColor" : "bg-secondaryColor"}`}
-        style={{ width: `${similarity * 100}%` }}
-      />
-    </div>
-  );
-
-  const ClusterDetails: React.FC<{ cluster: Cluster | undefined }> = ({
-    cluster,
-  }) => {
-    console.log("Cluster Details: ", cluster);
-
-    if (!cluster) return null;
-    return (
-      <div className="overflow-hidden rounded-lg border border-dashed border-accentColor">
-        <div className="p-4">
-          <div>
-            <h3 className="gap-1 p-1 text-xl font-medium">
-              Representative Responses:
-            </h3>
-            {cluster.representativeResponses.map((response, index) => (
-              <div key={index} className="rounded p-3">
-                {/* TODO: Better Line Clamping */}
-                <p className="line-clamp-2">"{response.text}"</p>
-                <div className="mt-2 flex items-center justify-between px-2 text-sm">
-                  <p>
-                    Similarity to cluster center:{" "}
-                    <span className="font-semibold">
-                      {(response.similarity * 100).toFixed(1)}%
-                    </span>
-                  </p>
-                  <div className="h-2.5 w-1/2 rounded-full bg-accent-100">
-                    <div
-                      className="h-2.5 rounded-full bg-accentColor"
-                      style={{
-                        width: `${response.similarity * 100}%`,
-                      }}
-                    ></div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "Escape") {
+      setIsOpen(false);
+    }
   };
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   const SimilarClustersList = ({ clusterId }: { clusterId: number }) => {
     const similarClusters = getMostSimilarClusters(clusterId);
@@ -437,8 +451,14 @@ function ClusterSimilarityModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4">
-      <div className="mt-[60px] w-full max-w-4xl rounded-lg bg-backgroundColor shadow-xl">
+    <div
+      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4"
+      onClick={() => setIsOpen(false)}
+    >
+      <div
+        className="mt-[60px] w-full max-w-4xl rounded-lg bg-backgroundColor shadow-xl"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="border-b p-6 pb-4">
           <div className="flex items-center justify-between">
             <h2 className="text-3xl font-semibold">Cluster Similarities</h2>

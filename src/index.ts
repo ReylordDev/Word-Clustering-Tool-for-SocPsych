@@ -236,7 +236,7 @@ const startScript = async (
 const createMainWindow = () => {
   console.log("Creating main window");
   const display = screen.getPrimaryDisplay();
-  const { width: workAreaWidth, height: workAreaHeight } = display.workAreaSize;
+  const { width: workAreaWidth } = display.workAreaSize;
   let width: number;
   let height: number;
 

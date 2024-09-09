@@ -72,11 +72,31 @@ function MergedClustersModal({
     });
   }, [path]);
 
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "Escape") {
+      setIsOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
   return (
     <>
       {isOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4">
-          <div className="mt-[60px] w-full max-w-4xl rounded-lg bg-backgroundColor shadow-xl">
+        <div
+          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4"
+          onClick={() => setIsOpen(false)}
+        >
+          <div
+            className="mt-[60px] w-full max-w-4xl rounded-lg bg-backgroundColor shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between border-b p-6 pb-4">
               <div className="flex flex-col gap-2">
                 <h2 className="text-3xl font-semibold">Merged Clusters</h2>
