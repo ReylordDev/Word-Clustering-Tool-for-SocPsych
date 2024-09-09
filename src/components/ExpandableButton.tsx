@@ -41,15 +41,15 @@ const ExpandableButton = ({
         )}
       </button> */}
       {isExpanded && (
-        <div className="mt-2 space-y-2">
+        <div className="mt-4 flex w-max flex-col items-center gap-4">
           <button
-            className="w-full rounded-md bg-gray-200 px-4 py-2 text-gray-800 hover:bg-gray-300"
+            className="w-full rounded-md bg-secondaryColor px-4 py-2 text-backgroundColor hover:bg-secondary-500"
             onClick={onClick1}
           >
             {option1}
           </button>
           <button
-            className="w-full rounded-md bg-gray-200 px-4 py-2 text-gray-800 hover:bg-gray-300"
+            className="w-full rounded-md bg-secondaryColor px-4 py-2 text-backgroundColor hover:bg-secondary-500"
             onClick={onClick2}
           >
             {option2}

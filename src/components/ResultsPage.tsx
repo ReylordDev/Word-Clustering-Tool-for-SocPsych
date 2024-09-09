@@ -53,8 +53,9 @@ function TotalTimeDropdown({ path }: { path: string }) {
   }
 
   return (
-    <div className="flex w-2/3 flex-col justify-start">
+    <div className="flex w-full flex-col items-center justify-start">
       <Button
+        className="w-2/3"
         onClick={() => {
           console.log("Open Total Time");
           setOpen(!open);
@@ -68,13 +69,13 @@ function TotalTimeDropdown({ path }: { path: string }) {
         rightIcon={open ? <ChevronUp /> : <ChevronDown />}
       />
       {open && (
-        <div className="flex flex-col gap-2 p-2">
+        <div className="flex w-full flex-col gap-2 p-4">
           {timeStamps.map((step, index) => {
             if (index === 0) {
               return null;
             }
             return (
-              <div key={index} className="flex justify-between">
+              <div key={index} className="flex w-full justify-between">
                 <div className="flex items-center gap-2">
                   <Check
                     className="rounded bg-accentColor text-backgroundColor"
@@ -203,7 +204,7 @@ export default function ResultsPage({
       <TitleBar index={4} />
       <div
         id="mainContent"
-        className="dark:dark h-screen w-full bg-backgroundColor text-textColor"
+        className="dark:dark flex flex-col bg-backgroundColor px-24 pt-6 text-textColor"
       >
         <ClusterAssignmentModal
           path={`${resultsDir}/cluster_assignments.csv`}
@@ -242,7 +243,7 @@ export default function ResultsPage({
             setIsOpen={setMergedClustersModalOpen}
           />
         )}
-        <div className="scrollbar flex max-h-[90vh] flex-col items-start justify-start gap-8 overflow-y-auto px-32 pt-8">
+        <div className="flex flex-col">
           <div className="flex w-full flex-col justify-start gap-2">
             <div className="flex w-full items-center gap-4">
               {editingRunName ? (
@@ -287,88 +288,90 @@ export default function ResultsPage({
             {showInputError && (
               <p className="text-red-500">Input is not a valid file name</p>
             )}
-            <div className="flex items-center gap-2 pb-2 text-accentColor">
+            <div className="flex items-center gap-2 pb-4 pl-5 text-accentColor">
               <CheckCheck className="rounded bg-backgroundColor" size={24} />
               <p className="text-xl font-semibold">
                 Your results have been saved.
               </p>
             </div>
           </div>
-          <div className="flex w-full flex-col items-center justify-center gap-8">
-            {/* I think the extra dir button is a bit unnecessary. */}
-            {/* <Button
-              onClick={() =>
-                window.python.openResultsDir().then((errorMessage) => {
-                  if (errorMessage) {
-                    console.error(
-                      "Error opening output directory",
-                      errorMessage,
-                    );
-                  }
-                })
-              }
-              leftIcon={<Folder />}
-              text="Results Folder"
-              className="w-2/3"
-            /> */}
-            <Button
-              onClick={() =>
-                window.python.showItemInFolder(resultsDir + "/output.csv")
-              }
-              text="Updated Input File"
-              leftIcon={<FileText />}
-              className="w-2/3"
-            />
-            <Button
-              onClick={() => setClusterAssignmentsModalOpen(true)}
-              text="Cluster Assignments"
-              leftIcon={<List />}
-              className="w-2/3"
-            />
-            <Button
-              onClick={() => setClusterSimilarityModalOpen(true)}
-              text="Cluster Similarities"
-              leftIcon={<GitCompare />}
-              className="w-2/3"
-            />
-            <Button
-              onClick={() => setOutliersModalOpen(true)}
-              text="Outliers"
-              leftIcon={<AlertTriangle />}
-              className="w-2/3"
-              disabled={
-                !args.algorithmSettings.advancedOptions.nearestNeighbors ||
-                !args.algorithmSettings.advancedOptions.zScoreThreshold
-              }
-              modalOpen={anyModalOpen}
-            />
-            <Button
-              onClick={() => setMergedClustersModalOpen(true)}
-              text="Merged Clusters"
-              leftIcon={<GitMerge />}
-              className="w-2/3"
-              disabled={
-                !args.algorithmSettings.advancedOptions.similarityThreshold
-              }
-              modalOpen={anyModalOpen}
-            />
-            <TotalTimeDropdown path={`${resultsDir}/timestamps.json`} />
-            <ExpandableButton
-              text="Start a new run"
-              option1="Change the algorithm settings"
-              onClick1={() => {
-                console.log("Back to Algorithm Settings");
-                window.python.resetClusterProgress();
-                navigate("/algorithm_settings");
-              }}
-              option2="Select a new input file"
-              onClick2={() => {
-                console.log("Back to File Selection");
-                window.python.resetRun();
-                resetFileSettings();
-                navigate("/");
-              }}
-            />
+          <div className="mt-4 flex justify-between">
+            <div className="flex w-1/2 flex-col items-center justify-start gap-8">
+              {/* I think the extra dir button is a bit unnecessary. */}
+              {/* <Button
+                onClick={() =>
+                  window.python.openResultsDir().then((errorMessage) => {
+                    if (errorMessage) {
+                      console.error(
+                        "Error opening output directory",
+                        errorMessage,
+                      );
+                    }
+                  })
+                }
+                leftIcon={<Folder />}
+                text="Results Folder"
+                className="w-2/3"
+              /> */}
+              <Button
+                onClick={() =>
+                  window.python.showItemInFolder(resultsDir + "/output.csv")
+                }
+                text="Updated Input File"
+                leftIcon={<FileText />}
+                className="w-2/3"
+              />
+              <Button
+                onClick={() => setClusterAssignmentsModalOpen(true)}
+                text="Cluster Assignments"
+                leftIcon={<List />}
+                className="w-2/3"
+              />
+              <Button
+                onClick={() => setClusterSimilarityModalOpen(true)}
+                text="Cluster Similarities"
+                leftIcon={<GitCompare />}
+                className="w-2/3"
+              />
+              <Button
+                onClick={() => setOutliersModalOpen(true)}
+                text="Outliers"
+                leftIcon={<AlertTriangle />}
+                className="w-2/3"
+                disabled={
+                  !args.algorithmSettings.advancedOptions.nearestNeighbors ||
+                  !args.algorithmSettings.advancedOptions.zScoreThreshold
+                }
+                modalOpen={anyModalOpen}
+              />
+              <Button
+                onClick={() => setMergedClustersModalOpen(true)}
+                text="Merged Clusters"
+                leftIcon={<GitMerge />}
+                className="w-2/3"
+                disabled={
+                  !args.algorithmSettings.advancedOptions.similarityThreshold
+                }
+                modalOpen={anyModalOpen}
+              />
+            </div>
+            <div className="flex w-2/3 flex-col items-center justify-start gap-8">
+              <ExpandableButton
+                text="Start a new run"
+                option1="Change the algorithm settings"
+                onClick1={() => {
+                  window.python.resetClusterProgress();
+                  navigate("/algorithm_settings");
+                }}
+                option2="Select a new input file"
+                onClick2={() => {
+                  window.python.resetRun();
+                  resetFileSettings();
+                  navigate("/");
+                }}
+              />
+              <TotalTimeDropdown path={`${resultsDir}/timestamps.json`} />
+            </div>
           </div>
         </div>
       </div>

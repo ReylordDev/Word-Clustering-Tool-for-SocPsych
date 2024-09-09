@@ -76,7 +76,7 @@ function MergedClustersModal({
     <>
       {isOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4">
-          <div className="h-[90vh] w-full max-w-4xl rounded-lg bg-backgroundColor shadow-xl">
+          <div className="mt-[60px] w-full max-w-4xl rounded-lg bg-backgroundColor shadow-xl">
             <div className="flex items-center justify-between border-b p-6 pb-4">
               <div className="flex flex-col gap-2">
                 <h2 className="text-3xl font-semibold">Merged Clusters</h2>
@@ -92,7 +92,7 @@ function MergedClustersModal({
                 <X size={36} />
               </button>
             </div>
-            <div className="scrollbar flex max-h-[70vh] flex-grow flex-col gap-4 overflow-y-auto p-6">
+            <div className="scrollbar flex max-h-[60vh] flex-grow flex-col gap-4 overflow-y-auto p-6">
               {mergers.length > 0 ? (
                 mergers.map((merger, mergerIndex) => (
                   <div
@@ -229,7 +229,7 @@ function MergedClustersModal({
                   </div>
                 ))
               ) : (
-                <div className="flex h-96 items-center justify-center">
+                <div className="flex items-center justify-center">
                   <p className="text-xl font-semibold">
                     No clusters were merged.
                   </p>

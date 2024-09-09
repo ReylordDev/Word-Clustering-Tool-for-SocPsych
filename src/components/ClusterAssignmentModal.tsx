@@ -85,8 +85,8 @@ const ClusterAssignmentModal = ({
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4">
-      <div className="h-[90vh] w-full max-w-4xl rounded-lg bg-backgroundColor shadow-xl">
-        <div className="flex h-[10vh] items-center justify-between border-b p-6">
+      <div className="mt-[60px] w-full max-w-4xl rounded-lg bg-backgroundColor shadow-xl">
+        <div className="flex items-center justify-between border-b p-6 pb-4">
           <h2 className="text-3xl font-semibold">Cluster Assignments</h2>
           <button
             onClick={() => setIsOpen(false)}
@@ -95,7 +95,7 @@ const ClusterAssignmentModal = ({
             <X size={36} />
           </button>
         </div>
-        <div className="scrollbar max-h-[80vh] flex-grow space-y-4 overflow-y-auto p-6">
+        <div className="scrollbar flex max-h-[70vh] flex-grow flex-col gap-4 overflow-y-auto p-6">
           {groupedResponses.map((group) => (
             <div
               key={group.clusterIndex}
@@ -106,7 +106,8 @@ const ClusterAssignmentModal = ({
                 className="flex w-full items-center justify-between p-4 px-8 focus:outline-none"
               >
                 <h2 className="text-2xl font-semibold">
-                  Cluster {group.clusterIndex + 1}
+                  Cluster {group.clusterIndex + 1} ({group.responses.length}{" "}
+                  responses)
                 </h2>
                 {expandedClusters.includes(group.clusterIndex) ? (
                   <ChevronUp className="text-primaryColor" size={32} />

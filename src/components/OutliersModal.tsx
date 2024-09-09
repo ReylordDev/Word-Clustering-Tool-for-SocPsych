@@ -115,8 +115,8 @@ function OutliersModal({
     <>
       {isOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4">
-          <div className="h-[90vh] w-full max-w-4xl rounded-lg bg-backgroundColor shadow-xl">
-            <div className="flex h-[16vh] flex-col gap-2 border-b p-6 pb-4">
+          <div className="mt-[60px] w-full max-w-4xl rounded-lg bg-backgroundColor shadow-xl">
+            <div className="flex flex-col gap-2 border-b p-6 pb-4">
               <div className="flex items-center justify-between">
                 <h2 className="text-3xl font-semibold">Response Outliers</h2>
                 <button
@@ -140,7 +140,7 @@ function OutliersModal({
                 </p>
               </div>
             </div>
-            <div className="scrollbar flex max-h-[74vh] flex-grow flex-col gap-4 overflow-y-auto p-6">
+            <div className="scrollbar flex max-h-[65vh] flex-grow flex-col gap-4 overflow-y-auto p-6">
               {outliers.map((outlier, index) => (
                 <OutlierCard
                   key={index}

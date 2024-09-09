@@ -48,7 +48,7 @@ const PreviousResultModal = ({
             <X size={36} />
           </button>
         </div>
-        <div className="scrollbar max-h-[70vh] flex-grow overflow-y-scroll p-6">
+        <div className="scrollbar max-h-[70vh] flex-grow overflow-y-auto p-6">
           <table className="w-full rounded-lg">
             <thead>
               <tr>

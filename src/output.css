@@ -868,28 +868,8 @@ video {
   height: 24rem;
 }
 
-.h-\[10vh\] {
-  height: 10vh;
-}
-
-.h-\[13vh\] {
-  height: 13vh;
-}
-
-.h-\[16vh\] {
-  height: 16vh;
-}
-
-.h-\[90vh\] {
-  height: 90vh;
-}
-
 .h-full {
   height: 100%;
-}
-
-.h-screen {
-  height: 100vh;
 }
 
 .max-h-96 {
@@ -900,24 +880,16 @@ video {
   max-height: 55vh;
 }
 
+.max-h-\[60vh\] {
+  max-height: 60vh;
+}
+
+.max-h-\[65vh\] {
+  max-height: 65vh;
+}
+
 .max-h-\[70vh\] {
   max-height: 70vh;
-}
-
-.max-h-\[74vh\] {
-  max-height: 74vh;
-}
-
-.max-h-\[77vh\] {
-  max-height: 77vh;
-}
-
-.max-h-\[80vh\] {
-  max-height: 80vh;
-}
-
-.max-h-\[90vh\] {
-  max-height: 90vh;
 }
 
 .w-1\/2 {
@@ -963,6 +935,11 @@ video {
 
 .w-full {
   width: 100%;
+}
+
+.w-max {
+  width: -moz-max-content;
+  width: max-content;
 }
 
 .min-w-28 {
@@ -1088,18 +1065,6 @@ video {
   margin-bottom: calc(0.25rem * var(--tw-space-y-reverse));
 }
 
-.space-y-2 > :not([hidden]) ~ :not([hidden]) {
-  --tw-space-y-reverse: 0;
-  margin-top: calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));
-  margin-bottom: calc(0.5rem * var(--tw-space-y-reverse));
-}
-
-.space-y-4 > :not([hidden]) ~ :not([hidden]) {
-  --tw-space-y-reverse: 0;
-  margin-top: calc(1rem * calc(1 - var(--tw-space-y-reverse)));
-  margin-bottom: calc(1rem * var(--tw-space-y-reverse));
-}
-
 .overflow-auto {
   overflow: auto;
 }
@@ -1114,10 +1079,6 @@ video {
 
 .overflow-y-auto {
   overflow-y: auto;
-}
-
-.overflow-y-scroll {
-  overflow-y: scroll;
 }
 
 .text-ellipsis {
@@ -1321,11 +1282,6 @@ video {
   padding-right: 6rem;
 }
 
-.px-32 {
-  padding-left: 8rem;
-  padding-right: 8rem;
-}
-
 .px-4 {
   padding-left: 1rem;
   padding-right: 1rem;
@@ -1378,6 +1334,10 @@ video {
 
 .pt-8 {
   padding-top: 2rem;
+}
+
+.pt-6 {
+  padding-top: 1.5rem;
 }
 
 .text-center {
@@ -1470,11 +1430,6 @@ video {
 .text-gray-600 {
   --tw-text-opacity: 1;
   color: rgb(75 85 99 / var(--tw-text-opacity));
-}
-
-.text-gray-800 {
-  --tw-text-opacity: 1;
-  color: rgb(31 41 55 / var(--tw-text-opacity));
 }
 
 .text-primaryColor {
@@ -1862,11 +1817,6 @@ button {
 .hover\:bg-gray-100:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(243 244 246 / var(--tw-bg-opacity));
-}
-
-.hover\:bg-gray-300:hover {
-  --tw-bg-opacity: 1;
-  background-color: rgb(209 213 219 / var(--tw-bg-opacity));
 }
 
 .hover\:bg-gray-50:hover {
