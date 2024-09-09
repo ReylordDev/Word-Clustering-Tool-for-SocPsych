@@ -5,6 +5,7 @@ import Toggle from "./Toggle";
 import ColumnHeader from "./ColumnHeader";
 import Button from "./Button";
 import { ArrowRightCircle } from "lucide-react";
+import { findDelimiter, parseCSVLine } from "../utils";
 
 export default function FilePreviewPage({
   filePath,
@@ -33,8 +34,12 @@ export default function FilePreviewPage({
       try {
         const input = await window.python.readFile(filePath);
         const lines = input.split("\n");
-        const parsedData = lines.map((line) => line.split(delimiter));
-        setPreviewData(parsedData.slice(0, 6)); // Get first 6 rows (including header if present)
+        const bestDelimiter = findDelimiter(lines);
+        setDelimiter(bestDelimiter);
+        const parsedData = lines
+          .slice(0, 6)
+          .map((line) => parseCSVLine(line, bestDelimiter));
+        setPreviewData(parsedData); // Get first 6 rows (including header if present)
       } catch (error) {
         console.error("Error fetching preview data:", error);
       }
