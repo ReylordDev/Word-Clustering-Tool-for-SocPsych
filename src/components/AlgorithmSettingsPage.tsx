@@ -100,9 +100,9 @@ export default function AlgorithmSettingsPage({
           advancedOptions={advancedOptions}
           setAdvancedOptions={setAdvancedOptions}
         />
-        <div className="mt-8 flex flex-col gap-6 px-24">
+        <div className="mt-8 flex flex-col gap-6 px-24 xl:gap-8 xl:px-32 xl:pb-8">
           <h1 className="flex w-full flex-col text-5xl">Algorithm Settings</h1>
-          <div className="flex flex-col gap-4 text-lg">
+          <div className="flex flex-col gap-4 text-lg xl:gap-8">
             <div className="flex items-center justify-between">
               <p>Automatically choose number of clusters</p>
               <Toggle

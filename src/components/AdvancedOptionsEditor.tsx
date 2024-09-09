@@ -112,33 +112,29 @@ const AdvancedOptionsEditor = ({
               />
             </div>
           </div>
-          <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between">
+            <p>Agglomerative Clustering Post-KMeans</p>
+            <Toggle
+              initialState={isAgglomerativeClusteringEnabled}
+              onToggle={setIsAgglomerativeClusteringEnabled}
+            />
+          </div>
+          <div
+            className={`flex flex-col gap-1 pl-4 ${!isAgglomerativeClusteringEnabled && "text-gray-400"}`}
+          >
             <div className="flex items-center justify-between">
-              <p>Agglomerative Clustering Post-KMeans</p>
-              <Toggle
-                initialState={isAgglomerativeClusteringEnabled}
-                onToggle={setIsAgglomerativeClusteringEnabled}
+              <label htmlFor="similarityThreshold">
+                <p>Similarity threshold for merging clusters</p>
+              </label>
+              <input
+                type="number"
+                id="similarityThreshold"
+                step={0.01}
+                value={similarityThreshold || ""}
+                onChange={(e) => setSimilarityThreshold(e.target.valueAsNumber)}
+                className="w-20 rounded-md border border-gray-300 p-2 text-center focus:outline-none focus:ring focus:ring-primaryColor focus:ring-opacity-50 dark:bg-backgroundColor"
+                disabled={!isAgglomerativeClusteringEnabled}
               />
-            </div>
-            <div
-              className={`flex flex-col gap-1 pl-4 ${!isAgglomerativeClusteringEnabled && "text-gray-400"}`}
-            >
-              <div className="flex items-center justify-between">
-                <label htmlFor="similarityThreshold">
-                  <p>Similarity threshold for merging clusters</p>
-                </label>
-                <input
-                  type="number"
-                  id="similarityThreshold"
-                  step={0.01}
-                  value={similarityThreshold || ""}
-                  onChange={(e) =>
-                    setSimilarityThreshold(e.target.valueAsNumber)
-                  }
-                  className="w-20 rounded-md border border-gray-300 p-2 text-center focus:outline-none focus:ring focus:ring-primaryColor focus:ring-opacity-50 dark:bg-backgroundColor"
-                  disabled={!isAgglomerativeClusteringEnabled}
-                />
-              </div>
             </div>
           </div>
           <div className="flex items-center justify-between">

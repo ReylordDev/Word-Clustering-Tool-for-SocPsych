@@ -1,4 +1,11 @@
-import { app, BrowserWindow, ipcMain, shell, nativeTheme } from "electron";
+import {
+  app,
+  BrowserWindow,
+  ipcMain,
+  shell,
+  nativeTheme,
+  screen,
+} from "electron";
 import { ChildProcess, spawn } from "child_process";
 import log from "electron-log/main";
 import squirrel from "electron-squirrel-startup";
@@ -228,9 +235,25 @@ const startScript = async (
 
 const createMainWindow = () => {
   console.log("Creating main window");
+  const display = screen.getPrimaryDisplay();
+  const { width: workAreaWidth, height: workAreaHeight } = display.workAreaSize;
+  let width: number;
+  let height: number;
+
+  if (workAreaWidth > 1920) {
+    width = 1920;
+    height = 1080;
+  } else if (workAreaWidth > 1366) {
+    width = 1366;
+    height = 768;
+  } else {
+    width = 1024;
+    height = 640;
+  }
+
   const mainWindow = new BrowserWindow({
-    height: 640,
-    width: 1024,
+    height: height,
+    width: width,
     titleBarStyle: "hidden",
     titleBarOverlay: {
       color: nativeTheme.shouldUseDarkColors

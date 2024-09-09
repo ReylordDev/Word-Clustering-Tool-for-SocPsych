@@ -82,7 +82,7 @@ export default function FilePreviewPage({
       <TitleBar index={1} resetState={resetState} />
       <div
         id="mainContent"
-        className="dark:dark flex flex-col justify-start gap-4 bg-backgroundColor px-24 pt-8 text-textColor"
+        className="dark:dark flex flex-col justify-start gap-4 bg-backgroundColor px-24 pt-8 text-textColor xl:gap-8 xl:px-32 xl:pb-8"
       >
         <h1 className="flex w-full flex-col text-5xl">File Preview</h1>
         <div className="flex flex-col gap-2 border-b pb-4">

@@ -3,7 +3,7 @@ import { TitleBar } from "./TitleBar";
 import { Database, FileText, FileSearch, Upload } from "lucide-react";
 import Button from "./Button";
 import PreviousResultModal from "./PreviousResultModal";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Args, FileSettings } from "../models";
 
 function FileSelector({ selectFile }: { selectFile: (path: string) => void }) {
@@ -49,7 +49,7 @@ function FileSelector({ selectFile }: { selectFile: (path: string) => void }) {
 
   return (
     <div
-      className="flex h-full w-fit flex-col items-center justify-center gap-4 rounded-3xl border-4 border-dashed border-accentColor"
+      className="flex h-full w-fit flex-col items-center justify-center gap-4 rounded-3xl border-4 border-dashed border-accentColor 2xl:w-1/2"
       onDrop={handleDrop}
       onDragOver={handleDragOver}
     >
@@ -104,7 +104,7 @@ export default function FileSelectionPage({
       <TitleBar index={0} />
       <div
         id="mainContent"
-        className="dark:dark flex flex-col bg-backgroundColor px-24 pt-8 text-textColor"
+        className="dark:dark flex flex-col bg-backgroundColor px-24 pt-8 text-textColor xl:px-32 xl:pb-8 2xl:px-48 2xl:pb-16"
       >
         <PreviousResultModal
           isOpen={previousResultModalOpen}
@@ -120,14 +120,14 @@ export default function FileSelectionPage({
           </h1>
           <p>Analyze your open-ended survey responses with ease.</p>
         </div>
-        <div className="mb-8 flex h-full items-center justify-between">
+        <div className="mb-8 flex h-full items-center justify-between 2xl:p-16">
           <FileSelector
             selectFile={(path: string) => {
               setFilePath(path);
               navigate("/file_preview");
             }}
           />
-          <div className="flex h-full flex-col items-center justify-between gap-8 p-4 text-center">
+          <div className="flex h-full flex-col items-center justify-between gap-8 p-4 text-center 2xl:p-12">
             <div className="flex flex-col gap-2">
               <h5>Start by selecting an input file.</h5>
               <div className="flex flex-col items-center justify-center gap-2">

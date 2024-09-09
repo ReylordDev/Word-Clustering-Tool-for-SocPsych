@@ -30,10 +30,12 @@ const IndeterminateLoadingBar = () => {
   }, []);
 
   return (
-    <div className={`bg-primary-300 h-1 w-full overflow-hidden rounded-full`}>
+    <div
+      className={`h-1 w-full overflow-hidden rounded-full bg-primary-100 xl:h-2`}
+    >
       <div
         ref={foregroundRef}
-        className={"bg-primaryColor z-20 h-full rounded-full"}
+        className={"z-20 h-full rounded-full bg-primaryColor"}
         style={{
           width: "50%", // Width of the moving bar
         }}

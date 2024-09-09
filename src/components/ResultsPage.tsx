@@ -187,7 +187,7 @@ export default function ResultsPage({
         <TitleBar index={4} />
         <div
           id="mainContent"
-          className="dark:dark flex flex-col items-center justify-start gap-4 bg-backgroundColor px-24"
+          className="dark:dark flex flex-col items-center justify-start gap-4 bg-backgroundColor px-24 xl:gap-8 xl:px-32 xl:pb-8"
         >
           <div className="mt-24 flex w-full justify-center p-8">
             <h1 className="text-4xl">No Run Selected</h1>
@@ -204,7 +204,7 @@ export default function ResultsPage({
       <TitleBar index={4} />
       <div
         id="mainContent"
-        className="dark:dark flex flex-col bg-backgroundColor px-24 pt-6 text-textColor"
+        className="dark:dark flex flex-col bg-backgroundColor px-24 pt-6 text-textColor xl:gap-8 xl:px-32 xl:pb-8"
       >
         <ClusterAssignmentModal
           path={`${resultsDir}/cluster_assignments.csv`}
@@ -296,7 +296,7 @@ export default function ResultsPage({
             </div>
           </div>
           <div className="mt-4 flex justify-between">
-            <div className="flex w-1/2 flex-col items-center justify-start gap-8">
+            <div className="flex w-1/2 flex-col items-center justify-start gap-8 xl:gap-12">
               {/* I think the extra dir button is a bit unnecessary. */}
               {/* <Button
                 onClick={() =>
@@ -355,7 +355,7 @@ export default function ResultsPage({
                 modalOpen={anyModalOpen}
               />
             </div>
-            <div className="flex w-2/3 flex-col items-center justify-start gap-8">
+            <div className="flex w-2/3 flex-col items-center justify-start gap-8 xl:gap-12">
               <ExpandableButton
                 text="Start a new run"
                 option1="Change the algorithm settings"
