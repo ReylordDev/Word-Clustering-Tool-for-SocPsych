@@ -64,6 +64,8 @@ export default function FilePreviewPage({
     setSelectedColumns([]);
   };
 
+  console.log("Selected columns: ", selectedColumns);
+
   if (!filePath) {
     return (
       <>
@@ -118,9 +120,24 @@ export default function FilePreviewPage({
           </div>
         </div>
         <div className="flex flex-col gap-2">
-          <p className="text-gray-500">
-            Select all columns that contain responses to open-ended questions:
-          </p>
+          <div className="flex items-center justify-between">
+            <p>
+              Select all columns that contain responses to open-ended questions:
+            </p>
+            <div>
+              <Button
+                onClick={() => {
+                  setSelectedColumns(
+                    selectedColumns.length === 0
+                      ? [...Array(headers.length).keys()]
+                      : [],
+                  );
+                }}
+                text="Toggle all"
+                className="rounded-md"
+              />
+            </div>
+          </div>
           <div className="scrollbar overflow-x-auto">
             <table className="w-full overflow-hidden">
               <thead>
@@ -135,7 +152,7 @@ export default function FilePreviewPage({
                           key={index}
                           onChange={() => toggleColumn(index)}
                           title={header}
-                          initialState={selectedColumns.includes(index)}
+                          isOn={selectedColumns.includes(index)}
                         />
                       </th>
                     ))}

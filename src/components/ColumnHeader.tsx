@@ -1,28 +1,20 @@
-import { useState } from "react";
 import { Square, Check } from "lucide-react";
 
 const ColumnHeader = ({
-  initialState,
-  onChange,
+  isOn,
   title,
+  onChange,
 }: {
-  initialState: boolean;
-  onChange: (isOn: boolean) => void;
+  isOn: boolean;
   title: string;
+  onChange: (isOn: boolean) => void;
 }) => {
-  const [isOn, setIsOn] = useState(initialState);
-
-  const toggleCheckbox = () => {
-    setIsOn(!isOn);
-    onChange(!isOn);
-  };
-
   return (
     <div
       className={`flex cursor-pointer items-center justify-center gap-2 rounded-md p-2 ${
         isOn ? "bg-accentColor text-backgroundColor" : "hover:bg-accent-200"
       }`}
-      onClick={toggleCheckbox}
+      onClick={() => onChange(!isOn)}
     >
       <Check size={16} className={`text-background ${isOn ? "" : "hidden"}`} />
       <Square size={16} className={`text-text ${isOn ? "hidden" : ""}`} />
@@ -30,7 +22,7 @@ const ColumnHeader = ({
       <input
         type="checkbox"
         checked={isOn}
-        onChange={toggleCheckbox}
+        onChange={() => onChange(!isOn)}
         className="hidden"
       ></input>
     </div>
