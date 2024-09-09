@@ -168,6 +168,7 @@ const startScript = async (
     `Executing Command: ${executablePath} ${pythonArguments.map((arg) => `"${arg}"`).join(" ")}`,
   );
 
+  mainWindow.setProgressBar(1);
   return new Promise<void>((resolve, reject) => {
     script = spawn(executablePath, pythonArguments, {
       cwd: rootDir,
@@ -228,6 +229,7 @@ const startScript = async (
     });
 
     script.on("close", (code: number) => {
+      mainWindow.setProgressBar(-1);
       console.log(`Python process exited with code ${code}`);
     });
   });
@@ -282,7 +284,7 @@ const createMainWindow = () => {
 app.on("ready", async () => {
   nativeTheme.themeSource = "light";
   console.log("App is ready");
-  const mainWindow = createMainWindow();
+  mainWindow = createMainWindow();
 
   ipcMain.handle("python:readFile", async (event, path: string) => {
     return new Promise<string>((resolve, reject) => {
