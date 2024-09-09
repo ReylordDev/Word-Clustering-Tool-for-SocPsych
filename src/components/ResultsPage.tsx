@@ -133,6 +133,11 @@ export default function ResultsPage({
   const [mergedClustersModalOpen, setMergedClustersModalOpen] = useState(false);
 
   const navigate = useNavigate();
+  const anyModalOpen =
+    outliersModalOpen ||
+    mergedClustersModalOpen ||
+    clusterSimilarityModalOpen ||
+    clusterAssignmentsModalOpen;
 
   useEffect(() => {
     window.python
@@ -335,6 +340,7 @@ export default function ResultsPage({
                 !args.algorithmSettings.advancedOptions.nearestNeighbors ||
                 !args.algorithmSettings.advancedOptions.zScoreThreshold
               }
+              modalOpen={anyModalOpen}
             />
             <Button
               onClick={() => setMergedClustersModalOpen(true)}
@@ -344,6 +350,7 @@ export default function ResultsPage({
               disabled={
                 !args.algorithmSettings.advancedOptions.similarityThreshold
               }
+              modalOpen={anyModalOpen}
             />
             <TotalTimeDropdown path={`${resultsDir}/timestamps.json`} />
             <ExpandableButton

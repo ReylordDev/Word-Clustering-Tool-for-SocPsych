@@ -37,7 +37,10 @@ const PreviousResultModal = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4">
+    <div
+      id="modal"
+      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4"
+    >
       <div className="max-h-[75vh] w-full max-w-4xl rounded-lg bg-backgroundColor shadow-xl">
         <div className="flex items-center justify-between border-b p-6 pb-4">
           <h2 className="text-3xl font-semibold">Select Previous Result</h2>

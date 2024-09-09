@@ -42,6 +42,7 @@ export default function AlgorithmSettingsPage({
   const [isAdvancedOptionsEditorOpen, setIsAdvancedOptionsEditorOpen] =
     useState(false);
   const navigate = useNavigate();
+  const anyModalOpen = isExcludedWordsEditorOpen || isAdvancedOptionsEditorOpen;
 
   const submitAlgorithmSettings = () => {
     console.log("Submitting settings...");
@@ -210,6 +211,7 @@ export default function AlgorithmSettingsPage({
                 (autoChooseClusters && !maxClusters) ||
                 (!autoChooseClusters && !clusterCount)
               }
+              modalOpen={anyModalOpen}
             ></Button>
           </div>
         </div>
