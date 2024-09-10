@@ -66,13 +66,16 @@ function FileSelector({ selectFile }: { selectFile: (path: string) => void }) {
 }
 
 export default function FileSelectionPage({
-  filePath,
   setFilePath,
   setFileSettings,
+  tutorialState,
 }: {
-  filePath: string | null;
   setFilePath: (path: string) => void;
   setFileSettings: (fileSettings: FileSettings) => void;
+  tutorialState: {
+    tutorialMode: boolean;
+    setTutorialMode: (mode: boolean) => void;
+  };
 }) {
   const [previousResultModalOpen, setPreviousResultModalOpen] = useState(false);
   const navigate = useNavigate();
@@ -101,7 +104,7 @@ export default function FileSelectionPage({
 
   return (
     <>
-      <TitleBar index={0} />
+      <TitleBar index={0} tutorialState={tutorialState} />
       <div
         id="mainContent"
         className="dark:dark flex flex-col bg-backgroundColor px-24 pt-8 text-textColor xl:px-32 xl:pb-8 2xl:px-48 2xl:pb-16"

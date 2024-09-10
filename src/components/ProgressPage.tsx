@@ -20,8 +20,13 @@ const progression_messages: { [key: string]: string } = {
 
 export default function ProgressPage({
   startTime,
+  tutorialState,
 }: {
   startTime: number | null;
+  tutorialState: {
+    tutorialMode: boolean;
+    setTutorialMode: (mode: boolean) => void;
+  };
 }) {
   const [complete, setComplete] = useState(false);
   const [timeElapsed, setTimeElapsed] = useState<number>(0);
@@ -83,7 +88,7 @@ export default function ProgressPage({
   if (!startTime) {
     return (
       <>
-        <TitleBar index={3} />
+        <TitleBar index={3} tutorialState={tutorialState} />
         <div
           id="mainContent"
           className="dark:dark flex flex-col items-center justify-start gap-4 bg-backgroundColor px-24"
@@ -98,7 +103,7 @@ export default function ProgressPage({
 
   return (
     <>
-      <TitleBar index={3} />
+      <TitleBar index={3} tutorialState={tutorialState} />
       <div
         id="mainContent"
         className="dark:dark flex flex-col items-center justify-start gap-12 bg-backgroundColor px-24 text-textColor"

@@ -15,6 +15,7 @@ export default function FilePreviewPage({
   setDelimiter,
   selectedColumns,
   setSelectedColumns,
+  tutorialState,
 }: {
   filePath: string | null;
   hasHeader: boolean;
@@ -23,6 +24,10 @@ export default function FilePreviewPage({
   setDelimiter: (delimiter: string) => void;
   selectedColumns: number[];
   setSelectedColumns: (selectedColumns: number[]) => void;
+  tutorialState: {
+    tutorialMode: boolean;
+    setTutorialMode: (mode: boolean) => void;
+  };
 }) {
   const [previewData, setPreviewData] = useState<string[][]>([]);
 
@@ -69,7 +74,7 @@ export default function FilePreviewPage({
   if (!filePath) {
     return (
       <>
-        <TitleBar index={1} />
+        <TitleBar index={1} tutorialState={tutorialState} />
         <div
           id="mainContent"
           className="dark:dark flex flex-col items-center justify-start gap-4 bg-backgroundColor px-24"
@@ -86,7 +91,11 @@ export default function FilePreviewPage({
 
   return (
     <>
-      <TitleBar index={1} resetState={resetState} />
+      <TitleBar
+        index={1}
+        resetState={resetState}
+        tutorialState={tutorialState}
+      />
       <div
         id="mainContent"
         className="dark:dark flex flex-col justify-start gap-4 bg-backgroundColor px-24 pt-8 text-textColor xl:gap-8 xl:px-32 xl:pb-8"

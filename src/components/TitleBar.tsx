@@ -15,9 +15,13 @@ const routes = [
 function SettingsModal({
   isOpen,
   setIsOpen,
+  tutorialMode,
+  setTutorialMode,
 }: {
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
+  tutorialMode: boolean;
+  setTutorialMode: (state: boolean) => void;
 }) {
   const [dark, setDark] = useState(false);
 
@@ -41,6 +45,20 @@ function SettingsModal({
           </button>
         </div>
         <div className="flex flex-col gap-8 p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-2">
+              <h3 className="text-xl font-semibold">Toggle tutorial mode</h3>
+              <p>Whether you want additonal explanations.</p>
+            </div>
+            <div className="flex items-center gap-4">
+              <Toggle
+                onToggle={(state) => {
+                  setTutorialMode(state);
+                }}
+                initialState={tutorialMode}
+              />
+            </div>
+          </div>
           <div className="flex items-center justify-between">
             <div className="flex flex-col gap-2">
               <h3 className="text-xl font-semibold">Toggle dark mode</h3>
@@ -80,19 +98,29 @@ function SettingsModal({
 export function TitleBar({
   index,
   resetState,
+  tutorialState,
 }: {
   index: number;
   resetState?: () => void;
+  tutorialState: {
+    tutorialMode: boolean;
+    setTutorialMode: (state: boolean) => void;
+  };
 }) {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const enableSettings = false;
+  const enableSettings = true;
 
   return (
     <div
       id="titleBarContainer"
       className="dark:dark absolute z-30 w-full bg-backgroundColor text-textColor"
     >
-      <SettingsModal isOpen={isSettingsOpen} setIsOpen={setIsSettingsOpen} />
+      <SettingsModal
+        isOpen={isSettingsOpen}
+        setIsOpen={setIsSettingsOpen}
+        tutorialMode={tutorialState.tutorialMode}
+        setTutorialMode={tutorialState.setTutorialMode}
+      />
       <div
         id="titleBar"
         className="draggable absolute top-0 flex h-full select-none items-center justify-between border-accentColor pl-8"

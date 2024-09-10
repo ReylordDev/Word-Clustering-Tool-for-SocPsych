@@ -22,6 +22,7 @@ export default function AlgorithmSettingsPage({
   advancedOptions,
   setAdvancedOptions,
   startClustering,
+  tutorialState,
 }: {
   autoChooseClusters: boolean;
   setAutoChooseClusters: (autoChooseClusters: boolean) => void;
@@ -36,6 +37,10 @@ export default function AlgorithmSettingsPage({
   advancedOptions: AdvancedOptions;
   setAdvancedOptions: (advancedOptions: AdvancedOptions) => void;
   startClustering: () => void;
+  tutorialState: {
+    tutorialMode: boolean;
+    setTutorialMode: (mode: boolean) => void;
+  };
 }) {
   const [isExcludedWordsEditorOpen, setIsExcludedWordsEditorOpen] =
     useState(false);
@@ -83,7 +88,11 @@ export default function AlgorithmSettingsPage({
 
   return (
     <>
-      <TitleBar index={2} resetState={resetState} />
+      <TitleBar
+        index={2}
+        resetState={resetState}
+        tutorialState={tutorialState}
+      />
       <div
         id="mainContent"
         className="dark:dark bg-backgroundColor text-textColor"

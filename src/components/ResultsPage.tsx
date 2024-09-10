@@ -115,8 +115,13 @@ const isValidFileName = (name: string) => {
 
 export default function ResultsPage({
   resetFileSettings,
+  tutorialState,
 }: {
   resetFileSettings: () => void;
+  tutorialState: {
+    tutorialMode: boolean;
+    setTutorialMode: (mode: boolean) => void;
+  };
 }) {
   const [resultsDir, setResultsDir] = useState<string | undefined>(undefined);
   const [runName, setRunName] = useState<string | undefined>(undefined);
@@ -184,7 +189,7 @@ export default function ResultsPage({
   if (!args || !resultsDir) {
     return (
       <>
-        <TitleBar index={4} />
+        <TitleBar index={4} tutorialState={tutorialState} />
         <div
           id="mainContent"
           className="dark:dark flex flex-col items-center justify-start gap-4 bg-backgroundColor px-24 xl:gap-8 xl:px-32 xl:pb-8"
@@ -201,7 +206,7 @@ export default function ResultsPage({
 
   return (
     <>
-      <TitleBar index={4} />
+      <TitleBar index={4} tutorialState={tutorialState} />
       <div
         id="mainContent"
         className="dark:dark flex flex-col bg-backgroundColor px-24 pt-6 text-textColor xl:gap-8 xl:px-32 xl:pb-8"

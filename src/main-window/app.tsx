@@ -31,6 +31,7 @@ export default function App() {
     languageModel: "BAAI/bge-large-en-v1.5",
   });
   const [startTime, setStartTime] = useState<number | null>(null);
+  const [tutorialMode, setTutorialMode] = useState(false);
 
   const setFileSettings = (fileSettings: FileSettings) => {
     setFilePath(fileSettings.path);
@@ -80,9 +81,9 @@ export default function App() {
           path="/"
           element={
             <FileSelectionPage
-              filePath={filePath}
               setFilePath={setFilePath}
               setFileSettings={setFileSettings}
+              tutorialState={{ tutorialMode, setTutorialMode }}
             />
           }
         />
@@ -97,6 +98,7 @@ export default function App() {
               setDelimiter={setDelimiter}
               selectedColumns={selectedColumns}
               setSelectedColumns={setSelectedColumns}
+              tutorialState={{ tutorialMode, setTutorialMode }}
             />
           }
         />
@@ -117,16 +119,27 @@ export default function App() {
               advancedOptions={advancedOptions}
               setAdvancedOptions={setAdvancedOptions}
               startClustering={startClustering}
+              tutorialState={{ tutorialMode, setTutorialMode }}
             />
           }
         />
         <Route
           path="/progress"
-          element={<ProgressPage startTime={startTime} />}
+          element={
+            <ProgressPage
+              startTime={startTime}
+              tutorialState={{ tutorialMode, setTutorialMode }}
+            />
+          }
         />
         <Route
           path="/results"
-          element={<ResultsPage resetFileSettings={resetFileSettings} />}
+          element={
+            <ResultsPage
+              resetFileSettings={resetFileSettings}
+              tutorialState={{ tutorialMode, setTutorialMode }}
+            />
+          }
         />
       </Routes>
     </Router>
