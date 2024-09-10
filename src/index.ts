@@ -366,7 +366,11 @@ app.on("ready", async () => {
   });
 
   ipcMain.handle("python:getExampleFilePath", () => {
-    return path.join(rootDir, "example_data", "example.csv");
+    if (isDev()) {
+      return path.join(rootDir, "example_data", "example.csv");
+    } else {
+      return path.join(rootDir, "resources", "example_data", "example.csv");
+    }
   });
 
   ipcMain.handle("python:getResultsDir", () => {
