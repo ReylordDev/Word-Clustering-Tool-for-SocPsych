@@ -56,6 +56,7 @@
   "license": "MIT",
   "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610",
   "dependencies": {
+    "@floating-ui/react": "^0.26.23",
     "electron-log": "^5.1.7",
     "electron-squirrel-startup": "^1.0.1",
     "lucide-react": "^0.435.0",

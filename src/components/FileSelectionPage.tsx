@@ -1,10 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import { TitleBar } from "./TitleBar";
-import { Database, FileText, FileSearch, Upload } from "lucide-react";
+import { Database, FileText, FileSearch, Upload, Info } from "lucide-react";
 import Button from "./Button";
 import PreviousResultModal from "./PreviousResultModal";
 import { useState } from "react";
 import { Args, FileSettings } from "../models";
+import { Tooltip, TooltipTrigger, TooltipContent } from "./Tooltip";
 
 function FileSelector({ selectFile }: { selectFile: (path: string) => void }) {
   const checkFiles = (files: FileList | null) => {
@@ -148,12 +149,30 @@ export default function FileSelectionPage({
             </div>
             <div className="flex flex-col items-center gap-2">
               <p>Or you could review a previous result</p>
-              <Button
-                primary={false}
-                leftIcon={<Database size={24} />}
-                text="Review Previous Result"
-                onClick={() => setPreviousResultModalOpen(true)}
-              />
+              <Tooltip placement="bottom">
+                <TooltipTrigger asChild>
+                  <div>
+                    <Button
+                      primary={false}
+                      leftIcon={<Database size={24} />}
+                      text="Review Previous Result"
+                      onClick={() => setPreviousResultModalOpen(true)}
+                    />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <div className="z-10 flex w-96 flex-col items-start justify-start gap-1 rounded-lg border-2 border-accentColor bg-backgroundColor p-4">
+                    <div className="w-full text-accentColor">
+                      <Info className="shrink-0" size={24} />
+                    </div>
+                    <p className="text-left">
+                      Reviewing a previous result will load the settings from
+                      the previous run.<br></br>This is especially useful if you
+                      want to fine-tune the settings or compare the results.
+                    </p>
+                  </div>
+                </TooltipContent>
+              </Tooltip>
             </div>
           </div>
         </div>
