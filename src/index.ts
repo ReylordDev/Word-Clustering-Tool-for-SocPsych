@@ -254,8 +254,11 @@ const createMainWindow = () => {
   }
 
   const mainWindow = new BrowserWindow({
-    height: height,
-    width: width,
+    // TODO: Undo this change before merging.
+    // height: height,
+    // width: width,
+    width: 1024,
+    height: 640,
     titleBarStyle: "hidden",
     titleBarOverlay: {
       color: nativeTheme.shouldUseDarkColors

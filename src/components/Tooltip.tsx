@@ -13,6 +13,7 @@ import {
   FloatingPortal,
 } from "@floating-ui/react";
 import type { Placement } from "@floating-ui/react";
+import { Info } from "lucide-react";
 import {
   cloneElement,
   createContext,
@@ -165,3 +166,23 @@ export const TooltipContent = forwardRef<
     </FloatingPortal>
   );
 });
+
+export function TooltipContentContainer({
+  children,
+  tutorialMode,
+}: {
+  children: React.ReactNode;
+  tutorialMode: boolean;
+}) {
+  if (!tutorialMode) {
+    return null;
+  }
+  return (
+    <div className="z-50 flex w-96 flex-col items-start justify-start gap-1 rounded-lg border-2 border-accentColor bg-backgroundColor p-4">
+      <div className="w-full text-accentColor">
+        <Info className="shrink-0" size={24} />
+      </div>
+      {children}
+    </div>
+  );
+}

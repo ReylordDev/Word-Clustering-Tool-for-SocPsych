@@ -5,9 +5,23 @@ import Button from "./Button";
 import PreviousResultModal from "./PreviousResultModal";
 import { useState } from "react";
 import { Args, FileSettings } from "../models";
-import { Tooltip, TooltipTrigger, TooltipContent } from "./Tooltip";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipContentContainer,
+} from "./Tooltip";
 
-function FileSelector({ selectFile }: { selectFile: (path: string) => void }) {
+function FileSelector({
+  selectFile,
+  tutorialState,
+}: {
+  selectFile: (path: string) => void;
+  tutorialState: {
+    tutorialMode: boolean;
+    setTutorialMode: (mode: boolean) => void;
+  };
+}) {
   const checkFiles = (files: FileList | null) => {
     if (files) {
       const file = files[0];
@@ -54,10 +68,26 @@ function FileSelector({ selectFile }: { selectFile: (path: string) => void }) {
       onDrop={handleDrop}
       onDragOver={handleDragOver}
     >
-      <div className="flex flex-col items-center justify-start gap-2 p-4">
-        <Upload size={48} className="text-primaryColor" />
-        <p className="w-full text-nowrap">Drag and drop your CSV file here</p>
-      </div>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div className="flex flex-col items-center justify-start gap-2 p-4">
+            <Upload size={48} className="text-primaryColor" />
+            <p className="w-full text-nowrap">
+              Drag and drop your CSV file here
+            </p>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent>
+          <TooltipContentContainer tutorialMode={tutorialState.tutorialMode}>
+            <p className="text-left">
+              The program requires comma-separated values (CSV) files as input.
+              <br></br>
+              Most survey or statisics tools provide an option to export the
+              data as a CSV file.
+            </p>
+          </TooltipContentContainer>
+        </TooltipContent>
+      </Tooltip>
       <div className="flex items-center justify-center gap-2">
         <p>or</p>
         <BrowseButton />
@@ -117,15 +147,23 @@ export default function FileSelectionPage({
         />
         <div className="mb-8 flex w-full flex-col gap-2">
           <h1 className="text-5xl">
-            <span className="text-accentColor">Word</span>{" "}
-            <span className="font-bold text-primaryColor">Clustering</span>
+            <span className="text-accentColor">Word Clustering</span>
+            {/* <span className="text-accentColor">Word</span>{" "}
+            <span className="font-bold text-primaryColor">Clustering</span> */}
+            {/* <span className="bg-gradient-to-r from-primaryColor via-accentColor to-secondaryColor bg-clip-text text-transparent">
+              Word Clustering
+            </span> */}
             <br></br>
-            based on LLM <span className="text-accentColor">Embeddings</span>
+            based on{" "}
+            <span className="bg-gradient-to-r from-primaryColor to-secondaryColor bg-clip-text text-transparent">
+              LLM Embeddings
+            </span>
           </h1>
           <p>Analyze your open-ended survey responses with ease.</p>
         </div>
         <div className="mb-8 flex h-full items-center justify-between 2xl:p-16">
           <FileSelector
+            tutorialState={tutorialState}
             selectFile={(path: string) => {
               setFilePath(path);
               navigate("/file_preview");
@@ -139,12 +177,29 @@ export default function FileSelectionPage({
                   You can also start with the example file if you just want to
                   try the application out.
                 </p>
-                <Button
-                  onClick={submitExampleFile}
-                  primary={false}
-                  leftIcon={<FileText size={24} />}
-                  text="Select Example File"
-                />
+                <Tooltip placement="bottom">
+                  <TooltipTrigger asChild>
+                    <div>
+                      <Button
+                        onClick={submitExampleFile}
+                        primary={false}
+                        leftIcon={<FileText size={24} />}
+                        text="Select Example File"
+                      />
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <TooltipContentContainer
+                      tutorialMode={tutorialState.tutorialMode}
+                    >
+                      <p className="text-left">
+                        The example file contains the response data of a study
+                        regarding self-generated motives of social casino
+                        gamers.
+                      </p>
+                    </TooltipContentContainer>
+                  </TooltipContent>
+                </Tooltip>
               </div>
             </div>
             <div className="flex flex-col items-center gap-2">
@@ -161,16 +216,15 @@ export default function FileSelectionPage({
                   </div>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <div className="z-10 flex w-96 flex-col items-start justify-start gap-1 rounded-lg border-2 border-accentColor bg-backgroundColor p-4">
-                    <div className="w-full text-accentColor">
-                      <Info className="shrink-0" size={24} />
-                    </div>
+                  <TooltipContentContainer
+                    tutorialMode={tutorialState.tutorialMode}
+                  >
                     <p className="text-left">
                       Reviewing a previous result will load the settings from
                       the previous run.<br></br>This is especially useful if you
                       want to fine-tune the settings or compare the results.
                     </p>
-                  </div>
+                  </TooltipContentContainer>
                 </TooltipContent>
               </Tooltip>
             </div>

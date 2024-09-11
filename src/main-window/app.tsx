@@ -31,7 +31,7 @@ export default function App() {
     languageModel: "BAAI/bge-large-en-v1.5",
   });
   const [startTime, setStartTime] = useState<number | null>(null);
-  const [tutorialMode, setTutorialMode] = useState(false);
+  const [tutorialMode, setTutorialMode] = useState(true);
 
   const setFileSettings = (fileSettings: FileSettings) => {
     setFilePath(fileSettings.path);

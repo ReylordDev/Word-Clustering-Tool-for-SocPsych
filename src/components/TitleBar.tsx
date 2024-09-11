@@ -252,7 +252,7 @@ export function TitleBar({
             </button>
           </div>
         )}
-        <div id="tutorial-mode"></div>
+        <div></div>
         {/* <div className="flex items-center gap-4">
           <button onClick={window.control.minimize}>
             <Minus size={28} />

@@ -6,6 +6,12 @@ import ColumnHeader from "./ColumnHeader";
 import Button from "./Button";
 import { ArrowRightCircle } from "lucide-react";
 import { findDelimiter, parseCSVLine } from "../utils";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipContentContainer,
+  TooltipTrigger,
+} from "./Tooltip";
 
 export default function FilePreviewPage({
   filePath,
@@ -102,37 +108,85 @@ export default function FilePreviewPage({
       >
         <h1 className="flex w-full flex-col text-5xl">File Preview</h1>
         <div className="flex flex-col gap-2 border-b pb-4">
-          <div className="flex w-full items-start justify-between">
-            <div className="flex flex-col">
-              <p>Header row</p>
-              <p className="text-wrap text-base font-normal text-gray-500">
-                Whether the first line of data already contains responses.
-              </p>
-            </div>
-            <Toggle initialState={hasHeader} onToggle={setHasHeader} />
-          </div>
-          <div className="flex items-center justify-between">
-            <label htmlFor="delimiter">
-              <div className="flex flex-col">
-                <p>Line separator</p>
-                <p className="text-base font-normal text-gray-500">
-                  Enter the character that separates each column
-                </p>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex w-full items-start justify-between">
+                <div className="flex flex-col">
+                  <p>Header row</p>
+                  <p className="text-wrap text-base font-normal text-gray-500">
+                    Whether the first line of data already contains responses.
+                  </p>
+                </div>
+                <Toggle initialState={hasHeader} onToggle={setHasHeader} />
               </div>
-            </label>
-            <input
-              id="delimiter"
-              value={delimiter || ""}
-              onChange={(e) => setDelimiter(e.target.value)}
-              className="w-20 rounded-md border border-gray-300 p-2 text-center focus:outline-none focus:ring focus:ring-primaryColor focus:ring-opacity-50 dark:bg-backgroundColor"
-            />
-          </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <TooltipContentContainer
+                tutorialMode={tutorialState.tutorialMode}
+              >
+                <p className="text-left">
+                  The header row is the first row of the file that contains the
+                  names of each column. Some CSV files may not have a header
+                  row. In that case, disable this option.
+                </p>
+              </TooltipContentContainer>
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip placement="bottom">
+            <TooltipTrigger asChild>
+              <div className="flex items-center justify-between">
+                <label htmlFor="delimiter">
+                  <div className="flex flex-col">
+                    <p>Line separator</p>
+                    <p className="text-base font-normal text-gray-500">
+                      Enter the character that separates each column
+                    </p>
+                  </div>
+                </label>
+                <input
+                  id="delimiter"
+                  value={delimiter || ""}
+                  onChange={(e) => setDelimiter(e.target.value)}
+                  className="w-20 rounded-md border border-gray-300 p-2 text-center focus:outline-none focus:ring focus:ring-primaryColor focus:ring-opacity-50 dark:bg-backgroundColor"
+                />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <TooltipContentContainer
+                tutorialMode={tutorialState.tutorialMode}
+              >
+                <p className="text-left">
+                  The line separator is the character that separates each column
+                  in the file. Common separators include commas (","), tabs
+                  ("\t"), and semicolons (";").
+                  <br></br>
+                  The application will automatically detect the separator for
+                  you based on the first few lines of the file. You should only
+                  need to change this if the preview data looks incorrect.
+                </p>
+              </TooltipContentContainer>
+            </TooltipContent>
+          </Tooltip>
         </div>
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
-            <p>
-              Select all columns that contain responses to open-ended questions:
-            </p>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <p>
+                  Select all columns that contain responses to open-ended
+                  questions:
+                </p>
+              </TooltipTrigger>
+              <TooltipContent>
+                <TooltipContentContainer
+                  tutorialMode={tutorialState.tutorialMode}
+                >
+                  <p className="text-left">
+                    Only the selected columns will be used in the analysis.
+                  </p>
+                </TooltipContentContainer>
+              </TooltipContent>
+            </Tooltip>
             <div>
               <Button
                 onClick={() => {
