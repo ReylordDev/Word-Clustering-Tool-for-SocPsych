@@ -19,7 +19,7 @@ const Toggle = ({
   return (
     <button
       className={`flex h-8 w-14 cursor-pointer items-center rounded-full p-1 ${
-        isOn ? "bg-primaryColor" : "bg-background-300"
+        isOn ? "bg-primaryColor" : "bg-background-200"
       }`}
       onClick={toggleSwitch}
     >

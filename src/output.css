@@ -1200,8 +1200,8 @@ video {
   background-color: var(--accent);
 }
 
-.bg-background-300 {
-  background-color: var(--background-300);
+.bg-background-200 {
+  background-color: var(--background-200);
 }
 
 .bg-backgroundColor {
@@ -1493,6 +1493,11 @@ video {
 .text-white {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity));
+}
+
+.text-gray-300 {
+  --tw-text-opacity: 1;
+  color: rgb(209 213 219 / var(--tw-text-opacity));
 }
 
 .line-through {

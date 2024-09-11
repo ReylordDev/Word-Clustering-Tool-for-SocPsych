@@ -1,8 +1,14 @@
-import { Settings, X, Undo } from "lucide-react";
+import { Settings, X, Undo, GraduationCap } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Toggle from "./Toggle";
 import Button from "./Button";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipContentContainer,
+} from "./Tooltip";
 
 const routes = [
   "",
@@ -128,7 +134,7 @@ export function TitleBar({
   };
 }) {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const enableSettings = true;
+  const enableSettings = false;
 
   return (
     <div
@@ -145,84 +151,96 @@ export function TitleBar({
         id="titleBar"
         className="draggable absolute top-0 flex h-full select-none items-center justify-between border-accentColor pl-8"
       >
-        <Link to={"/"} className="no-drag flex">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="size-10"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="var(--background)"
-            strokeWidth="1"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <circle
-              cx="7.2"
-              cy="14.4"
-              r="6"
-              fill={
-                index % 3 === 0
-                  ? `var(--accent)`
-                  : index % 3 === 1
-                    ? `var(--primary)`
-                    : `var(--secondary)`
-              }
-            />
-            <circle
-              cx="16.8"
-              cy="14.4"
-              r="6"
-              fill={
-                index % 3 === 0
-                  ? `var(--secondary)`
-                  : index % 3 === 1
-                    ? `var(--accent)`
-                    : `var(--primary)`
-              }
-            />
-            <circle
-              cx="12"
-              cy="7.2"
-              r="6"
-              fill={
-                index % 3 === 0
-                  ? `var(--primary)`
-                  : index % 3 === 1
-                    ? `var(--secondary)`
-                    : `var(--accent)`
-              }
-            />
-          </svg>
-        </Link>
-        <div className="flex items-center">
-          {index > 0 ? (
-            <Link
-              to={`/${routes[index - 1] === "progress" ? routes[index - 2] : routes[index - 1]}`}
-              className="no-drag rounded p-1 hover:bg-background-50"
-              onClick={resetState}
-            >
-              <Undo size={24} />
+        <Tooltip offsetValue={10}>
+          <TooltipTrigger asChild>
+            <Link to={"/"} className="no-drag flex">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="size-10"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="var(--background)"
+                strokeWidth="1"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle
+                  cx="7.2"
+                  cy="14.4"
+                  r="6"
+                  fill={
+                    index % 3 === 0
+                      ? `var(--accent)`
+                      : index % 3 === 1
+                        ? `var(--primary)`
+                        : `var(--secondary)`
+                  }
+                />
+                <circle
+                  cx="16.8"
+                  cy="14.4"
+                  r="6"
+                  fill={
+                    index % 3 === 0
+                      ? `var(--secondary)`
+                      : index % 3 === 1
+                        ? `var(--accent)`
+                        : `var(--primary)`
+                  }
+                />
+                <circle
+                  cx="12"
+                  cy="7.2"
+                  r="6"
+                  fill={
+                    index % 3 === 0
+                      ? `var(--primary)`
+                      : index % 3 === 1
+                        ? `var(--secondary)`
+                        : `var(--accent)`
+                  }
+                />
+              </svg>
             </Link>
-          ) : (
-            <div className="rounded p-1 opacity-25">
-              <Undo size={24} />
-            </div>
-          )}
-
-          {/* I'm not sure if there is any reason for having a forward arrow. */}
-          {/* {index < routes.length - 1 ? (
-            <Link
-              to={`/${routes[index + 1]}`}
-              className="no-drag rounded p-1 hover:bg-background-50"
+          </TooltipTrigger>
+          <TooltipContent>
+            <TooltipContentContainer
+              tutorialMode={tutorialState.tutorialMode}
+              small
             >
-              <ArrowRight size={24} />
-            </Link>
-          ) : (
-            <div className="rounded p-1 opacity-25">
-              <ArrowRight size={24} />
-            </div>
-          )} */}
-        </div>
+              <p className="text-left">
+                Click to return to the beginning of the process.
+              </p>
+            </TooltipContentContainer>
+          </TooltipContent>
+        </Tooltip>
+        <Tooltip offsetValue={14} placement="bottom">
+          <TooltipTrigger asChild>
+            {index > 0 ? (
+              <Link
+                to={`/${routes[index - 1] === "progress" ? routes[index - 2] : routes[index - 1]}`}
+                className="no-drag rounded p-1 hover:bg-background-50"
+                onClick={resetState}
+              >
+                <Undo size={24} />
+              </Link>
+            ) : (
+              <div className="rounded p-1 opacity-25">
+                <Undo size={24} />
+              </div>
+            )}
+          </TooltipTrigger>
+          <TooltipContent>
+            <TooltipContentContainer
+              tutorialMode={tutorialState.tutorialMode}
+              small
+            >
+              <p className="text-left">
+                Click to go back to the previous step.
+              </p>
+            </TooltipContentContainer>
+          </TooltipContent>
+        </Tooltip>
         <div className="flex">
           <div className="flex flex-col">
             <p className="px-2">File Selection</p>
@@ -265,8 +283,32 @@ export function TitleBar({
             )}
           </div>
         </div>
+        <div id="tutorial-mode" className="flex items-center">
+          <button
+            onClick={() =>
+              tutorialState.setTutorialMode(!tutorialState.tutorialMode)
+            }
+          >
+            <Tooltip offsetValue={16}>
+              <TooltipTrigger asChild>
+                <GraduationCap
+                  size={28}
+                  className={` ${tutorialState.tutorialMode ? "text-accentColor" : "text-gray-300"} `}
+                />
+              </TooltipTrigger>
+              <TooltipContent>
+                <TooltipContentContainer tutorialMode={true} small>
+                  <p className="text-left">
+                    Click to {tutorialState.tutorialMode ? "hide" : "show"}{" "}
+                    additional explanations.
+                  </p>
+                </TooltipContentContainer>
+              </TooltipContent>
+            </Tooltip>
+          </button>
+        </div>
         {enableSettings && (
-          <div id="settings" className="flex items-center gap-4">
+          <div id="settings" className="flex items-center">
             <button onClick={() => setIsSettingsOpen(true)}>
               <Settings size={28} />
             </button>

@@ -27,6 +27,7 @@ import {
 interface TooltipOptions {
   initialOpen?: boolean;
   placement?: Placement;
+  offsetValue?: number;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }
@@ -34,6 +35,7 @@ interface TooltipOptions {
 export function useTooltip({
   initialOpen = false,
   placement = "top",
+  offsetValue = 5,
   open: controlledOpen,
   onOpenChange: setControlledOpen,
 }: TooltipOptions = {}) {
@@ -48,7 +50,7 @@ export function useTooltip({
     onOpenChange: setOpen,
     whileElementsMounted: autoUpdate,
     middleware: [
-      offset(5),
+      offset(offsetValue),
       flip({
         crossAxis: placement.includes("-"),
         fallbackAxisSideDirection: "start",
@@ -170,12 +172,24 @@ export const TooltipContent = forwardRef<
 export function TooltipContentContainer({
   children,
   tutorialMode,
+  small,
 }: {
   children: React.ReactNode;
   tutorialMode: boolean;
+  small?: boolean;
 }) {
   if (!tutorialMode) {
     return null;
+  }
+  if (small) {
+    return (
+      <div className="z-50 flex items-start justify-start gap-2 rounded-lg border-2 border-accentColor bg-backgroundColor p-4">
+        <div className="text-accentColor">
+          <Info className="shrink-0" size={24} />
+        </div>
+        {children}
+      </div>
+    );
   }
   return (
     <div className="z-50 flex w-96 flex-col items-start justify-start gap-1 rounded-lg border-2 border-accentColor bg-backgroundColor p-4">

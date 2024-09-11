@@ -157,12 +157,16 @@ export default function FilePreviewPage({
               >
                 <p className="text-left">
                   The line separator is the character that separates each column
-                  in the file. Common separators include commas (","), tabs
-                  ("\t"), and semicolons (";").
+                  in the file.
+                  <br></br>
+                  Common separators include commas (","), tabs ("\t"), and
+                  semicolons (";").
                   <br></br>
                   The application will automatically detect the separator for
-                  you based on the first few lines of the file. You should only
-                  need to change this if the preview data looks incorrect.
+                  you based on the first few lines of the file.
+                  <br></br>
+                  You should only need to change this if the preview data looks
+                  incorrect.
                 </p>
               </TooltipContentContainer>
             </TooltipContent>
@@ -180,6 +184,7 @@ export default function FilePreviewPage({
               <TooltipContent>
                 <TooltipContentContainer
                   tutorialMode={tutorialState.tutorialMode}
+                  small
                 >
                   <p className="text-left">
                     Only the selected columns will be used in the analysis.

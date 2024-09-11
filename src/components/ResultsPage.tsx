@@ -286,7 +286,7 @@ export default function ResultsPage({
                   <Save className="text-secondaryColor" size={32} />
                 </button>
               ) : (
-                <Tooltip>
+                <Tooltip placement="bottom">
                   <TooltipTrigger asChild>
                     <button
                       onClick={() => {
@@ -300,6 +300,7 @@ export default function ResultsPage({
                   <TooltipContent>
                     <TooltipContentContainer
                       tutorialMode={tutorialState.tutorialMode}
+                      small
                     >
                       <p className="text-left">
                         Click to edit the name of the run.
