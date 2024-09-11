@@ -24,6 +24,12 @@ import ClusterSimilarityModal from "./ClusterSimilaritiesModal";
 import OutliersModal from "./OutliersModal";
 import MergedClustersModal from "./MergedClustersModal";
 import { useNavigate } from "react-router-dom";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipContentContainer,
+} from "./Tooltip";
 
 interface TimeStamp {
   name: string;
@@ -280,14 +286,27 @@ export default function ResultsPage({
                   <Save className="text-secondaryColor" size={32} />
                 </button>
               ) : (
-                <button
-                  onClick={() => {
-                    setEditingRunName(true);
-                    setRunNameInput(runName);
-                  }}
-                >
-                  <Pencil className="text-secondaryColor" size={32} />
-                </button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={() => {
+                        setEditingRunName(true);
+                        setRunNameInput(runName);
+                      }}
+                    >
+                      <Pencil className="text-secondaryColor" size={32} />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <TooltipContentContainer
+                      tutorialMode={tutorialState.tutorialMode}
+                    >
+                      <p className="text-left">
+                        Click to edit the name of the run.
+                      </p>
+                    </TooltipContentContainer>
+                  </TooltipContent>
+                </Tooltip>
               )}
             </div>
             {showInputError && (
@@ -318,47 +337,129 @@ export default function ResultsPage({
                 text="Results Folder"
                 className="w-2/3"
               /> */}
-              <Button
-                onClick={() =>
-                  window.python.showItemInFolder(resultsDir + "/output.csv")
-                }
-                text="Updated Input File"
-                leftIcon={<FileText />}
-                className="w-2/3"
-              />
-              <Button
-                onClick={() => setClusterAssignmentsModalOpen(true)}
-                text="Cluster Assignments"
-                leftIcon={<List />}
-                className="w-2/3"
-              />
-              <Button
-                onClick={() => setClusterSimilarityModalOpen(true)}
-                text="Cluster Similarities"
-                leftIcon={<GitCompare />}
-                className="w-2/3"
-              />
-              <Button
-                onClick={() => setOutliersModalOpen(true)}
-                text="Outliers"
-                leftIcon={<AlertTriangle />}
-                className="w-2/3"
-                disabled={
-                  !args.algorithmSettings.advancedOptions.nearestNeighbors ||
-                  !args.algorithmSettings.advancedOptions.zScoreThreshold
-                }
-                modalOpen={anyModalOpen}
-              />
-              <Button
-                onClick={() => setMergedClustersModalOpen(true)}
-                text="Merged Clusters"
-                leftIcon={<GitMerge />}
-                className="w-2/3"
-                disabled={
-                  !args.algorithmSettings.advancedOptions.similarityThreshold
-                }
-                modalOpen={anyModalOpen}
-              />
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="w-2/3">
+                    <Button
+                      onClick={() =>
+                        window.python.showItemInFolder(
+                          resultsDir + "/output.csv",
+                        )
+                      }
+                      text="Updated Input File"
+                      leftIcon={<FileText />}
+                      className="w-full"
+                    />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <TooltipContentContainer
+                    tutorialMode={tutorialState.tutorialMode}
+                  >
+                    <p className="text-left">
+                      Click to show the updated input file in the file explorer.
+                    </p>
+                  </TooltipContentContainer>
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="w-2/3">
+                    <Button
+                      onClick={() => setClusterAssignmentsModalOpen(true)}
+                      text="Cluster Assignments"
+                      leftIcon={<List />}
+                      className="w-full"
+                    />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <TooltipContentContainer
+                    tutorialMode={tutorialState.tutorialMode}
+                  >
+                    <p className="text-left">
+                      Click to view the created clusters and their assigned
+                      responses.
+                    </p>
+                  </TooltipContentContainer>
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="w-2/3">
+                    <Button
+                      onClick={() => setClusterSimilarityModalOpen(true)}
+                      text="Cluster Similarities"
+                      leftIcon={<GitCompare />}
+                      className="w-full"
+                    />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <TooltipContentContainer
+                    tutorialMode={tutorialState.tutorialMode}
+                  >
+                    <p className="text-left">
+                      Click to view the similarities between clusters.
+                    </p>
+                  </TooltipContentContainer>
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="w-2/3">
+                    <Button
+                      onClick={() => setOutliersModalOpen(true)}
+                      text="Outliers"
+                      leftIcon={<AlertTriangle />}
+                      className="w-full"
+                      disabled={
+                        !args.algorithmSettings.advancedOptions
+                          .nearestNeighbors ||
+                        !args.algorithmSettings.advancedOptions.zScoreThreshold
+                      }
+                      modalOpen={anyModalOpen}
+                    />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <TooltipContentContainer
+                    tutorialMode={tutorialState.tutorialMode}
+                  >
+                    <p className="text-left">
+                      Click to view the outliers in the data that were excluded
+                      from the clusters.
+                    </p>
+                  </TooltipContentContainer>
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="w-2/3">
+                    <Button
+                      onClick={() => setMergedClustersModalOpen(true)}
+                      text="Merged Clusters"
+                      leftIcon={<GitMerge />}
+                      className="w-full"
+                      disabled={
+                        !args.algorithmSettings.advancedOptions
+                          .similarityThreshold
+                      }
+                      modalOpen={anyModalOpen}
+                    />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <TooltipContentContainer
+                    tutorialMode={tutorialState.tutorialMode}
+                  >
+                    <p className="text-left">
+                      Click to view the clusters that were merged during the
+                      agglomerative clustering process.
+                    </p>
+                  </TooltipContentContainer>
+                </TooltipContent>
+              </Tooltip>
             </div>
             <div className="flex w-2/3 flex-col items-center justify-start gap-8 xl:gap-12">
               <ExpandableButton
