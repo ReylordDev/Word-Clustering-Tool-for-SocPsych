@@ -285,6 +285,7 @@ export function TitleBar({
         </div>
         <div id="tutorial-mode" className="flex items-center">
           <button
+            className="no-drag rounded p-1 hover:bg-background-50"
             onClick={() =>
               tutorialState.setTutorialMode(!tutorialState.tutorialMode)
             }

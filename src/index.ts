@@ -242,26 +242,25 @@ const startScript = async (
 
 const createMainWindow = () => {
   console.log("Creating main window");
-  const display = screen.getPrimaryDisplay();
-  const { width: workAreaWidth } = display.workAreaSize;
-  let width: number;
-  let height: number;
 
-  if (workAreaWidth > 1920) {
-    width = 1920;
-    height = 1080;
-  } else if (workAreaWidth > 1366) {
-    width = 1366;
-    height = 768;
-  } else {
-    width = 1024;
-    height = 640;
-  }
+  // Not sure if I want to use this.
+  // const display = screen.getPrimaryDisplay();
+  // const { width: workAreaWidth } = display.workAreaSize;
+  // let width: number;
+  // let height: number;
+
+  // if (workAreaWidth > 1920) {
+  //   width = 1920;
+  //   height = 1080;
+  // } else if (workAreaWidth > 1366) {
+  //   width = 1366;
+  //   height = 768;
+  // } else {
+  //   width = 1024;
+  //   height = 640;
+  // }
 
   const mainWindow = new BrowserWindow({
-    // TODO: Undo this change before merging.
-    // height: height,
-    // width: width,
     width: 1024,
     height: 640,
     titleBarStyle: "hidden",
