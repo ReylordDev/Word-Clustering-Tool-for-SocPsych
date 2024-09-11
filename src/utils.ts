@@ -1,4 +1,7 @@
 export function formatTime(timeInSeconds: number): string {
+  if (timeInSeconds === 0) {
+    return "<1 sec";
+  }
   const hours = Math.floor(timeInSeconds / 3600);
   const minutes = Math.floor((timeInSeconds % 3600) / 60);
   const seconds = timeInSeconds % 60;
