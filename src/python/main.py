@@ -566,7 +566,6 @@ def main(
     # find the number of clusters
     if algorithm_settings.auto_cluster_count:
         if not algorithm_settings.max_clusters:
-            # This path is technically not possible at the moment but no reason to remove it.
             max_num_clusters = len(responses_remaining) // 2
         else:
             max_num_clusters = algorithm_settings.max_clusters
@@ -668,9 +667,9 @@ def validate_args(args):
     if args.nearest_neighbors is None and args.z_score_threshold is not None:
         print("Error: --nearest_neighbors must be set if --z_score_threshold is set.")
         sys.exit(1)
-    if args.automatic_k and args.max_num_clusters is None:
-        print("Error: --max_num_clusters must be set if --automatic_k is set.")
-        sys.exit(1)
+    # if args.automatic_k and args.max_num_clusters is None:
+    #     print("Error: --max_num_clusters must be set if --automatic_k is set.")
+    #     sys.exit(1)
     if not args.automatic_k and args.cluster_count is None:
         print("Error: --cluster_count must be set if --automatic_k is not set.")
         sys.exit(1)

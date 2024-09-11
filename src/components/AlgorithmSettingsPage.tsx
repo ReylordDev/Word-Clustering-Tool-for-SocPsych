@@ -7,6 +7,12 @@ import { AdvancedOptions } from "../models";
 import Toggle from "./Toggle";
 import Button from "./Button";
 import { SquarePen, ChartScatter } from "lucide-react";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipContentContainer,
+} from "./Tooltip";
 
 export default function AlgorithmSettingsPage({
   autoChooseClusters,
@@ -53,10 +59,10 @@ export default function AlgorithmSettingsPage({
     console.log("Submitting settings...");
 
     // TODO: Validate settings
-    if (autoChooseClusters && !maxClusters) {
-      console.error("Max clusters must be set when autoChooseClusters is true");
-      return;
-    }
+    // if (autoChooseClusters && !maxClusters) {
+    //   console.error("Max clusters must be set when autoChooseClusters is true");
+    //   return;
+    // }
 
     if (!autoChooseClusters && !clusterCount) {
       console.error(
@@ -108,93 +114,184 @@ export default function AlgorithmSettingsPage({
           setIsOpen={setIsAdvancedOptionsEditorOpen}
           advancedOptions={advancedOptions}
           setAdvancedOptions={setAdvancedOptions}
+          tutorialState={tutorialState}
         />
         <div className="mt-8 flex flex-col gap-6 px-24 xl:gap-8 xl:px-32 xl:pb-8">
           <h1 className="flex w-full flex-col text-5xl">Algorithm Settings</h1>
           <div className="flex flex-col gap-4 text-lg xl:gap-8">
-            <div className="flex items-center justify-between">
-              <p>Automatically choose number of clusters</p>
-              <Toggle
-                initialState={autoChooseClusters}
-                onToggle={(isOn) => {
-                  setAutoChooseClusters(isOn);
-                  if (isOn) {
-                    setClusterCount(undefined);
-                    setMaxClusters(null);
-                  } else {
-                    setMaxClusters(undefined);
-                    setClusterCount(null);
-                  }
-                }}
-                modalOpen={anyModalOpen}
-              />
-            </div>
-            <div
-              className={`flex items-center justify-between ${!autoChooseClusters && "text-gray-400"}`}
-            >
-              <label htmlFor="maxClusterCount">
-                <p>Maximum number of clusters to consider</p>
-              </label>
-              <input
-                type="number"
-                min={1}
-                value={maxClusters || ""}
-                onChange={(e) => setMaxClusters(e.target.valueAsNumber)}
-                id="maxClusterCount"
-                className="w-24 rounded-md border border-primaryColor p-2 pl-5 focus:outline-none focus:ring focus:ring-primaryColor focus:ring-opacity-50 disabled:border-gray-300 dark:bg-backgroundColor dark:disabled:border-gray-800"
-                disabled={!autoChooseClusters}
-              />
-            </div>
-            <div
-              className={`flex items-center justify-between ${autoChooseClusters && "text-gray-400"}`}
-            >
-              <label htmlFor="clusterCount">
-                <p>Specific cluster count</p>
-              </label>
-              <input
-                type="number"
-                id="clusterCount"
-                min={1}
-                value={clusterCount || ""}
-                onChange={(e) => setClusterCount(e.target.valueAsNumber)}
-                className="w-24 rounded-md border border-primaryColor p-2 pl-5 focus:outline-none focus:ring focus:ring-primaryColor focus:ring-opacity-50 disabled:border-gray-300 dark:bg-backgroundColor dark:disabled:border-gray-800"
-                disabled={autoChooseClusters}
-              />
-            </div>
-            <div className="flex items-center justify-between">
-              <label htmlFor="seed">
-                <div className="flex flex-col">
-                  <p>Deterministic Seed</p>
-                  <p className="text-base font-normal text-gray-500">
-                    Leave empty for non-deterministic results
-                  </p>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="flex items-center justify-between">
+                  <p>Automatically choose number of clusters</p>
+                  <Toggle
+                    initialState={autoChooseClusters}
+                    onToggle={(isOn) => {
+                      setAutoChooseClusters(isOn);
+                      if (isOn) {
+                        setClusterCount(undefined);
+                        setMaxClusters(null);
+                      } else {
+                        setMaxClusters(undefined);
+                        setClusterCount(null);
+                      }
+                    }}
+                    modalOpen={anyModalOpen}
+                  />
                 </div>
-              </label>
-              <input
-                id="seed"
-                type="number"
-                value={seed || ""}
-                onChange={(e) => setSeed(parseInt(e.target.value))}
-                className="w-24 rounded-md border border-gray-300 p-2 pl-5 text-center focus:outline-none focus:ring focus:ring-primaryColor focus:ring-opacity-50 dark:bg-backgroundColor"
-              />
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex flex-col">
-                <p>
-                  Excluded Words{" "}
-                  {excludedWords.length > 0 ? `(${excludedWords.length})` : ""}
-                </p>
-                <p className="text-base font-normal text-gray-500">
-                  Disregard any responses containing these words
-                </p>
-              </div>
-              <Button
-                onClick={() => setIsExcludedWordsEditorOpen(true)}
-                primary={false}
-                leftIcon={<SquarePen size={24} />}
-                text="Edit"
-              />
-            </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <TooltipContentContainer
+                  tutorialMode={tutorialState.tutorialMode}
+                >
+                  <p className="text-left">
+                    With this setting enabled, the program will decide the
+                    number of clusters by systematically testing different
+                    cluster counts and evaluating them using internal cluster
+                    validation techniques.
+                    <br></br>
+                    This setting can increase the computation time, especially
+                    when checking a large number of clusters. Therefore, it is
+                    recommended to set a maximum number of clusters to consider.
+                  </p>
+                </TooltipContentContainer>
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div
+                  className={`flex items-center justify-between ${!autoChooseClusters && "text-gray-400"}`}
+                >
+                  <label htmlFor="maxClusterCount">
+                    <p>Maximum number of clusters to consider</p>
+                  </label>
+                  <input
+                    type="number"
+                    min={1}
+                    value={maxClusters || ""}
+                    onChange={(e) => setMaxClusters(e.target.valueAsNumber)}
+                    id="maxClusterCount"
+                    className="w-24 rounded-md border border-primaryColor p-2 pl-5 focus:outline-none focus:ring focus:ring-primaryColor focus:ring-opacity-50 disabled:border-gray-300 dark:bg-backgroundColor dark:disabled:border-gray-800"
+                    disabled={!autoChooseClusters}
+                  />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <TooltipContentContainer
+                  tutorialMode={tutorialState.tutorialMode}
+                >
+                  <p className="text-left">
+                    The maximum number of clusters to consider when
+                    automatically choosing the number of clusters.
+                    <br></br>
+                    If not set, the program will consider all possible cluster
+                    counts up to the number of data points divided by 2.
+                  </p>
+                </TooltipContentContainer>
+              </TooltipContent>
+            </Tooltip>{" "}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div
+                  className={`flex items-center justify-between ${autoChooseClusters && "text-gray-400"}`}
+                >
+                  <label htmlFor="clusterCount">
+                    <p>Specific cluster count</p>
+                  </label>
+                  <input
+                    type="number"
+                    id="clusterCount"
+                    min={1}
+                    value={clusterCount || ""}
+                    onChange={(e) => setClusterCount(e.target.valueAsNumber)}
+                    className="w-24 rounded-md border border-primaryColor p-2 pl-5 focus:outline-none focus:ring focus:ring-primaryColor focus:ring-opacity-50 disabled:border-gray-300 dark:bg-backgroundColor dark:disabled:border-gray-800"
+                    disabled={autoChooseClusters}
+                  />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <TooltipContentContainer
+                  tutorialMode={tutorialState.tutorialMode}
+                >
+                  <p className="text-left">
+                    The specific number of clusters to use when not
+                    automatically choosing the number of clusters.
+                    <br></br>
+                    This option is required when the automatic cluster count
+                    setting is disabled.
+                  </p>
+                </TooltipContentContainer>
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="flex items-center justify-between">
+                  <label htmlFor="seed">
+                    <div className="flex flex-col">
+                      <p>Deterministic Seed</p>
+                      <p className="text-base font-normal text-gray-500">
+                        Leave empty for non-deterministic results
+                      </p>
+                    </div>
+                  </label>
+                  <input
+                    id="seed"
+                    type="number"
+                    value={seed || ""}
+                    onChange={(e) => setSeed(parseInt(e.target.value))}
+                    className="w-24 rounded-md border border-gray-300 p-2 pl-5 text-center focus:outline-none focus:ring focus:ring-primaryColor focus:ring-opacity-50 dark:bg-backgroundColor"
+                  />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <TooltipContentContainer
+                  tutorialMode={tutorialState.tutorialMode}
+                >
+                  <p className="text-left">
+                    The seed to use for the random number generator. This allows
+                    for deterministic results when the same seed is used.
+                    <br></br>
+                    Leave empty for non-deterministic results.
+                  </p>
+                </TooltipContentContainer>
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="flex items-center justify-between">
+                  <div className="flex flex-col">
+                    <p>
+                      Excluded Words{" "}
+                      {excludedWords.length > 0
+                        ? `(${excludedWords.length})`
+                        : ""}
+                    </p>
+                    <p className="text-base font-normal text-gray-500">
+                      Disregard any responses containing these words
+                    </p>
+                  </div>
+                  <Button
+                    onClick={() => setIsExcludedWordsEditorOpen(true)}
+                    primary={false}
+                    leftIcon={<SquarePen size={24} />}
+                    text="Edit"
+                  />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <TooltipContentContainer
+                  tutorialMode={tutorialState.tutorialMode}
+                >
+                  <p className="text-left">
+                    The excluded words list allows you to specify words that
+                    should not be considered when clustering responses. This can
+                    be useful for removing common words or phrases that are not
+                    relevant to the clustering.
+                    <br></br>
+                    This setting is case-insensitive!
+                  </p>
+                </TooltipContentContainer>
+              </TooltipContent>
+            </Tooltip>
             <div className="flex items-center justify-between">
               <div className="flex flex-col">
                 <p>Advanced algorithm options</p>
@@ -215,10 +312,7 @@ export default function AlgorithmSettingsPage({
               leftIcon={<ChartScatter size={24} />}
               onClick={submitAlgorithmSettings}
               text="Start Clustering"
-              disabled={
-                (autoChooseClusters && !maxClusters) ||
-                (!autoChooseClusters && !clusterCount)
-              }
+              disabled={!autoChooseClusters && !clusterCount}
               modalOpen={anyModalOpen}
             ></Button>
           </div>

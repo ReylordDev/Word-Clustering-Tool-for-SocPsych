@@ -135,14 +135,19 @@ const startScript = async (
   fileSettings.selectedColumns.forEach((index) => {
     pythonArguments.push(index.toString());
   });
-  if (algorithmSettings.autoClusterCount && algorithmSettings.maxClusters) {
+  if (algorithmSettings.autoClusterCount) {
     pythonArguments.push("--automatic_k");
-    pythonArguments.push("--max_num_clusters");
-    pythonArguments.push(algorithmSettings.maxClusters.toString());
+    if (algorithmSettings.maxClusters) {
+      pythonArguments.push("--max_num_clusters");
+      pythonArguments.push(algorithmSettings.maxClusters.toString());
+    }
   } else {
     if (algorithmSettings.clusterCount) {
       pythonArguments.push("--cluster_count");
       pythonArguments.push(algorithmSettings.clusterCount.toString());
+    } else {
+      console.error("No cluster count specified");
+      return;
     }
   }
   if (algorithmSettings.seed) {
