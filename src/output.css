@@ -730,8 +730,26 @@ video {
   inset: 0px;
 }
 
+.inset-y-\[60px\] {
+  top: 60px;
+  bottom: 60px;
+}
+
+.inset-x-0 {
+  left: 0px;
+  right: 0px;
+}
+
 .top-0 {
   top: 0px;
+}
+
+.bottom-0 {
+  bottom: 0px;
+}
+
+.top-\[60px\] {
+  top: 60px;
 }
 
 .z-20 {

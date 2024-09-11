@@ -48,7 +48,7 @@ function SettingsModal({
   if (!isOpen) return null;
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4"
+      className="fixed inset-0 top-[60px] flex items-center justify-center bg-black bg-opacity-50 p-4"
       onClick={() => setIsOpen(false)}
     >
       <div
