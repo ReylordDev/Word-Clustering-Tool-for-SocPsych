@@ -48,9 +48,26 @@ export default function FilePreviewPage({
         const bestDelimiter = findDelimiter(lines);
         setDelimiter(bestDelimiter);
         const parsedData = lines
-          .slice(0, 6)
+          .slice(0, lines.length > 100 ? 100 : lines.length)
           .map((line) => parseCSVLine(line, bestDelimiter));
-        setPreviewData(parsedData); // Get first 6 rows (including header if present)
+        // Fill in missing values by copying the last non-empty value
+        const fillIndexes = Array(parsedData.length).fill(
+          parsedData.length - 1,
+        );
+        for (let i = 0; i < parsedData.length; i++) {
+          for (let j = 0; j < parsedData[i].length; j++) {
+            if (!parsedData[i][j]) {
+              for (let k = fillIndexes[j]; k >= 0; k--) {
+                if (parsedData[k][j]) {
+                  parsedData[i][j] = parsedData[k][j];
+                  fillIndexes[j] = k - 1;
+                  break;
+                }
+              }
+            }
+          }
+        }
+        setPreviewData(parsedData.slice(0, 6)); // Get first 6 rows (including header if present)
       } catch (error) {
         console.error("Error fetching preview data:", error);
       }
