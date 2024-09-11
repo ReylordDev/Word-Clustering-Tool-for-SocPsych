@@ -18,13 +18,13 @@ const Toggle = ({
 
   return (
     <button
-      className={`flex h-8 w-14 cursor-pointer items-center rounded-full p-1 ${
+      className={`z-10 flex h-8 w-14 cursor-pointer items-center rounded-full p-1 ${
         isOn ? "bg-primaryColor" : "bg-background-200"
       }`}
       onClick={toggleSwitch}
     >
       <div
-        className={`size-6 transform rounded-full ${modalOpen ? "bg-zinc-500" : "bg-backgroundColor"} shadow-md transition-transform duration-300 ease-in-out ${
+        className={`size-6 transform rounded-full bg-backgroundColor shadow-md transition-transform duration-300 ease-in-out ${
           isOn ? "translate-x-6" : ""
         }`}
       />

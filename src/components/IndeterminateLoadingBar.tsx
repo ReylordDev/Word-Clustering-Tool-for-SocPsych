@@ -35,7 +35,7 @@ const IndeterminateLoadingBar = () => {
     >
       <div
         ref={foregroundRef}
-        className={"z-20 h-full rounded-full bg-primaryColor"}
+        className={"z-40 h-full rounded-full bg-primaryColor"}
         style={{
           width: "50%", // Width of the moving bar
         }}

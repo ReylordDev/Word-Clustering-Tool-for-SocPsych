@@ -158,6 +158,7 @@ export const TooltipContent = forwardRef<
   return (
     <FloatingPortal>
       <div
+        className="z-50"
         ref={ref}
         style={{
           ...context.floatingStyles,
@@ -183,7 +184,7 @@ export function TooltipContentContainer({
   }
   if (small) {
     return (
-      <div className="z-50 flex items-start justify-start gap-2 rounded-lg border-2 border-accentColor bg-backgroundColor p-4">
+      <div className="flex items-start justify-start gap-2 rounded-lg border-2 border-accentColor bg-backgroundColor p-4">
         <div className="text-accentColor">
           <Info className="shrink-0" size={24} />
         </div>
@@ -192,7 +193,7 @@ export function TooltipContentContainer({
     );
   }
   return (
-    <div className="z-50 flex w-96 flex-col items-start justify-start gap-1 rounded-lg border-2 border-accentColor bg-backgroundColor p-4">
+    <div className="flex w-96 flex-col items-start justify-start gap-1 rounded-lg border-2 border-accentColor bg-backgroundColor p-4">
       <div className="w-full text-accentColor">
         <Info className="shrink-0" size={24} />
       </div>
