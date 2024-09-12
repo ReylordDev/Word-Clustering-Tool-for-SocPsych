@@ -327,7 +327,7 @@ function ClusterSimilarityModal({
           {showDropdown &&
             filteredClusters.length > 0 &&
             searchTerm.length > 1 && (
-              <ul className="scrollbar fixed mt-12 max-h-96 w-96 overflow-auto rounded-md border border-primaryColor bg-white shadow-lg dark:bg-zinc-900">
+              <ul className="scrollbar absolute z-20 mt-12 max-h-96 w-96 overflow-auto rounded-md border border-primaryColor bg-white shadow-lg dark:bg-zinc-900">
                 {filteredClusters.map((cluster) => (
                   <li
                     key={cluster.index}
@@ -413,7 +413,7 @@ function ClusterSimilarityModal({
           {showDropdown &&
             filteredClusters.length > 0 &&
             searchTerm.length > 1 && (
-              <ul className="scrollbar fixed z-30 mt-12 max-h-96 w-96 overflow-auto rounded-md border border-primaryColor bg-white shadow-lg dark:bg-zinc-900">
+              <ul className="scrollbar absolute z-30 mt-12 max-h-96 w-96 overflow-auto rounded-md border border-primaryColor bg-white shadow-lg dark:bg-zinc-900">
                 {filteredClusters.map((cluster) => (
                   <li
                     key={cluster.index}
