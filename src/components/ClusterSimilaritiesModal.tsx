@@ -540,7 +540,7 @@ function ClusterSimilarityModal({
             <p>Select a cluster to view details and compare similarities.</p>
           </div>
         </div>
-        <div className="scrollbar max-h-[70vh] flex-grow overflow-y-auto p-6">
+        <div className="scrollbar h-[70vh] flex-grow overflow-y-auto p-6">
           <div className="flex flex-col justify-start gap-1 px-4 pb-2">
             <h5 className="font-medium">Select a cluster:</h5>
             <MainClusterSelector />
