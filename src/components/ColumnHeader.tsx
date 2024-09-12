@@ -18,7 +18,7 @@ const ColumnHeader = ({
     >
       <Check size={16} className={`text-background ${isOn ? "" : "hidden"}`} />
       <Square size={16} className={`text-text ${isOn ? "hidden" : ""}`} />
-      <p className="select-none font-normal">{title}</p>
+      <p className="w-full select-none font-normal">{title}</p>
       <input
         type="checkbox"
         checked={isOn}

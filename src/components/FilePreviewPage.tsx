@@ -76,8 +76,11 @@ export default function FilePreviewPage({
     fetchPreviewData();
   }, [filePath, delimiter]);
 
-  const displayData = hasHeader ? previewData.slice(1) : previewData;
+  const displayData = hasHeader
+    ? previewData.slice(1)
+    : previewData.slice(0, 5);
   const headers = hasHeader ? previewData[0] : [];
+  const columnCount = displayData.length > 0 ? displayData[0].length : 0;
 
   const toggleColumn = (index: number) => {
     selectedColumns.includes(index)
@@ -93,6 +96,8 @@ export default function FilePreviewPage({
   };
 
   console.log("Selected columns: ", selectedColumns);
+  console.log("Has header: ", hasHeader);
+  console.log("Display data: ", displayData);
 
   if (!filePath) {
     return (
@@ -227,7 +232,8 @@ export default function FilePreviewPage({
             <table className="w-full overflow-hidden">
               <thead>
                 <tr>
-                  {headers &&
+                  {hasHeader &&
+                    headers &&
                     headers.map((header, index) => (
                       <th
                         key={index}
@@ -241,6 +247,22 @@ export default function FilePreviewPage({
                         />
                       </th>
                     ))}
+                  {!hasHeader &&
+                    Array(columnCount)
+                      .fill(0)
+                      .map((_, index) => (
+                        <th
+                          key={index}
+                          className="border-x border-b border-dashed border-textColor p-1"
+                        >
+                          <ColumnHeader
+                            key={index}
+                            onChange={() => toggleColumn(index)}
+                            title={`Column ${index}`}
+                            isOn={selectedColumns.includes(index)}
+                          />
+                        </th>
+                      ))}
                 </tr>
               </thead>
               <tbody>

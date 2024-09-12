@@ -738,28 +738,20 @@ video {
   top: 60px;
 }
 
-.z-20 {
-  z-index: 20;
+.z-10 {
+  z-index: 10;
 }
 
 .z-30 {
   z-index: 30;
 }
 
-.z-50 {
-  z-index: 50;
-}
-
-.z-10 {
-  z-index: 10;
-}
-
 .z-40 {
   z-index: 40;
 }
 
-.z-auto {
-  z-index: auto;
+.z-50 {
+  z-index: 50;
 }
 
 .mx-1 {
@@ -1253,11 +1245,6 @@ video {
 .bg-white {
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
-}
-
-.bg-zinc-500 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(113 113 122 / var(--tw-bg-opacity));
 }
 
 .bg-opacity-50 {
