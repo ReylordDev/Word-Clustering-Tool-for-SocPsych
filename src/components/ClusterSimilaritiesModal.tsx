@@ -345,7 +345,43 @@ function ClusterSimilarityModal({
                             key={index}
                             className="text-ellipsis text-sm text-gray-600"
                           >
-                            "{response.text}"
+                            {response.text
+                              .toLowerCase()
+                              .includes(searchTerm.toLowerCase()) ? (
+                              <>
+                                <span>
+                                  "
+                                  {response.text.slice(
+                                    0,
+                                    response.text
+                                      .toLowerCase()
+                                      .indexOf(searchTerm.toLowerCase()),
+                                  )}
+                                </span>
+                                <span className="font-bold text-primaryColor">
+                                  {response.text.slice(
+                                    response.text
+                                      .toLowerCase()
+                                      .indexOf(searchTerm.toLowerCase()),
+                                    response.text
+                                      .toLowerCase()
+                                      .indexOf(searchTerm.toLowerCase()) +
+                                      searchTerm.length,
+                                  )}
+                                </span>
+                                <span>
+                                  {response.text.slice(
+                                    response.text
+                                      .toLowerCase()
+                                      .indexOf(searchTerm.toLowerCase()) +
+                                      searchTerm.length,
+                                  )}
+                                  "
+                                </span>
+                              </>
+                            ) : (
+                              <span>"{response.text}"</span>
+                            )}
                           </li>
                         ),
                       )}
@@ -428,7 +464,43 @@ function ClusterSimilarityModal({
                             key={index}
                             className="text-ellipsis text-sm text-gray-600"
                           >
-                            "{response.text}"
+                            {response.text
+                              .toLowerCase()
+                              .includes(searchTerm.toLowerCase()) ? (
+                              <>
+                                <span>
+                                  "
+                                  {response.text.slice(
+                                    0,
+                                    response.text
+                                      .toLowerCase()
+                                      .indexOf(searchTerm.toLowerCase()),
+                                  )}
+                                </span>
+                                <span className="font-bold text-primaryColor">
+                                  {response.text.slice(
+                                    response.text
+                                      .toLowerCase()
+                                      .indexOf(searchTerm.toLowerCase()),
+                                    response.text
+                                      .toLowerCase()
+                                      .indexOf(searchTerm.toLowerCase()) +
+                                      searchTerm.length,
+                                  )}
+                                </span>
+                                <span>
+                                  {response.text.slice(
+                                    response.text
+                                      .toLowerCase()
+                                      .indexOf(searchTerm.toLowerCase()) +
+                                      searchTerm.length,
+                                  )}
+                                  "
+                                </span>
+                              </>
+                            ) : (
+                              <span>"{response.text}"</span>
+                            )}
                           </li>
                         ),
                       )}
