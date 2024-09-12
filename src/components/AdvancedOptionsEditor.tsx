@@ -16,6 +16,7 @@ const AdvancedOptionsEditor = ({
   advancedOptions,
   setAdvancedOptions,
   tutorialState,
+  setUnsavedChanges,
 }: {
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
@@ -25,6 +26,7 @@ const AdvancedOptionsEditor = ({
     tutorialMode: boolean;
     setTutorialMode: (mode: boolean) => void;
   };
+  setUnsavedChanges: (unsavedChanges: boolean) => void;
 }) => {
   const [isOutlierDetectionEnabled, setIsOutlierDetectionEnabled] = useState(
     advancedOptions.outlierDetection,
@@ -67,6 +69,7 @@ const AdvancedOptionsEditor = ({
       similarityThreshold: localSimilarityThreshold,
       languageModel,
     });
+    setUnsavedChanges(false);
     setIsOpen(false);
   };
 
@@ -111,7 +114,10 @@ const AdvancedOptionsEditor = ({
                 <p>Outlier Detection</p>
                 <Toggle
                   initialState={isOutlierDetectionEnabled}
-                  onToggle={setIsOutlierDetectionEnabled}
+                  onToggle={() => {
+                    setIsOutlierDetectionEnabled((prev) => !prev);
+                    setUnsavedChanges(true);
+                  }}
                 />
               </div>
             </TooltipTrigger>
@@ -142,9 +148,10 @@ const AdvancedOptionsEditor = ({
                     type="number"
                     id="nearestNeighbors"
                     value={nearestNeighbors || ""}
-                    onChange={(e) =>
-                      setNearestNeighbors(e.target.valueAsNumber)
-                    }
+                    onChange={(e) => {
+                      setNearestNeighbors(e.target.valueAsNumber);
+                      setUnsavedChanges(true);
+                    }}
                     className="w-20 rounded-md border border-gray-300 p-2 text-center focus:outline-none focus:ring focus:ring-primaryColor focus:ring-opacity-50 dark:bg-backgroundColor"
                     disabled={!isOutlierDetectionEnabled}
                   />
@@ -158,7 +165,10 @@ const AdvancedOptionsEditor = ({
                     step={0.1}
                     id="zScoreThreshold"
                     value={zScoreThreshold || ""}
-                    onChange={(e) => setZScoreThreshold(e.target.valueAsNumber)}
+                    onChange={(e) => {
+                      setZScoreThreshold(e.target.valueAsNumber);
+                      setUnsavedChanges(true);
+                    }}
                     className="w-20 rounded-md border border-gray-300 p-2 text-center focus:outline-none focus:ring focus:ring-primaryColor focus:ring-opacity-50 dark:bg-backgroundColor"
                     disabled={!isOutlierDetectionEnabled}
                   />
@@ -185,7 +195,10 @@ const AdvancedOptionsEditor = ({
                 <p>Agglomerative Clustering Post-KMeans</p>
                 <Toggle
                   initialState={isAgglomerativeClusteringEnabled}
-                  onToggle={setIsAgglomerativeClusteringEnabled}
+                  onToggle={() => {
+                    setIsAgglomerativeClusteringEnabled((prev) => !prev);
+                    setUnsavedChanges(true);
+                  }}
                 />
               </div>
             </TooltipTrigger>
@@ -216,7 +229,10 @@ const AdvancedOptionsEditor = ({
                 id="similarityThreshold"
                 step={0.01}
                 value={similarityThreshold || ""}
-                onChange={(e) => setSimilarityThreshold(e.target.valueAsNumber)}
+                onChange={(e) => {
+                  setSimilarityThreshold(e.target.valueAsNumber);
+                  setUnsavedChanges(true);
+                }}
                 className="w-20 rounded-md border border-gray-300 p-2 text-center focus:outline-none focus:ring focus:ring-primaryColor focus:ring-opacity-50 dark:bg-backgroundColor"
                 disabled={!isAgglomerativeClusteringEnabled}
               />
@@ -237,7 +253,10 @@ const AdvancedOptionsEditor = ({
                   type="text"
                   id="languageModel"
                   value={languageModel}
-                  onChange={(e) => setLanguageModel(e.target.value)}
+                  onChange={(e) => {
+                    setLanguageModel(e.target.value);
+                    setUnsavedChanges(true);
+                  }}
                   className="w-96 rounded-md border border-gray-300 p-2 text-center focus:outline-none focus:ring focus:ring-primaryColor focus:ring-opacity-50 dark:bg-backgroundColor"
                 />
               </div>

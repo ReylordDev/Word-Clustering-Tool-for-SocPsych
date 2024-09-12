@@ -54,6 +54,7 @@ export default function AlgorithmSettingsPage({
     useState(false);
   const navigate = useNavigate();
   const anyModalOpen = isExcludedWordsEditorOpen || isAdvancedOptionsEditorOpen;
+  const [unsavedChanges, setUnsavedChanges] = useState(false);
 
   const submitAlgorithmSettings = () => {
     console.log("Submitting settings...");
@@ -115,6 +116,7 @@ export default function AlgorithmSettingsPage({
           advancedOptions={advancedOptions}
           setAdvancedOptions={setAdvancedOptions}
           tutorialState={tutorialState}
+          setUnsavedChanges={setUnsavedChanges}
         />
         <div className="mt-8 flex flex-col gap-6 px-24 xl:gap-8 xl:px-32 xl:pb-8">
           <h1 className="flex w-full flex-col text-5xl">Algorithm Settings</h1>
@@ -294,7 +296,14 @@ export default function AlgorithmSettingsPage({
             </Tooltip>
             <div className="flex items-center justify-between">
               <div className="flex flex-col">
-                <p>Advanced algorithm options</p>
+                <div className="flex items-center gap-4">
+                  <p>Advanced algorithm options</p>
+                  {unsavedChanges && (
+                    <p className="text-base font-normal text-primaryColor">
+                      Unsaved changes
+                    </p>
+                  )}
+                </div>
                 <p className="text-base font-normal text-gray-500">
                   More granular control over the algorithm
                 </p>
