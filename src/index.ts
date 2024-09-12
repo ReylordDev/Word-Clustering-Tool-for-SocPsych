@@ -236,6 +236,11 @@ const startScript = async (
     script.on("close", (code: number) => {
       mainWindow.setProgressBar(-1);
       console.log(`Python process exited with code ${code}`);
+      if (code === 0) {
+        currentRun.status = "COMPLETED";
+      } else {
+        currentRun.status = "ERROR";
+      }
     });
   });
 };
@@ -337,8 +342,8 @@ app.on("ready", async () => {
     },
   );
 
-  ipcMain.handle("python:pollClusterProgress", () => {
-    return currentRun.progress;
+  ipcMain.handle("python:pollRunStatus", () => {
+    return currentRun;
   });
 
   ipcMain.handle("python:resetClusterProgress", () => {
@@ -396,6 +401,10 @@ app.on("ready", async () => {
     const resultsDir = path.join(outputDir, currentRun.name);
     console.log(`Opening results directory: ${resultsDir}`);
     return shell.openPath(resultsDir);
+  });
+
+  ipcMain.handle("python:getLogsPath", () => {
+    return path.join(app.getPath("logs"), "python", "main.log");
   });
 
   ipcMain.handle("python:fetchPreviousResults", async () => {
@@ -541,13 +550,14 @@ declare global {
         fileSettings: FileSettings,
         algorithmSettings: AlgorithmSettings,
       ) => Promise<void>;
-      pollClusterProgress: () => Promise<ClusterProgress>;
+      pollRunStatus: () => Promise<RunStatus>;
       resetClusterProgress: () => void;
       getRunName: () => Promise<string | undefined>;
       setRunName: (name: string) => void;
       getExampleFilePath: () => Promise<string>;
       getResultsDir: () => Promise<string>;
       openResultsDir: () => Promise<string>;
+      getLogsPath: () => Promise<string>;
       fetchPreviousResults: () => Promise<
         {
           name: string;

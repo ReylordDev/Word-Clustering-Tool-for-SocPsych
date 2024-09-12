@@ -1,9 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import { TitleBar } from "./TitleBar";
 import { useState, useEffect } from "react";
-import { Clock, Check, Square } from "lucide-react";
+import { Clock, Check, Square, TriangleAlert, FileClock } from "lucide-react";
 import { formatTime } from "../utils";
 import IndeterminateLoadingBar from "./IndeterminateLoadingBar";
+import Button from "./Button";
 
 // Potential improvement: Sync this with the python code
 const progression_messages: { [key: string]: string } = {
@@ -34,7 +35,9 @@ export default function ProgressPage({
   const [currentTask, setCurrentTask] = useState<[string, number] | null>(null);
   const [completedTasks, setCompletedTasks] = useState<[string, number][]>([]);
   const [currentTaskTimer, setCurrentTaskTimer] = useState<number>(0);
+  const [errorEncountered, setErrorEncountered] = useState(false);
   const navigate = useNavigate();
+  const [logsPath, setLogsPath] = useState<string | null>(null);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -53,10 +56,23 @@ export default function ProgressPage({
   }, [complete]);
 
   useEffect(() => {
+    window.python.getLogsPath().then((path) => {
+      setLogsPath(path);
+    });
+  }, [logsPath]);
+
+  useEffect(() => {
     let currentTaskInterval: NodeJS.Timeout;
     const interval = setInterval(() => {
-      window.python.pollClusterProgress().then((progress) => {
-        console.log(progress);
+      window.python.pollRunStatus().then((run) => {
+        if (run.status === "COMPLETED") {
+          setComplete(true);
+          clearInterval(interval);
+        } else if (run.status === "ERROR") {
+          setErrorEncountered(true);
+          clearInterval(interval);
+        }
+        const progress = run.progress;
         setPendingTasks(progress.pendingTasks);
         if (progress.currentTask) {
           clearInterval(currentTaskInterval);
@@ -72,13 +88,6 @@ export default function ProgressPage({
         }
         setCurrentTask(progress.currentTask);
         setCompletedTasks(progress.completedTasks);
-        if (
-          progress.completedTasks.filter((value) =>
-            value[0].includes("results"),
-          ).length > 0
-        ) {
-          setComplete(true);
-        }
       });
     }, 1000);
 
@@ -101,12 +110,43 @@ export default function ProgressPage({
     );
   }
 
+  if (errorEncountered) {
+    return (
+      <>
+        <TitleBar index={3} tutorialState={tutorialState} />
+        <div
+          id="mainContent"
+          className="dark:dark flex flex-col items-center justify-start gap-4 bg-backgroundColor px-24"
+        >
+          <div className="mt-24 flex w-full justify-center p-4">
+            <div className="flex items-center gap-2">
+              <TriangleAlert size={32} className="text-red-600" />
+              <h1 className="text-4xl">Error Encountered</h1>
+            </div>
+          </div>
+          <div className="flex flex-col items-center justify-center gap-2">
+            <p>
+              Try again or check the logs for more information on the error
+              encountered.
+            </p>
+            <Button
+              onClick={() => window.python.showItemInFolder(logsPath || "")}
+              disabled={!logsPath}
+              text="View Logs"
+              leftIcon={<FileClock />}
+            />
+          </div>
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       <TitleBar index={3} tutorialState={tutorialState} />
       <div
         id="mainContent"
-        className="dark:dark flex flex-col items-center justify-start gap-12 bg-backgroundColor px-24 text-textColor"
+        className="dark:dark flex flex-col items-center justify-start gap-4 bg-backgroundColor px-24 text-textColor"
       >
         <div className="flex w-full items-center justify-between p-8">
           <h1 className="text-4xl">Clustering in Progress</h1>

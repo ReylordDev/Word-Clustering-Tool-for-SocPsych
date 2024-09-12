@@ -880,12 +880,12 @@ video {
   height: 2rem;
 }
 
-.h-full {
-  height: 100%;
-}
-
 .h-\[70vh\] {
   height: 70vh;
+}
+
+.h-full {
+  height: 100%;
 }
 
 .max-h-96 {
@@ -906,14 +906,6 @@ video {
 
 .max-h-\[70vh\] {
   max-height: 70vh;
-}
-
-.min-h-\[30vh\] {
-  min-height: 30vh;
-}
-
-.min-h-\[50vh\] {
-  min-height: 50vh;
 }
 
 .w-1\/2 {
@@ -1059,10 +1051,6 @@ video {
 
 .gap-1 {
   gap: 0.25rem;
-}
-
-.gap-12 {
-  gap: 3rem;
 }
 
 .gap-2 {
@@ -1496,6 +1484,11 @@ video {
 .text-red-500 {
   --tw-text-opacity: 1;
   color: rgb(239 68 68 / var(--tw-text-opacity));
+}
+
+.text-red-600 {
+  --tw-text-opacity: 1;
+  color: rgb(220 38 38 / var(--tw-text-opacity));
 }
 
 .text-secondaryColor {

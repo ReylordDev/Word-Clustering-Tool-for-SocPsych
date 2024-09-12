@@ -42,11 +42,14 @@ contextBridge.exposeInMainWorld("python", {
   openResultsDir: async () => {
     return await ipcRenderer.invoke("python:openResultsDir");
   },
+  getLogsPath: async () => {
+    return await ipcRenderer.invoke("python:getLogsPath");
+  },
   fetchPreviousResults: async () => {
     return await ipcRenderer.invoke("python:fetchPreviousResults");
   },
-  pollClusterProgress: async () => {
-    return await ipcRenderer.invoke("python:pollClusterProgress");
+  pollRunStatus: async () => {
+    return await ipcRenderer.invoke("python:pollRunStatus");
   },
   resetClusterProgress: async () => {
     return await ipcRenderer.invoke("python:resetClusterProgress");

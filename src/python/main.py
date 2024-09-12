@@ -659,6 +659,8 @@ def main(
     )
     save_timestamps(result_dir)
 
+    return result_dir
+
 
 def validate_args(args):
     if args.nearest_neighbors is not None and args.z_score_threshold is None:
@@ -822,8 +824,10 @@ if __name__ == "__main__":
     )
     logger.debug(algorithmSettings.model_dump_json(by_alias=True))
 
-    main(
+    result_dir = main(
         file_settings=fileSettings,
         algorithm_settings=algorithmSettings,
         output_dir=args.output_dir,
     )
+    if not result_dir:
+        sys.exit(1)
