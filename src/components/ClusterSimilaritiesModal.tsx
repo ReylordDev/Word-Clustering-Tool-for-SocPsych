@@ -240,7 +240,7 @@ function ClusterSimilarityModal({
                 )
               }
             >
-              <span className="w-28">Cluster {sc.cluster2 + 1}</span>
+              <span className="w-28">Cluster {sc.cluster2}</span>
               <div className="flex flex-grow items-center">
                 <SimilarityVisualizer
                   primary={true}
@@ -294,19 +294,17 @@ function ClusterSimilarityModal({
           <input
             type="number"
             value={
-              comparisonClusterIndex !== undefined
-                ? comparisonClusterIndex + 1
-                : ""
+              comparisonClusterIndex !== undefined ? comparisonClusterIndex : ""
             }
             onChange={(e) => {
               if (
                 e.target.value === "" ||
-                parseInt(e.target.value) < 1 ||
-                parseInt(e.target.value) > clusters.length
+                parseInt(e.target.value) < 0 ||
+                parseInt(e.target.value) > clusters.length - 1
               ) {
                 setComparisonClusterIndex(undefined);
               } else {
-                setComparisonClusterIndex(parseInt(e.target.value) - 1);
+                setComparisonClusterIndex(parseInt(e.target.value));
               }
             }}
             placeholder="Cluster ID..."
@@ -339,9 +337,7 @@ function ClusterSimilarityModal({
                       setComparisonClusterIndex(cluster.index);
                     }}
                   >
-                    <span className="font-medium">
-                      Cluster {cluster.index + 1}
-                    </span>
+                    <span className="font-medium">Cluster {cluster.index}</span>
                     <ul className="mt-1 space-y-1">
                       {cluster.representativeResponses.map(
                         (response, index) => (
@@ -384,17 +380,17 @@ function ClusterSimilarityModal({
           <input
             type="number"
             value={
-              selectedClusterIndex !== undefined ? selectedClusterIndex + 1 : ""
+              selectedClusterIndex !== undefined ? selectedClusterIndex : ""
             }
             onChange={(e) => {
               if (
                 e.target.value === "" ||
-                parseInt(e.target.value) < 1 ||
-                parseInt(e.target.value) > clusters.length
+                parseInt(e.target.value) < 0 ||
+                parseInt(e.target.value) > clusters.length - 1
               ) {
                 setSelectedClusterIndex(undefined);
               } else {
-                setSelectedClusterIndex(parseInt(e.target.value) - 1);
+                setSelectedClusterIndex(parseInt(e.target.value));
               }
             }}
             placeholder="Cluster ID..."
@@ -417,16 +413,14 @@ function ClusterSimilarityModal({
           {showDropdown &&
             filteredClusters.length > 0 &&
             searchTerm.length > 1 && (
-              <ul className="scrollbar fixed mt-12 max-h-96 w-96 overflow-auto rounded-md border border-primaryColor bg-white shadow-lg dark:bg-zinc-900">
+              <ul className="scrollbar fixed z-30 mt-12 max-h-96 w-96 overflow-auto rounded-md border border-primaryColor bg-white shadow-lg dark:bg-zinc-900">
                 {filteredClusters.map((cluster) => (
                   <li
                     key={cluster.index}
                     className="cursor-pointer p-2 hover:bg-gray-100"
                     onClick={() => setSelectedClusterIndex(cluster.index)}
                   >
-                    <span className="font-medium">
-                      Cluster {cluster.index + 1}
-                    </span>
+                    <span className="font-medium">Cluster {cluster.index}</span>
                     <ul className="mt-1 space-y-1">
                       {cluster.representativeResponses.map(
                         (response, index) => (
@@ -487,7 +481,7 @@ function ClusterSimilarityModal({
                   className="flex w-full items-center justify-between p-4 focus:outline-none"
                 >
                   <h2 className="text-2xl font-semibold">
-                    Cluster {selectedClusterIndex + 1}
+                    Cluster {selectedClusterIndex}
                   </h2>
                   {selectedClusterExpanded ? (
                     <ChevronUp size={28} className="text-secondaryColor" />
@@ -528,7 +522,7 @@ function ClusterSimilarityModal({
                           className="flex w-full items-center justify-between p-4 focus:outline-none"
                         >
                           <h2 className="text-2xl font-semibold">
-                            Cluster {comparisonClusterIndex + 1}
+                            Cluster {comparisonClusterIndex}
                           </h2>
                           {comparisonClusterExpanded ? (
                             <ChevronUp

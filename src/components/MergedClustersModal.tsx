@@ -121,7 +121,7 @@ function MergedClustersModal({
                   >
                     <div className="flex items-center justify-between">
                       <h2 className="mb-2 text-xl font-semibold">
-                        Merged Group {mergerIndex + 1}
+                        Merged Group {mergerIndex}
                       </h2>
                       <button
                         className="px-4 text-primaryColor hover:text-primary-900"

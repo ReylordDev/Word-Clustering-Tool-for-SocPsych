@@ -126,7 +126,7 @@ const ClusterAssignmentModal = ({
                 className="flex w-full items-center justify-between p-4 px-8 focus:outline-none"
               >
                 <h2 className="text-2xl font-semibold">
-                  Cluster {group.clusterIndex + 1} ({group.responses.length}{" "}
+                  Cluster {group.clusterIndex} ({group.responses.length}{" "}
                   responses)
                 </h2>
                 {expandedClusters.includes(group.clusterIndex) ? (
