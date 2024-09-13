@@ -141,6 +141,8 @@ export default function ProgressPage({
     );
   }
 
+  console.log(completedTasks);
+
   return (
     <>
       <TitleBar index={3} tutorialState={tutorialState} />

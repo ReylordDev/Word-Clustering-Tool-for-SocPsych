@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel, ConfigDict
 from pydantic.alias_generators import to_camel
@@ -77,7 +76,7 @@ class TimeStamps(CamelModel):
 class ProgressMessage(CamelModel):
     step: str
     status: str
-    timestamp: str = datetime.now().isoformat()
+    timestamp: str
     type: str = "progress"
 
 

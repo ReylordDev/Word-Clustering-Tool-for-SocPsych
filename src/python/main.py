@@ -1,4 +1,5 @@
 from collections import Counter
+from datetime import datetime
 import json
 import os
 import csv
@@ -487,7 +488,7 @@ def save_args(
 
 def print_progress_message(step: str, status: str):
     print(
-        f"{ProgressMessage(step=step, status=status).model_dump_json(by_alias=True)} ",
+        f"{ProgressMessage(step=step, status=status, timestamp=datetime.now().isoformat()).model_dump_json(by_alias=True)} ",
         flush=True,
     )
     time.sleep(0.01)

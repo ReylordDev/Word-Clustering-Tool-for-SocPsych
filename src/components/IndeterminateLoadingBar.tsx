@@ -6,7 +6,6 @@ const IndeterminateLoadingBar = () => {
   useEffect(() => {
     const foregroundElement =
       foregroundRef.current as unknown as HTMLDivElement;
-    console.log(foregroundElement);
     let start: number | undefined;
 
     const step: FrameRequestCallback = (timestamp) => {
