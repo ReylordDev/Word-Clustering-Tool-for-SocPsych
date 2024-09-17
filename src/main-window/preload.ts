@@ -2,7 +2,7 @@
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 
 import { contextBridge, ipcRenderer } from "electron";
-import { FileSettings, AlgorithmSettings } from "../models";
+import { FileSettings, AlgorithmSettings, Settings } from "../models";
 
 // Expose protected methods that allow the renderer process to use
 // the ipcRenderer without exposing the entire object
@@ -83,5 +83,14 @@ contextBridge.exposeInMainWorld("darkMode", {
   },
   system: () => {
     ipcRenderer.invoke("darkMode:system");
+  },
+});
+
+contextBridge.exposeInMainWorld("settings", {
+  load: async () => {
+    return await ipcRenderer.invoke("settings:load");
+  },
+  save: async (settings: Settings) => {
+    return await ipcRenderer.invoke("settings:save", settings);
   },
 });

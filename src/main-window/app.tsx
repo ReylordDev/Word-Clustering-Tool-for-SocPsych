@@ -1,5 +1,5 @@
 import { MemoryRouter as Router, Routes, Route } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import FileSelectionPage from "../components/FileSelectionPage";
 import FilePreviewPage from "../components/FilePreviewPage";
@@ -32,6 +32,17 @@ export default function App() {
   });
   const [startTime, setStartTime] = useState<number | null>(null);
   const [tutorialMode, setTutorialMode] = useState(true);
+
+  useEffect(() => {
+    window.settings.load().then((settings) => {
+      setTutorialMode(settings.tutorialMode);
+    });
+  }, []);
+
+  const saveTutorialMode = (tutorialMode: boolean) => {
+    window.settings.save({ tutorialMode });
+    setTutorialMode(tutorialMode);
+  };
 
   const setFileSettings = (fileSettings: FileSettings) => {
     setFilePath(fileSettings.path);
@@ -83,7 +94,10 @@ export default function App() {
             <FileSelectionPage
               setFilePath={setFilePath}
               setFileSettings={setFileSettings}
-              tutorialState={{ tutorialMode, setTutorialMode }}
+              tutorialState={{
+                tutorialMode,
+                setTutorialMode: saveTutorialMode,
+              }}
             />
           }
         />
@@ -98,7 +112,10 @@ export default function App() {
               setDelimiter={setDelimiter}
               selectedColumns={selectedColumns}
               setSelectedColumns={setSelectedColumns}
-              tutorialState={{ tutorialMode, setTutorialMode }}
+              tutorialState={{
+                tutorialMode,
+                setTutorialMode: saveTutorialMode,
+              }}
             />
           }
         />
@@ -119,7 +136,10 @@ export default function App() {
               advancedOptions={advancedOptions}
               setAdvancedOptions={setAdvancedOptions}
               startClustering={startClustering}
-              tutorialState={{ tutorialMode, setTutorialMode }}
+              tutorialState={{
+                tutorialMode,
+                setTutorialMode: saveTutorialMode,
+              }}
             />
           }
         />
@@ -128,7 +148,10 @@ export default function App() {
           element={
             <ProgressPage
               startTime={startTime}
-              tutorialState={{ tutorialMode, setTutorialMode }}
+              tutorialState={{
+                tutorialMode,
+                setTutorialMode: saveTutorialMode,
+              }}
             />
           }
         />
@@ -137,7 +160,10 @@ export default function App() {
           element={
             <ResultsPage
               resetFileSettings={resetFileSettings}
-              tutorialState={{ tutorialMode, setTutorialMode }}
+              tutorialState={{
+                tutorialMode,
+                setTutorialMode: saveTutorialMode,
+              }}
             />
           }
         />

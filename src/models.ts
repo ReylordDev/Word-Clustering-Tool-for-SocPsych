@@ -52,3 +52,7 @@ export interface RunStatus {
   progress: ClusterProgress;
   name: string;
 }
+
+export interface Settings {
+  tutorialMode: boolean;
+}
