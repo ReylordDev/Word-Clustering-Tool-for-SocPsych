@@ -287,8 +287,11 @@ export default function FilePreviewPage({
           </div>
         </div>
         <div className="flex items-center justify-end gap-4">
-          {/* TODO: fix the case for 1 column selected */}
-          <p>{selectedColumns.length} columns selected</p>
+          {selectedColumns.length !== 1 ? (
+            <p>{selectedColumns.length} columns selected</p>
+          ) : (
+            <p>{selectedColumns.length} column selected</p>
+          )}
           <Link to="/algorithm_settings">
             <Button
               onClick={() =>
