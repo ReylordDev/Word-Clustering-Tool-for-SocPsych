@@ -183,7 +183,7 @@ def cluster(
 ):
     logger.info("STARTED: Clustering")
     print_progress_message("cluster", "STARTED")
-    clustering = KMeans(n_clusters=K, n_init=10, random_state=seed)
+    clustering = KMeans(n_clusters=K, n_init="auto", random_state=seed)
     clustering.fit(embeddings, sample_weight=sample_weights)
     cluster_idxs = np.copy(clustering.labels_)
     cluster_centers = clustering.cluster_centers_ / np.linalg.norm(
@@ -387,7 +387,7 @@ def find_number_of_clusters(
     bics = []
     for K in K_values:
         logger.info(f"Computing K = {K}")
-        clustering = KMeans(n_clusters=K, n_init=10, random_state=seed)
+        clustering = KMeans(n_clusters=K, n_init="auto", random_state=seed)
         clustering.fit(embeddings_normalized, sample_weight=sample_weights)
         sil = silhouette_score(np.asarray(embeddings_normalized), clustering.labels_)
         sils.append(sil)
