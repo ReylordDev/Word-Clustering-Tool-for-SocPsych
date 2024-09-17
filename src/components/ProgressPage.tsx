@@ -1,10 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import { TitleBar } from "./TitleBar";
 import { useState, useEffect } from "react";
-import { Clock, Check, Square, TriangleAlert, FileClock } from "lucide-react";
+import { Check, Square, TriangleAlert, FileClock } from "lucide-react";
 import { formatTime } from "../utils";
 import IndeterminateLoadingBar from "./IndeterminateLoadingBar";
 import Button from "./Button";
+import AdaptiveClock from "./AdaptiveClock";
 
 // Potential improvement: Sync this with the python code
 const progression_messages: { [key: string]: string } = {
@@ -153,8 +154,8 @@ export default function ProgressPage({
         <div className="flex w-full items-center justify-between p-8">
           <h1 className="text-4xl">Clustering in Progress</h1>
           <div className="flex items-center justify-start gap-2">
-            <Clock size={32} />
-            <p className="text-right text-xl">{formatTime(timeElapsed)}</p>
+            <AdaptiveClock size={32} seconds={timeElapsed} />
+            <p className="min-w-32 text-xl">{formatTime(timeElapsed)}</p>
           </div>
         </div>
         <div className="flex min-w-[500px] flex-col justify-start gap-4 p-4">
@@ -175,7 +176,9 @@ export default function ProgressPage({
                     </div>
                   </div>
                   <div className="flex justify-start gap-2">
-                    <Clock />
+                    <AdaptiveClock
+                      seconds={Math.floor((message[1] - previousTime) / 1000)}
+                    />
                     <p className="min-w-28">
                       {formatTime(
                         Math.floor((message[1] - previousTime) / 1000),
@@ -199,7 +202,10 @@ export default function ProgressPage({
                   </div>
                 </div>
                 <div className="flex justify-start gap-2">
-                  <Clock className="text-primaryColor" />
+                  <AdaptiveClock
+                    className="text-primaryColor"
+                    seconds={currentTaskTimer}
+                  />
                   <p className="min-w-28">{formatTime(currentTaskTimer)}</p>
                 </div>
               </div>
