@@ -31,7 +31,7 @@ export interface Args {
 
 export interface ProgressMessage {
   step: string;
-  status: "TODO" | "STARTED" | "DONE";
+  status: "TODO" | "STARTED" | "DONE" | "ERROR";
   timestamp: string;
   type: string;
 }
@@ -55,4 +55,5 @@ export interface RunStatus {
 
 export interface Settings {
   tutorialMode: boolean;
+  firstLaunch: boolean;
 }

@@ -888,6 +888,10 @@ video {
   height: 100%;
 }
 
+.h-screen {
+  height: 100vh;
+}
+
 .max-h-96 {
   max-height: 24rem;
 }
@@ -956,6 +960,10 @@ video {
 .w-max {
   width: -moz-max-content;
   width: max-content;
+}
+
+.w-screen {
+  width: 100vw;
 }
 
 .min-w-28 {
@@ -1291,6 +1299,10 @@ video {
   padding: 0.5rem;
 }
 
+.p-24 {
+  padding: 6rem;
+}
+
 .p-3 {
   padding: 0.75rem;
 }
@@ -1386,10 +1398,6 @@ video {
 
 .text-center {
   text-align: center;
-}
-
-.text-right {
-  text-align: right;
 }
 
 .text-2xl {

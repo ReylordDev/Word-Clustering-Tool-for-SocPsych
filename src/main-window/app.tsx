@@ -40,7 +40,7 @@ export default function App() {
   }, []);
 
   const saveTutorialMode = (tutorialMode: boolean) => {
-    window.settings.save({ tutorialMode });
+    window.settings.save({ tutorialMode, firstLaunch: false });
     setTutorialMode(tutorialMode);
   };
 

@@ -17,6 +17,8 @@ import {
 // whether you're running in development or production).
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
+declare const FIRST_LAUNCH_WEBPACK_ENTRY: string;
+declare const FIRST_LAUNCH_PRELOAD_WEBPACK_ENTRY: string;
 
 const isDev = () => {
   return process.env["WEBPACK_SERVE"] === "true";
@@ -289,6 +291,7 @@ function loadSettings(): Settings {
   const settingsPath = path.join(dataDir, "settings.json");
   const defaultSettings: Settings = {
     tutorialMode: true,
+    firstLaunch: true,
   };
   if (!fs.existsSync(settingsPath)) {
     console.log("Settings file does not exist");
@@ -309,14 +312,212 @@ function saveSettings(settings: Settings) {
   fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2));
 }
 
+function handleFirstLaunch() {
+  const firstLaunchWindow = new BrowserWindow({
+    width: 1024,
+    height: 426,
+    titleBarStyle: "hidden",
+    titleBarOverlay: {
+      color: nativeTheme.shouldUseDarkColors
+        ? "rgba(0,0,0,0)"
+        : "rgba(255,255,255,0)",
+      symbolColor: nativeTheme.shouldUseDarkColors ? "#eddcf9" : "#160622",
+      height: 60,
+    },
+    icon: path.join(rootDir, "assets", "icons", "icon.png"),
+    useContentSize: true,
+    webPreferences: {
+      preload: FIRST_LAUNCH_PRELOAD_WEBPACK_ENTRY,
+    },
+  });
+
+  firstLaunchWindow.loadURL(FIRST_LAUNCH_WEBPACK_ENTRY);
+
+  let executablePath: string;
+  const pythonArguments: string[] = [];
+  if (!isDev()) {
+    // Launch the compiled executable
+    const pyInstallerDestinationDir = path.join(
+      rootDir,
+      "resources",
+      "dist",
+      "main",
+    );
+    if (process.platform === "win32") {
+      executablePath = path.join(pyInstallerDestinationDir, "first_launch.exe");
+    } else {
+      executablePath = path.join(pyInstallerDestinationDir, "first_launch");
+    }
+  } else {
+    // Launch the python script
+    // dataDir is equivalent to rootDir in development anyway
+    if (process.platform === "win32") {
+      executablePath = path.join(dataDir, ".venv", "Scripts", "python.exe");
+    } else {
+      executablePath = path.join(dataDir, ".venv", "bin", "python");
+    }
+    const scriptPath = path.join(rootDir, "src", "python", "first_launch.py");
+    pythonArguments.push("-u", scriptPath);
+  }
+  pythonArguments.push("--log_dir", path.join(dataDir, "logs", "python"));
+
+  console.log(
+    `Executing Command: ${executablePath} ${pythonArguments.map((arg) => `"${arg}"`).join(" ")}`,
+  );
+  firstLaunchWindow.setProgressBar(1);
+  return new Promise<BrowserWindow>((resolve, reject) => {
+    const launchScript = spawn(executablePath, pythonArguments, {
+      cwd: rootDir,
+    });
+    launchScript.on("error", (error) => {
+      console.error(`Error: ${error.message}`);
+      reject(error);
+    });
+    launchScript.stdout?.on("data", (data: Buffer) => {
+      const message = data.toString().trim();
+      try {
+        const parsedMessage = JSON.parse(message) as ProgressMessage;
+        if (parsedMessage.status === "STARTED") {
+          console.log(`Started task: ${parsedMessage.step}`);
+        }
+        if (parsedMessage.status === "DONE") {
+          console.log(`Completed task: ${parsedMessage.step}`);
+        }
+        if (parsedMessage.status === "ERROR") {
+          console.error(`Error: ${parsedMessage.step}`);
+          firstLaunchWindow.webContents.send("firstLaunch:error");
+        }
+      } catch (error) {
+        console.error(
+          `Failed to parse progress message: ${message} because of ${error}`,
+        );
+      }
+    });
+    launchScript.stderr?.on("data", (data: Buffer) => {
+      console.error(`Error: ${data.toString()}`);
+      reject(data.toString());
+    });
+
+    launchScript.on("close", (code: number) => {
+      firstLaunchWindow.setProgressBar(-1);
+      console.log(`Python process exited with code ${code}`);
+      if (code === 0) {
+        console.log("First launch script completed");
+        firstLaunchWindow.close();
+        const settings = loadSettings();
+        saveSettings({ ...settings, firstLaunch: false });
+        mainWindow = createMainWindow();
+        resolve(mainWindow);
+      } else {
+        console.error("First launch script failed");
+        reject(false);
+      }
+    });
+  });
+}
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on("ready", async () => {
   nativeTheme.themeSource = "light";
+  registerIpcHandlers();
   console.log("App is ready");
-  mainWindow = createMainWindow();
 
+  const settings = loadSettings();
+  if (settings.firstLaunch) {
+    handleFirstLaunch()
+      .then((window) => {
+        mainWindow = window;
+      })
+      .catch((error) => {
+        console.error(`Failed to complete first launch: ${error}`);
+      });
+  } else {
+    mainWindow = createMainWindow();
+  }
+});
+
+// Quit when all windows are closed, except on macOS. There, it's common
+// for applications and their menu bar to stay active until the user quits
+// explicitly with Cmd + Q.
+app.on("window-all-closed", () => {
+  if (process.platform !== "darwin") {
+    app.quit();
+  }
+});
+
+app.on("activate", () => {
+  // On OS X it's common to re-create a window in the app when the
+  // dock icon is clicked and there are no other windows open.
+  if (BrowserWindow.getAllWindows().length === 0) {
+    createMainWindow();
+  }
+});
+
+// In this file you can include the rest of your app's specific main process
+// code. You can also put them in separate files and import them here.
+
+declare global {
+  interface Window {
+    python: {
+      readFile: (path: string) => Promise<string>;
+      showItemInFolder: (path: string) => Promise<void>;
+      readJsonFile: (path: string) => Promise<unknown>;
+      startClustering: (
+        fileSettings: FileSettings,
+        algorithmSettings: AlgorithmSettings,
+      ) => Promise<void>;
+      pollRunStatus: () => Promise<RunStatus>;
+      resetClusterProgress: () => void;
+      getRunName: () => Promise<string | undefined>;
+      setRunName: (name: string) => void;
+      getExampleFilePath: () => Promise<string>;
+      getResultsDir: () => Promise<string>;
+      openResultsDir: () => Promise<string>;
+      getLogsPath: (firstLaunch?: boolean) => Promise<string>;
+      fetchPreviousResults: () => Promise<
+        {
+          name: string;
+          date: string;
+        }[]
+      >;
+      loadRun(name: string): void;
+      resetRun: () => void;
+    };
+    control: {
+      minimize: () => void;
+      maximize: () => void;
+      close: () => void;
+    };
+    darkMode: {
+      toggle: () => void;
+      get: () => Promise<boolean>;
+      system: () => void;
+    };
+    settings: {
+      load: () => Promise<Settings>;
+      save: (settings: Settings) => void;
+    };
+    firstLaunch: {
+      onError: (callback: () => void) => void;
+    };
+  }
+}
+
+const formatDate = (timestamp: number) => {
+  const date = new Date(timestamp * 1000);
+  return date.toLocaleDateString(app.getSystemLocale(), {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+  });
+};
+
+function registerIpcHandlers() {
   ipcMain.handle("python:readFile", async (event, path: string) => {
     return new Promise<string>((resolve, reject) => {
       fs.readFile(path, "utf-8", (err, data) => {
@@ -422,7 +623,10 @@ app.on("ready", async () => {
     return shell.openPath(resultsDir);
   });
 
-  ipcMain.handle("python:getLogsPath", () => {
+  ipcMain.handle("python:getLogsPath", (_event, firstLaunch?: boolean) => {
+    if (firstLaunch) {
+      return path.join(app.getPath("logs"), "python", "first_launch.log");
+    }
     return path.join(app.getPath("logs"), "python", "main.log");
   });
 
@@ -545,80 +749,4 @@ app.on("ready", async () => {
   ipcMain.handle("settings:save", (event, settings: Settings) => {
     saveSettings(settings);
   });
-});
-
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
-app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") {
-    app.quit();
-  }
-});
-
-app.on("activate", () => {
-  // On OS X it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
-  if (BrowserWindow.getAllWindows().length === 0) {
-    createMainWindow();
-  }
-});
-
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and import them here.
-
-declare global {
-  interface Window {
-    python: {
-      readFile: (path: string) => Promise<string>;
-      showItemInFolder: (path: string) => Promise<void>;
-      readJsonFile: (path: string) => Promise<unknown>;
-      startClustering: (
-        fileSettings: FileSettings,
-        algorithmSettings: AlgorithmSettings,
-      ) => Promise<void>;
-      pollRunStatus: () => Promise<RunStatus>;
-      resetClusterProgress: () => void;
-      getRunName: () => Promise<string | undefined>;
-      setRunName: (name: string) => void;
-      getExampleFilePath: () => Promise<string>;
-      getResultsDir: () => Promise<string>;
-      openResultsDir: () => Promise<string>;
-      getLogsPath: () => Promise<string>;
-      fetchPreviousResults: () => Promise<
-        {
-          name: string;
-          date: string;
-        }[]
-      >;
-      loadRun(name: string): void;
-      resetRun: () => void;
-    };
-    control: {
-      minimize: () => void;
-      maximize: () => void;
-      close: () => void;
-    };
-    darkMode: {
-      toggle: () => void;
-      get: () => Promise<boolean>;
-      system: () => void;
-    };
-    settings: {
-      load: () => Promise<Settings>;
-      save: (settings: Settings) => void;
-    };
-  }
 }
-
-const formatDate = (timestamp: number) => {
-  const date = new Date(timestamp * 1000);
-  return date.toLocaleDateString(app.getSystemLocale(), {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "numeric",
-    minute: "numeric",
-    second: "numeric",
-  });
-};
