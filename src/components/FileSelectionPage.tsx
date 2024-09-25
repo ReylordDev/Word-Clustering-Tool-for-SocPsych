@@ -196,6 +196,10 @@ export default function FileSelectionPage({
                         The example file contains the response data of a study
                         regarding self-generated motives of social casino
                         gamers.
+                        <br></br>
+                        Full citation: Kim, H.S., Coelho, S., Wohl, M.J. et al.
+                        Self-Generated Motives of Social Casino Gamers. J Gambl
+                        Stud 39, 299–320 (2023).
                       </p>
                     </TooltipContentContainer>
                   </TooltipContent>
