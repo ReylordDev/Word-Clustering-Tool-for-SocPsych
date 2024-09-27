@@ -121,9 +121,11 @@ const isValidFileName = (name: string) => {
 
 export default function ResultsPage({
   resetFileSettings,
+  resetAlgorithmSettings,
   tutorialState,
 }: {
   resetFileSettings: () => void;
+  resetAlgorithmSettings: () => void;
   tutorialState: {
     tutorialMode: boolean;
     setTutorialMode: (mode: boolean) => void;
@@ -322,22 +324,6 @@ export default function ResultsPage({
           </div>
           <div className="mt-4 flex justify-between">
             <div className="flex w-1/2 flex-col items-center justify-start gap-8 xl:gap-12">
-              {/* I think the extra dir button is a bit unnecessary. */}
-              {/* <Button
-                onClick={() =>
-                  window.python.openResultsDir().then((errorMessage) => {
-                    if (errorMessage) {
-                      console.error(
-                        "Error opening output directory",
-                        errorMessage,
-                      );
-                    }
-                  })
-                }
-                leftIcon={<Folder />}
-                text="Results Folder"
-                className="w-2/3"
-              /> */}
               <Tooltip>
                 <TooltipTrigger asChild>
                   <div className="w-2/3">
@@ -472,8 +458,9 @@ export default function ResultsPage({
                 }}
                 option2="Select a new input file"
                 onClick2={() => {
-                  window.python.resetRun();
+                  window.python.resetClusterProgress();
                   resetFileSettings();
+                  resetAlgorithmSettings();
                   navigate("/");
                 }}
               />

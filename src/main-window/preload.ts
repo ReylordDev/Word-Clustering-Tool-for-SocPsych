@@ -57,9 +57,6 @@ contextBridge.exposeInMainWorld("python", {
   loadRun: async (name: string) => {
     return await ipcRenderer.invoke("python:loadRun", name);
   },
-  resetRun: async () => {
-    return await ipcRenderer.invoke("python:resetRun");
-  },
 });
 
 contextBridge.exposeInMainWorld("control", {

@@ -6,7 +6,12 @@ import FilePreviewPage from "../components/FilePreviewPage";
 import AlgorithmSettingsPage from "../components/AlgorithmSettingsPage";
 import ProgressPage from "../components/ProgressPage";
 import ResultsPage from "../components/ResultsPage";
-import { FileSettings, AlgorithmSettings, AdvancedOptions } from "../models";
+import {
+  FileSettings,
+  AlgorithmSettings,
+  AdvancedOptions,
+  Args,
+} from "../models";
 
 export default function App() {
   const [filePath, setFilePath] = useState<string | null>(null);
@@ -51,11 +56,36 @@ export default function App() {
     setSelectedColumns(fileSettings.selectedColumns);
   };
 
+  const setAlgorithmSettings = (algorithmSettings: AlgorithmSettings) => {
+    setAutoChooseClusters(algorithmSettings.autoClusterCount);
+    setMaxClusters(algorithmSettings.maxClusters);
+    setClusterCount(algorithmSettings.clusterCount);
+    setExcludedWords(algorithmSettings.excludedWords);
+    setSeed(algorithmSettings.seed);
+    setAdvancedOptions(algorithmSettings.advancedOptions);
+  };
+
   const resetFileSettings = () => {
     setFilePath(null);
     setHasHeader(true);
     setDelimiter(",");
     setSelectedColumns([]);
+  };
+
+  const resetAlgorithmSettings = () => {
+    setAutoChooseClusters(true);
+    setMaxClusters(null);
+    setClusterCount(undefined);
+    setExcludedWords([]);
+    setSeed(null);
+    setAdvancedOptions({
+      outlierDetection: true,
+      agglomerativeClustering: true,
+      nearestNeighbors: 5,
+      zScoreThreshold: 3,
+      similarityThreshold: 0.95,
+      languageModel: "BAAI/bge-large-en-v1.5",
+    });
   };
 
   const startClustering = async () => {
@@ -85,6 +115,15 @@ export default function App() {
     setStartTime(Date.now());
   };
 
+  const loadPrevousResult = async (result: string) => {
+    await window.python.loadRun(result);
+    const resultsDir = await window.python.getResultsDir();
+    const output = await window.python.readJsonFile(`${resultsDir}/args.json`);
+    const args = output as Args;
+    setFileSettings(args.fileSettings);
+    setAlgorithmSettings(args.algorithmSettings);
+  };
+
   return (
     <Router>
       <Routes>
@@ -93,7 +132,7 @@ export default function App() {
           element={
             <FileSelectionPage
               setFilePath={setFilePath}
-              setFileSettings={setFileSettings}
+              loadPrevousResult={loadPrevousResult}
               tutorialState={{
                 tutorialMode,
                 setTutorialMode: saveTutorialMode,
@@ -160,6 +199,7 @@ export default function App() {
           element={
             <ResultsPage
               resetFileSettings={resetFileSettings}
+              resetAlgorithmSettings={resetAlgorithmSettings}
               tutorialState={{
                 tutorialMode,
                 setTutorialMode: saveTutorialMode,

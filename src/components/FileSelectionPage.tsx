@@ -98,11 +98,11 @@ function FileSelector({
 
 export default function FileSelectionPage({
   setFilePath,
-  setFileSettings,
+  loadPrevousResult,
   tutorialState,
 }: {
   setFilePath: (path: string) => void;
-  setFileSettings: (fileSettings: FileSettings) => void;
+  loadPrevousResult: (result: string) => Promise<void>;
   tutorialState: {
     tutorialMode: boolean;
     setTutorialMode: (mode: boolean) => void;
@@ -118,19 +118,14 @@ export default function FileSelectionPage({
     });
   };
 
-  // useEffect(() => {
-  //   if (filePath) {
-  //     navigate("/file_preview");
-  //   }
-  // }, [filePath]);
-
-  const handlePreviousResultSelect = async (result: string) => {
-    await window.python.loadRun(result);
-    const resultsDir = await window.python.getResultsDir();
-    const output = await window.python.readJsonFile(`${resultsDir}/args.json`);
-    const args = output as Args;
-    setFileSettings(args.fileSettings);
-    navigate("/results");
+  const handlePreviousResultSelect = (result: string) => {
+    loadPrevousResult(result)
+      .then(() => {
+        navigate("/results");
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   return (

@@ -60,11 +60,6 @@ export default function AlgorithmSettingsPage({
     console.log("Submitting settings...");
 
     // TODO: Validate settings
-    // if (autoChooseClusters && !maxClusters) {
-    //   console.error("Max clusters must be set when autoChooseClusters is true");
-    //   return;
-    // }
-
     if (!autoChooseClusters && !clusterCount) {
       console.error(
         "Cluster count must be set when autoChooseClusters is false",

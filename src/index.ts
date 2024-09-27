@@ -148,6 +148,10 @@ const startScript = async (
   if (algorithmSettings.seed) {
     pythonArguments.push("--seed");
     pythonArguments.push(algorithmSettings.seed.toString());
+  } else {
+    const randomSeed = Math.floor(Math.random() * 1000);
+    pythonArguments.push("--seed");
+    pythonArguments.push(randomSeed.toString());
   }
   if (algorithmSettings.excludedWords.length > 0) {
     pythonArguments.push("--excluded_words");
@@ -483,7 +487,6 @@ declare global {
         }[]
       >;
       loadRun(name: string): void;
-      resetRun: () => void;
     };
     control: {
       minimize: () => void;
@@ -564,14 +567,6 @@ function registerIpcHandlers() {
 
   ipcMain.handle("python:pollRunStatus", () => {
     return currentRun;
-  });
-
-  ipcMain.handle("python:resetClusterProgress", () => {
-    currentRun.progress = {
-      pendingTasks: [],
-      currentTask: null,
-      completedTasks: [],
-    };
   });
 
   ipcMain.handle("python:getRunName", async () => {
@@ -703,7 +698,7 @@ function registerIpcHandlers() {
     });
   });
 
-  ipcMain.handle("python:resetRun", () => {
+  ipcMain.handle("python:resetClusterProgress", () => {
     currentRun = {
       status: "NOT_STARTED",
       progress: {
