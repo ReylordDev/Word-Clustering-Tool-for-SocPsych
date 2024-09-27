@@ -56,7 +56,7 @@ export function findDelimiter(lines: string[]): string {
   const sampleSize = Math.min(10, lines.length);
   const sampleLines = lines.slice(0, sampleSize);
 
-  let bestDelimiter = ",";
+  let bestDelimiter = commonDelimiters[0];
   let maxConsistentFields = 0;
 
   for (const delimiter of commonDelimiters) {

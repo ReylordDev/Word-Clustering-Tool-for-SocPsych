@@ -38,6 +38,25 @@ export default function FilePreviewPage({
   const [previewData, setPreviewData] = useState<string[][]>([]);
 
   useEffect(() => {
+    const findBestDelimiter = async () => {
+      if (!filePath) {
+        return;
+      }
+      try {
+        const input = await window.python.readFile(filePath);
+        const lines = input.split("\n");
+        const bestDelimiter = findDelimiter(lines);
+        console.log("Best delimiter: ", bestDelimiter);
+        setDelimiter(bestDelimiter);
+      } catch (error) {
+        console.error("Error finding best delimiter:", error);
+      }
+    };
+
+    findBestDelimiter();
+  }, [filePath]);
+
+  useEffect(() => {
     const fetchPreviewData = async () => {
       if (!delimiter || !filePath) {
         return;
@@ -45,11 +64,9 @@ export default function FilePreviewPage({
       try {
         const input = await window.python.readFile(filePath);
         const lines = input.split("\n");
-        const bestDelimiter = findDelimiter(lines);
-        setDelimiter(bestDelimiter);
         const parsedData = lines
           .slice(0, lines.length > 100 ? 100 : lines.length)
-          .map((line) => parseCSVLine(line, bestDelimiter));
+          .map((line) => parseCSVLine(line, delimiter));
         // Fill in missing values by copying the last non-empty value
         const fillIndexes = Array(parsedData.length).fill(
           parsedData.length - 1,
