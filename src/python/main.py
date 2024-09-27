@@ -5,6 +5,7 @@ import os
 import csv
 import sys
 from typing import Optional
+from matplotlib import pyplot as plt
 import numpy as np
 from sentence_transformers import SentenceTransformer
 from sklearn.cluster import AgglomerativeClustering, KMeans
@@ -363,6 +364,7 @@ def save_amended_file(
 def find_number_of_clusters(
     embeddings_normalized: np.ndarray,
     max_num_clusters: int,
+    results_dir: str,
     sample_weights: Optional[np.ndarray] = None,
     seed: Optional[int] = None,
 ) -> int:
@@ -411,6 +413,14 @@ def find_number_of_clusters(
     # and BIC. The product is chosen to achieve both high silhoutte
     # AND high BIC score.
     K = K_values[np.argmax(sils * bics)]
+
+    plt.plot(K_values, sils)
+    plt.plot(K_values, bics)
+    plt.plot([K, K], [0, 1], "r--")
+    plt.xlabel("number of clusters")
+    plt.ylabel("normalized scores")
+    plt.legend(["silhouette score", "inverse BIC", "automatic suggestion"])
+    plt.savefig(f"{results_dir}/automatic_cluster_count_evaluation.png")
 
     logger.info(f"COMPLETED: {progression_messages['find_number_of_clusters']}")
     print_progress_message("find_number_of_clusters", "DONE")
@@ -564,6 +574,18 @@ def main(
         sample_weights.append(response_counts[response])
     sample_weights = np.array(sample_weights)
 
+    ###
+    # Moved here for earlier access (needed in find_number_of_clusters)
+    if not os.path.exists(output_dir):
+        os.mkdir(output_dir)
+
+    input_file_name = os.path.basename(file_settings.path).removesuffix(".csv")
+    input_file_name += f"_{time_stamps[0].time}"
+    result_dir = os.path.join(output_dir, input_file_name)
+    if not os.path.exists(result_dir):
+        os.mkdir(result_dir)
+    ###
+
     # find the number of clusters
     if algorithm_settings.auto_cluster_count:
         if not algorithm_settings.max_clusters:
@@ -571,7 +593,11 @@ def main(
         else:
             max_num_clusters = algorithm_settings.max_clusters
         K = find_number_of_clusters(
-            embeddings, max_num_clusters, sample_weights, algorithm_settings.seed
+            embeddings,
+            max_num_clusters,
+            result_dir,
+            sample_weights,
+            algorithm_settings.seed,
         )
     else:
         assert algorithm_settings.cluster_count is not None
@@ -601,14 +627,17 @@ def main(
     logger.info(f"STARTED: {progression_messages['results']}")
     print_progress_message("results", "STARTED")
 
-    if not os.path.exists(output_dir):
-        os.mkdir(output_dir)
+    ###
+    ## moved further up
+    # if not os.path.exists(output_dir):
+    #     os.mkdir(output_dir)
 
-    input_file_name = os.path.basename(file_settings.path).removesuffix(".csv")
-    input_file_name += f"_{time_stamps[0].time}"
-    result_dir = os.path.join(output_dir, input_file_name)
-    if not os.path.exists(result_dir):
-        os.mkdir(result_dir)
+    # input_file_name = os.path.basename(file_settings.path).removesuffix(".csv")
+    # input_file_name += f"_{time_stamps[0].time}"
+    # result_dir = os.path.join(output_dir, input_file_name)
+    # if not os.path.exists(result_dir):
+    #     os.mkdir(result_dir)
+    ###
     logger.info(f"RESULT_DIR: {os.path.abspath(result_dir)}")
     print(
         f"{RunNameMessage(name=input_file_name).model_dump_json(by_alias=True)} ",
