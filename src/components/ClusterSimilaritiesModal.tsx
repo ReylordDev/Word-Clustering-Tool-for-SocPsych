@@ -8,6 +8,7 @@ import {
   TextCursor,
   AlertCircle,
 } from "lucide-react";
+import { parseCSVLine } from "../utils";
 
 interface Cluster {
   index: number;
@@ -50,28 +51,30 @@ const ClusterDetails: React.FC<{ cluster: Cluster | undefined }> = ({
           <h3 className="gap-1 p-1 text-xl font-medium">
             Representative Responses:
           </h3>
-          {cluster.representativeResponses.map((response, index) => (
-            <div key={index} className="rounded p-3">
-              {/* TODO: Better Line Clamping */}
-              <p className="line-clamp-2">"{response.text}"</p>
-              <div className="mt-2 flex items-center justify-between px-2 text-sm">
-                <p>
-                  Similarity to cluster center:{" "}
-                  <span className="font-semibold">
-                    {(response.similarity * 100).toFixed(1)}%
-                  </span>
-                </p>
-                <div className="h-2.5 w-1/2 rounded-full bg-accent-100">
-                  <div
-                    className="h-2.5 rounded-full bg-accentColor"
-                    style={{
-                      width: `${response.similarity * 100}%`,
-                    }}
-                  ></div>
+          {cluster.representativeResponses
+            .slice(0, 5)
+            .map((response, index) => (
+              <div key={index} className="rounded p-3">
+                {/* TODO: Better Line Clamping */}
+                <p className="line-clamp-2">"{response.text}"</p>
+                <div className="mt-2 flex items-center justify-between px-2 text-sm">
+                  <p>
+                    Similarity to cluster center:{" "}
+                    <span className="font-semibold">
+                      {(response.similarity * 100).toFixed(1)}%
+                    </span>
+                  </p>
+                  <div className="h-2.5 w-1/2 rounded-full bg-accent-100">
+                    <div
+                      className="h-2.5 rounded-full bg-accentColor"
+                      style={{
+                        width: `${response.similarity * 100}%`,
+                      }}
+                    ></div>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
         </div>
       </div>
     </div>
@@ -94,7 +97,7 @@ function ClusterSimilarityModal({
   const [clusterSimilarities, setClusterSimilarities] = useState<
     ClusterSimilarity[]
   >([]);
-  const [clusters, setDetailedClusters] = useState<Cluster[]>([]);
+  const [clusters, setClusters] = useState<Cluster[]>([]);
   const [selectedClusterIndex, setSelectedClusterIndex] = useState<
     number | undefined
   >(undefined);
@@ -114,6 +117,8 @@ function ClusterSimilarityModal({
   const comparisonCluster = clusters.find(
     (c) => c.index === comparisonClusterIndex,
   );
+
+  console.log(clusters);
 
   useEffect(() => {
     window.python.readJsonFile(similaritiesPath).then((similarityUnknown) => {
@@ -138,8 +143,9 @@ function ClusterSimilarityModal({
       try {
         const input = await window.python.readFile(clusterAssignmentsPath);
         const lines = input.split("\n");
-        const parsedData = lines.map((line) => line.split(delimiter));
-        parsedData.shift(); // Remove header
+        const parsedData = lines
+          .slice(1)
+          .map((line) => parseCSVLine(line, delimiter));
         const assignments: Cluster[] = [];
         parsedData.forEach(([response, clusterIndex, similarity]) => {
           if (!response || !clusterIndex || !similarity) return;
@@ -167,10 +173,10 @@ function ClusterSimilarityModal({
           cluster.representativeResponses.sort(
             (a, b) => b.similarity - a.similarity,
           );
-          cluster.representativeResponses =
-            cluster.representativeResponses.slice(0, 5);
+          // cluster.representativeResponses =
+          //   cluster.representativeResponses.slice(0, 5);
         });
-        setDetailedClusters(assignments);
+        setClusters(assignments);
       } catch (error) {
         console.error("Error fetching cluster assignments: ", error);
       }
@@ -349,6 +355,19 @@ function ClusterSimilarityModal({
                               .toLowerCase()
                               .includes(searchTerm.toLowerCase()) ? (
                               <>
+                                <div
+                                  style={{
+                                    display:
+                                      index > 4 &&
+                                      cluster.representativeResponses.length > 5
+                                        ? "block"
+                                        : "none",
+                                  }}
+                                >
+                                  <span>
+                                    ... <br></br>
+                                  </span>
+                                </div>
                                 <span>
                                   "
                                   {response.text.slice(
@@ -379,6 +398,8 @@ function ClusterSimilarityModal({
                                   "
                                 </span>
                               </>
+                            ) : index > 4 ? (
+                              <></>
                             ) : (
                               <span>"{response.text}"</span>
                             )}
@@ -468,6 +489,19 @@ function ClusterSimilarityModal({
                               .toLowerCase()
                               .includes(searchTerm.toLowerCase()) ? (
                               <>
+                                <div
+                                  style={{
+                                    display:
+                                      index > 4 &&
+                                      cluster.representativeResponses.length > 5
+                                        ? "block"
+                                        : "none",
+                                  }}
+                                >
+                                  <span>
+                                    ... <br></br>
+                                  </span>
+                                </div>
                                 <span>
                                   "
                                   {response.text.slice(
@@ -498,6 +532,8 @@ function ClusterSimilarityModal({
                                   "
                                 </span>
                               </>
+                            ) : index > 4 ? (
+                              <></>
                             ) : (
                               <span>"{response.text}"</span>
                             )}

@@ -1,10 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { TitleBar } from "./TitleBar";
-import { Database, FileText, FileSearch, Upload, Info } from "lucide-react";
+import { Database, FileText, FileSearch, Upload } from "lucide-react";
 import Button from "./Button";
 import PreviousResultModal from "./PreviousResultModal";
 import { useState } from "react";
-import { Args, FileSettings } from "../models";
 import {
   Tooltip,
   TooltipTrigger,
