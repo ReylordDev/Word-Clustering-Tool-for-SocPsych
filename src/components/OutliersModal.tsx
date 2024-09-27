@@ -9,7 +9,7 @@ const OutlierCard = ({
   threshold: number;
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const precision = 3;
+  const precision = 2;
 
   // This is awkward because sometimes we show the option to expand the text even if there is nothing to expand
   // TODO: Refactor this to be more elegant
@@ -50,23 +50,30 @@ const OutlierCard = ({
             <p>
               Similarity:{" "}
               <span className="font-semibold">
-                {outlier.similarity.toFixed(precision)}
+                {(outlier.similarity * 100).toFixed(precision)}%
               </span>
             </p>
-            <p>
+            <p style={{ width: `${100 - threshold * 100}%` }}>
               Threshold:{" "}
               <span className="font-semibold">
-                {threshold.toFixed(precision)}
+                {(threshold * 100).toFixed(precision)}%
               </span>
             </p>
           </div>
           <div className="mt-2 h-2.5 w-full rounded-full bg-gray-200">
             <div
-              className="h-2.5 rounded-full bg-accentColor"
+              className="h-2.5 rounded-full bg-yellow-400"
               style={{
-                width: `${(outlier.similarity / threshold) * 100}%`,
+                width: `${threshold * 100}%`,
               }}
-            ></div>
+            >
+              <div
+                className="h-2.5 rounded-full bg-accentColor"
+                style={{
+                  width: `${(outlier.similarity / threshold) * 100}%`,
+                }}
+              ></div>
+            </div>
           </div>
         </div>
       </div>
@@ -90,6 +97,7 @@ function OutliersModal({
   const [outliers, setOutliers] = useState<
     { response: string; similarity: number }[]
   >([]);
+  const [outlierThreshold, setOutlierThreshold] = useState<number | null>(null);
 
   console.log("OutliersModal");
 
@@ -109,6 +117,7 @@ function OutliersModal({
           similarity: outlier.similarity,
         })),
       );
+      if (data.length > 0) setOutlierThreshold(data[0].threshold);
     });
   }, [path, nearestNeighbors, zScoreThreshold]);
 
@@ -166,7 +175,7 @@ function OutliersModal({
                 <OutlierCard
                   key={index}
                   outlier={outlier}
-                  threshold={zScoreThreshold}
+                  threshold={outlierThreshold || 0}
                 />
               ))}
             </div>
