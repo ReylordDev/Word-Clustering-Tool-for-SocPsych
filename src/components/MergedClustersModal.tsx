@@ -101,7 +101,7 @@ function MergedClustersModal({
               <div className="flex flex-col gap-2">
                 <h2 className="text-3xl font-semibold">Merged Clusters</h2>
                 <p>
-                  Merging Similarity Threshold:{" "}
+                  Paired Similarity Threshold:{" "}
                   <span className="font-semibold">{mergeThreshold * 100}%</span>
                 </p>
               </div>
