@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
+import { formatDate } from "../utils";
 
 const PreviousResultModal = ({
   isOpen,
@@ -13,9 +14,10 @@ const PreviousResultModal = ({
   const [previousResults, setPreviousResults] = useState<
     {
       name: string;
-      date: string;
+      timestamp: number;
     }[]
   >([]);
+  const [locale, setLocale] = useState("en-US");
 
   useEffect(() => {
     window.python
@@ -29,7 +31,7 @@ const PreviousResultModal = ({
       });
   }, []);
 
-  const handleClick = (selectedResult: { name: string; date: string }) => {
+  const handleClick = (selectedResult: { name: string; timestamp: number }) => {
     onSelect(selectedResult.name);
     setIsOpen(false);
   };
@@ -46,6 +48,10 @@ const PreviousResultModal = ({
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
+  }, []);
+
+  useEffect(() => {
+    window.settings.getSystemLocale().then(setLocale);
   }, []);
 
   if (!isOpen) return null;
@@ -83,7 +89,7 @@ const PreviousResultModal = ({
             </thead>
             <tbody>
               {previousResults
-                .sort((a, b) => b.date.localeCompare(a.date))
+                .sort((a, b) => b.timestamp - a.timestamp)
                 .map((item, index) => (
                   <tr
                     key={index}
@@ -94,7 +100,9 @@ const PreviousResultModal = ({
                       <p className="text-ellipsis font-semibold">{item.name}</p>
                     </td>
                     <td className="border border-dashed border-textColor p-2 pl-4">
-                      <p className="text-md text-ellipsis">{item.date}</p>
+                      <p className="text-md text-ellipsis">
+                        {formatDate(item.timestamp, locale)}
+                      </p>
                     </td>
                   </tr>
                 ))}

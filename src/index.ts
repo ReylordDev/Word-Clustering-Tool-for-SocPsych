@@ -483,7 +483,7 @@ declare global {
       fetchPreviousResults: () => Promise<
         {
           name: string;
-          date: string;
+          timestamp: number;
         }[]
       >;
       loadRun(name: string): void;
@@ -501,24 +501,13 @@ declare global {
     settings: {
       load: () => Promise<Settings>;
       save: (settings: Settings) => void;
+      getSystemLocale: () => Promise<string>;
     };
     firstLaunch: {
       onError: (callback: () => void) => void;
     };
   }
 }
-
-const formatDate = (timestamp: number) => {
-  const date = new Date(timestamp * 1000);
-  return date.toLocaleDateString(app.getSystemLocale(), {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "numeric",
-    minute: "numeric",
-    second: "numeric",
-  });
-};
 
 function registerIpcHandlers() {
   ipcMain.handle("python:readFile", async (event, path: string) => {
@@ -629,7 +618,7 @@ function registerIpcHandlers() {
     return new Promise<
       {
         name: string;
-        date: string;
+        timestamp: number;
       }[]
     >((resolve, reject) => {
       fs.readdir(outputDir, (err, files) => {
@@ -639,7 +628,7 @@ function registerIpcHandlers() {
         }
         const results: {
           name: string;
-          date: string;
+          timestamp: number;
         }[] = [];
         files.forEach((fileName) => {
           // Read timestamps.json
@@ -658,9 +647,7 @@ function registerIpcHandlers() {
             const startingTime = parsedTimestamps.timeStamps[0].time;
             results.push({
               name: fileName,
-              date: startingTime
-                ? formatDate(parseInt(startingTime))
-                : "Invalid Date",
+              timestamp: startingTime,
             });
           } catch (error) {
             console.error(
@@ -743,5 +730,9 @@ function registerIpcHandlers() {
 
   ipcMain.handle("settings:save", (event, settings: Settings) => {
     saveSettings(settings);
+  });
+
+  ipcMain.handle("settings:getSystemLocale", () => {
+    return app.getSystemLocale();
   });
 }

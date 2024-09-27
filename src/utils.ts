@@ -79,3 +79,15 @@ export function findDelimiter(lines: string[]): string {
 
   return bestDelimiter;
 }
+
+export function formatDate(timestamp: number, locale: string) {
+  const date = new Date(timestamp * 1000);
+  return date.toLocaleDateString(locale, {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+  });
+}

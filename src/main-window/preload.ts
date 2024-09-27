@@ -90,4 +90,7 @@ contextBridge.exposeInMainWorld("settings", {
   save: async (settings: Settings) => {
     return await ipcRenderer.invoke("settings:save", settings);
   },
+  getSystemLocale: async () => {
+    return await ipcRenderer.invoke("settings:getSystemLocale");
+  },
 });
