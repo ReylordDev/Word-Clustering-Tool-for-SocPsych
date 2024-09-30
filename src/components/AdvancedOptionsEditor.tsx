@@ -228,7 +228,7 @@ const AdvancedOptionsEditor = ({
                 type="number"
                 id="similarityThreshold"
                 step={0.01}
-                value={similarityThreshold || ""}
+                value={similarityThreshold === null ? "" : similarityThreshold}
                 onChange={(e) => {
                   setSimilarityThreshold(e.target.valueAsNumber);
                   setUnsavedChanges(true);
