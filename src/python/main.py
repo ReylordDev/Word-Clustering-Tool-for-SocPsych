@@ -57,6 +57,8 @@ def process_input_file(
         if file_settings.has_header:
             headers = reader.__next__()
             logger.debug(f"Headers: {headers}")
+        else:
+            headers = []
         col_idxs: list[int] = []
 
         for i in file_settings.selected_columns:
@@ -143,6 +145,7 @@ def detect_outliers(
     avg_neighbor_sim = np.mean(
         -np.partition(-S, outlier_k + 1, axis=1)[:, 1 : outlier_k + 1], axis=1
     )
+    # Can probably drop the extra np.mean() call here
     outlier_threshold = np.mean(
         avg_neighbor_sim
     ) - outlier_detection_threshold * np.std(avg_neighbor_sim)
@@ -176,7 +179,7 @@ def detect_outliers(
     return outlier_stats, responses_remaining, norm_embeddings[remaining_indexes, :]
 
 
-def cluster(
+def start_clustering(
     embeddings: np.ndarray,
     K: int,
     sample_weights: np.ndarray,
@@ -606,7 +609,7 @@ def main(
         assert algorithm_settings.cluster_count is not None
         K = algorithm_settings.cluster_count
 
-    cluster_idxs, cluster_centers = cluster(
+    cluster_idxs, cluster_centers = start_clustering(
         embeddings, K, sample_weights, algorithm_settings.seed
     )
 
