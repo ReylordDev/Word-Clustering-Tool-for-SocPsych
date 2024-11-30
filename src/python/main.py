@@ -143,11 +143,22 @@ def detect_outliers(
     # take the second to OUTLIER_K+1 values of those (to exclude the similarity
     # to the response itself), swap the sign again, and take the average.
 
-    # TODO: the ordering in the partitions is undefined, so I should test whether
-    #   the first index is actualy the cosine similarity of the response to itself
-    avg_neighbor_sim = np.mean(
-        -np.partition(-S, outlier_k + 1, axis=1)[:, 1 : outlier_k + 1], axis=1
+    # the ordering in the partitions is undefined, indexing the partitioned array directly
+    # is not guaranteed to exclude the similarity to the response itself.
+    # avg_neighbor_sim = np.mean(
+    #     -np.partition(-S, outlier_k + 1, axis=1)[:, 1 : outlier_k + 1], axis=1
+    # )
+
+    # we need to sort the partitioned array to get the correct order
+    partition = np.partition(-S, outlier_k + 1, axis=1)
+    sorted_neighborhood_partition = np.copy(partition)
+    sorted_neighborhood_partition[:, : outlier_k + 1] = np.sort(
+        partition[:, : outlier_k + 1], axis=1
     )
+    avg_neighbor_sim = np.mean(
+        -sorted_neighborhood_partition[:, 1 : outlier_k + 1], axis=1
+    )
+
     outlier_threshold = np.mean(avg_neighbor_sim) - z_score_threshold * np.std(
         avg_neighbor_sim
     )
@@ -458,10 +469,6 @@ def save_merged_clusters(
 ):
     merged_clusters_file = results_dir + "/merged_clusters.json"
     for merger in mergers:
-        # dead code
-        merger.merged_clusters
-        merger.similarity_pairs
-
         for cluster in merger.merged_clusters:
             in_cluster = np.where(cluster_idxs == cluster.index)[0]
 
