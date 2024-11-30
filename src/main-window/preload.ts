@@ -59,6 +59,7 @@ contextBridge.exposeInMainWorld("python", {
   },
 });
 
+// unused I think
 contextBridge.exposeInMainWorld("control", {
   close: () => {
     ipcRenderer.send("control:close");

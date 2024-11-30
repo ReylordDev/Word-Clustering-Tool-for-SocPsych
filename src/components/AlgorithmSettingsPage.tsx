@@ -225,9 +225,6 @@ export default function AlgorithmSettingsPage({
                   <label htmlFor="seed">
                     <div className="flex flex-col">
                       <p>Deterministic Seed</p>
-                      <p className="text-base font-normal text-gray-500">
-                        Leave empty for non-deterministic results
-                      </p>
                     </div>
                   </label>
                   <input
@@ -247,7 +244,7 @@ export default function AlgorithmSettingsPage({
                     The seed to use for the random number generator. This allows
                     for deterministic results when the same seed is used.
                     <br></br>
-                    Leave empty for non-deterministic results.
+                    When not set, the seed is randomly generated.
                   </p>
                 </TooltipContentContainer>
               </TooltipContent>

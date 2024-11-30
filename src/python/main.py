@@ -130,7 +130,7 @@ def detect_outliers(
     responses: list[str],
     norm_embeddings: np.ndarray,
     outlier_k: int,
-    outlier_detection_threshold: float,
+    z_score_threshold: float,
 ) -> tuple[list[dict], list[str], np.ndarray]:
     logger.info(f"STARTED: {progression_messages['detect_outliers']}")
     print_progress_message("detect_outliers", "STARTED")
@@ -142,16 +142,19 @@ def detect_outliers(
     # So we use that to find the OUTLIER_K+1 smallest negative similarities,
     # take the second to OUTLIER_K+1 values of those (to exclude the similarity
     # to the response itself), swap the sign again, and take the average.
+
+    # TODO: the ordering in the partitions is undefined, so I should test whether
+    #   the first index is actualy the cosine similarity of the response to itself
     avg_neighbor_sim = np.mean(
         -np.partition(-S, outlier_k + 1, axis=1)[:, 1 : outlier_k + 1], axis=1
     )
-    # Can probably drop the extra np.mean() call here
-    outlier_threshold = np.mean(
+    outlier_threshold = np.mean(avg_neighbor_sim) - z_score_threshold * np.std(
         avg_neighbor_sim
-    ) - outlier_detection_threshold * np.std(avg_neighbor_sim)
+    )
 
     outlier_stats = []
     outlier_bools = avg_neighbor_sim < outlier_threshold
+
     outliers = [responses[i] for i in np.where(outlier_bools)[0].tolist()]
     for i, response in enumerate(outliers):
         sim = avg_neighbor_sim[np.where(outlier_bools)[0][i]]
@@ -198,7 +201,7 @@ def start_clustering(
     return cluster_idxs, cluster_centers
 
 
-def merge(
+def merge_clusters(
     merge_threshold: float,
     cluster_idxs: np.ndarray,
     cluster_centers: np.ndarray,
@@ -213,7 +216,6 @@ def merge(
         n_clusters=None,
         distance_threshold=1.0 - merge_threshold,
         linkage="complete",
-        metric="cosine",
     )
     meta_clustering.fit(np.asarray(cluster_centers))
 
@@ -455,6 +457,7 @@ def save_merged_clusters(
 ):
     merged_clusters_file = results_dir + "/merged_clusters.json"
     for merger in mergers:
+        # dead code
         merger.merged_clusters
         merger.similarity_pairs
 
@@ -620,7 +623,7 @@ def main(
         advancedOptions.similarity_threshold is not None
         and advancedOptions.similarity_threshold < 1.0
     ):
-        cluster_idxs, cluster_centers, merged_clusters = merge(
+        cluster_idxs, cluster_centers, merged_clusters = merge_clusters(
             advancedOptions.similarity_threshold,
             cluster_idxs,
             cluster_centers,

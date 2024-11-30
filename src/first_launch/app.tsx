@@ -3,7 +3,7 @@ import IndeterminateLoadingBar from "../components/IndeterminateLoadingBar";
 import Button from "../components/Button";
 import { FileClock, AlertTriangle } from "lucide-react";
 
-// This is the window that shows while the defalt model is being downloaded.
+// This is the window that shows while the default model is being downloaded.
 export default function App() {
   const [error, setError] = useState(false);
   const [logsPath, setLogsPath] = useState<string | null>(null);

@@ -93,6 +93,11 @@ export default function App() {
       console.error("File not selected");
       return;
     }
+    const randomSeed = Math.floor(Math.random() * 1000);
+    if (!seed) {
+      setSeed(randomSeed);
+    }
+
     const fileSettings: FileSettings = {
       path: filePath,
       hasHeader,
@@ -103,7 +108,7 @@ export default function App() {
       autoClusterCount,
       maxClusters,
       clusterCount,
-      seed,
+      seed: seed || randomSeed,
       excludedWords,
       advancedOptions,
     };
