@@ -608,7 +608,9 @@ def main(
         if not algorithm_settings.max_clusters:
             max_num_clusters = len(responses_remaining) // 2
         else:
-            max_num_clusters = algorithm_settings.max_clusters
+            max_num_clusters = min(
+                algorithm_settings.max_clusters, len(responses_remaining) // 2
+            )
         K = find_number_of_clusters(
             embeddings,
             max_num_clusters,
