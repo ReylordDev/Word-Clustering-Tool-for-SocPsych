@@ -216,6 +216,7 @@ def merge_clusters(
         n_clusters=None,
         distance_threshold=1.0 - merge_threshold,
         linkage="complete",
+        metric="cosine",
     )
     meta_clustering.fit(np.asarray(cluster_centers))
 
